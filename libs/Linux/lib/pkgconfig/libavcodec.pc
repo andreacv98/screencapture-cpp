@@ -1,0 +1,16 @@
+CMAKE_INSTALL_PREFIX=/home/andrea/CLionProjects/video-app/
+
+prefix=${CMAKE_INSTALL_PREFIX}libs/Linux/
+exec_prefix=${prefix}
+libdir=${CMAKE_INSTALL_PREFIX}libs/Linux/lib
+includedir=${CMAKE_INSTALL_PREFIX}libs/Linux/include
+
+Name: libavcodec
+Description: FFmpeg codec library
+Version: 58.134.100
+Requires: libswresample >= 3.9.100, libavutil >= 56.70.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavcodec -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lvpx -lm -lpthread -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lvpx -lm -lpthread -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lvpx -lm -lpthread -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lvpx -lm -lpthread -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lwebpmux -lm -lwebp -lm -pthread -lm -lopencore-amrwb -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lz -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -laom -lm -lpthread -lmp3lame -lm -lopencore-amrnb -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lopus -lm -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lSvtAv1Enc -lpthread -lm -ltheoraenc -ltheoradec -logg -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lvorbis -lm -logg -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lvorbisenc -lvorbis -lm -logg -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lwebp -lm
+Libs.private: 
+Cflags: -I${includedir}

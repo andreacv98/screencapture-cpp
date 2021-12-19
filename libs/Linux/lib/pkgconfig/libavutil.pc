@@ -1,0 +1,16 @@
+CMAKE_INSTALL_PREFIX=/home/andrea/CLionProjects/video-app/
+
+prefix=${CMAKE_INSTALL_PREFIX}libs/Linux/
+exec_prefix=${prefix}
+libdir=${CMAKE_INSTALL_PREFIX}libs/Linux/lib
+includedir=${CMAKE_INSTALL_PREFIX}libs/Linux/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 56.70.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil -pthread -lm
+Libs.private: 
+Cflags: -I${includedir}

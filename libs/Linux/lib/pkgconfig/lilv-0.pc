@@ -1,0 +1,11 @@
+prefix=/home/xubuntu/Documents/ffmpeg-build-script/workspace
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Lilv
+Version: 0.24.12
+Description: Simple C library for hosting LV2 plugins
+Requires: lv2 serd-0 sord-0 sratom-0
+Libs: -L${libdir} -llilv-0  -ldl
+Cflags: -I${includedir}/lilv-0

@@ -1,0 +1,7 @@
+prefix=/home/xubuntu/Documents/ffmpeg-build-script/workspace
+includedir=/home/xubuntu/Documents/ffmpeg-build-script/workspace/include
+
+Name: LV2
+Version: 1.18.2
+Description: An extensible audio plugin interface.
+Cflags: -I${includedir}

@@ -1,0 +1,11 @@
+prefix=/home/xubuntu/Documents/ffmpeg-build-script/workspace
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Serd
+Version: 0.30.10
+Description: Lightweight RDF syntax library
+Libs: -L${libdir} -lserd-0
+Libs.private: -lm
+Cflags: -I${includedir}/serd-0
