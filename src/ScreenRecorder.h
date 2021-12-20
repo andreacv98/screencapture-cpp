@@ -13,7 +13,10 @@
 #include <math.h>
 #include <string.h>
 #include <queue>
-
+#include <mutex>
+#include <condition_variable>
+#include <thread>
+//#include <semaphore.h>
 //FFMPEG LIBRARIES
 
 extern "C"
@@ -37,26 +40,88 @@ extern "C"
 #include "libavutil/opt.h"
 #include "libavutil/pixdesc.h"
 #include "libavutil/file.h"
+#include "libavutil/audio_fifo.h"
 #include "libswscale/swscale.h"
+#include "libswresample/swresample.h"
 
 }
+#ifdef __APPLE__
+#define VIDEO_SOURCE ("avfoundation")
+#define VIDEO_URL ("1:none")
+#define AUDIO_SOURCE ("avfoundation")
+#define AUDIO_URL ("none:0")
+#endif
 
+#ifdef __unix__
+#define VIDEO_SOURCE ("x11grab")
+#define VIDEO_URL (":0.0+0,0")
+#define AUDIO_SOURCE ("pulse")
+#define AUDIO_URL ("alsa_output.pci-0000_00_1b.0.analog-stereo.monitor")
+#endif
 
+#ifdef _WIN32
+#define VIDEO_SOURCE ("gdigrab")
+#define VIDEO_URL ("desktop")
+#define AUDIO_SOURCE ("dshow")
+#define AUDIO_URL ("audio=Microfono (USB Microphone)")
+#endif
+
+#define CAPTURE_BUFFER 10
+
+typedef struct S{
+    int width;
+    int height;
+}SRResolution;
+
+typedef struct T{
+    int x;
+    int y;
+}SROffset;
+
+typedef struct A{
+    bool _recaudio;
+    bool _recvideo;
+    SRResolution  _inscreenres;
+    SRResolution  _outscreenres;
+    SROffset _screenoffset;
+    uint16_t  _fps;
+    char* filename;
+}SRSettings;
+
+typedef struct B{
+    int np;
+    std::queue<AVPacket*> buf;
+}SRPacketBuffer;
 
 class ScreenRecorder {
 
 private:
+
+
+    //synchro stuff
+    std::mutex r_mutex;
+    std::condition_variable r_cv;
+    std::mutex w_lock;
+
+    //threads
+    std::thread videoThread;
+    std::thread audioThread;
+    std::thread producerThread;
+
+    SRPacketBuffer inVideoBuffer;
+    SRPacketBuffer inAudioBuffer;
+
     //video
     AVInputFormat *inVInputFormat;
     AVFormatContext *inVFormatContext;
     AVDictionary *inVOptions;
     AVCodecContext *inVCodecContext;
-    const AVCodec *inVCodec;
+    AVCodec *inVCodec;
 
     AVFormatContext *outAVFormatContext;
     AVDictionary *outVOptions;
     AVCodecContext *outVCodecContext;
-    const AVCodec *outVCodec;
+    AVCodec *outVCodec;
 
     //audio
     AVDictionary *inAOptions;
@@ -65,24 +130,57 @@ private:
     AVCodecContext *inACodecContext;
 
     AVCodecContext *outACodecContext;
-    const AVCodec *outACodec;
-    const AVCodec *inACodec;
+    AVCodec *outACodec;
+    AVCodec *inACodec;
+
+
+    AVFrame *rawVideoFrame;
+    AVFrame *rawAudioFrame;
 
     //output
     AVOutputFormat *outAVOutputFormat;
 
-    int VideoStreamIndex;
-    int AudioStreamIndex;
-    void generateVideoOutputStream(AVFormatContext *formatContext);
-    void generateAudioOutputStream(AVFormatContext *formatContext);
+    int inVideoStreamIndex;
+    int inAudioStreamIndex;
+    int outVideoStreamIndex;
+    int outAudioStreamIndex;
 
+    bool captureSwitch;
+    bool killSwitch;
+
+    AVAudioFifo *fifo;
+
+    void generateVideoOutputStream();
+    void generateAudioOutputStream();
+    void captureVideo();
+    void captureAudio();
+    void produce();
+    void initOptions();
+    void initBuffers();
+    static int initConvertedSamples(uint8_t ***converted_input_samples,
+                                    AVCodecContext *output_codec_context,
+                                    int frame_size);
 public:
+    SRSettings settings;
+
     ScreenRecorder();
     ~ScreenRecorder();
 
     int openVideoSource();
     int openAudioSource();
-    int initOutputFile(char *filename, bool audio_recorded);
+    int initOutputFile();
+
+    void startCapture();
+    void pauseCapture();
+    void endCapture();
+
+    void initThreads();
+
+    int init_fifo();
+
+    int add_samples_to_fifo(uint8_t **converted_input_samples, const int frame_size);
+
+    void listDevices();
 };
 
 
