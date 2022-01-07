@@ -69,6 +69,12 @@ int ScreenRecorder::openVideoSource() {
     inVOptions = nullptr;
     inVFormatContext = avformat_alloc_context();
 
+    std::cout << "DEMUXER" << std::endl;
+    const AVInputFormat *fmt = NULL;
+    void *i = 0;
+    while ((fmt = av_demuxer_iterate(&i)))
+        std::cout << fmt->name << std::endl;
+
     /*Defining options for the device initialization*/
 
 #ifdef __APPLE__
@@ -120,7 +126,6 @@ int ScreenRecorder::openVideoSource() {
     }
 
 
-
     //get video stream infos from context
     value = avformat_find_stream_info(inVFormatContext, nullptr);
     if (value < 0) {
@@ -164,7 +169,6 @@ int ScreenRecorder::openAudioSource() {
     int value = 0;
     inAOptions = nullptr;
     inAFormatContext = avformat_alloc_context();
-
 
     inAInputFormat = av_find_input_format(AUDIO_SOURCE);
     value = avformat_open_input(&inAFormatContext, AUDIO_URL, inAInputFormat, &inAOptions);
@@ -862,6 +866,6 @@ void ScreenRecorder::listDevices() {
     }
     avformat_close_input(&inProbeFormatContext);
     avformat_free_context(inProbeFormatContext);
-    av_freep(avInput);
+    av_freep((void *) avInput);
 
 }

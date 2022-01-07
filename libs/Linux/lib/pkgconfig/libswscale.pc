@@ -1,9 +1,7 @@
-CMAKE_INSTALL_PREFIX=/home/andrea/CLionProjects/video-app/
-
-prefix=${CMAKE_INSTALL_PREFIX}libs/Linux/
+prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=${prefix}
-libdir=${CMAKE_INSTALL_PREFIX}libs/Linux/lib
-includedir=${CMAKE_INSTALL_PREFIX}libs/Linux/include
+libdir=${CMAKE_INSTALL_PREFIX}/lib
+includedir=${CMAKE_INSTALL_PREFIX}/include
 
 Name: libswscale
 Description: FFmpeg image rescaling library

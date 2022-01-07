@@ -1,6 +1,6 @@
 #!/bin/sh
 
-prefix=/home/xubuntu/Documents/ffmpeg-build-script/workspace
+prefix=/home/andrea/Documenti/ffmpeg-build-script/workspace
 exec_prefix=${prefix}
 exec_prefix_set=no
 libdir=${exec_prefix}/lib

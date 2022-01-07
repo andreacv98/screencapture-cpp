@@ -25,7 +25,7 @@ use warnings FATAL => 'all';
 
 BEGIN
 {
-  unshift (@INC, '/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/automake-1.16')
+  unshift (@INC, '/home/andrea/Documenti/ffmpeg-build-script/workspace/share/automake-1.16')
     unless $ENV{AUTOMAKE_UNINSTALLED};
 }
 
@@ -65,8 +65,8 @@ $perl_threads = 0;
 # ACLOCAL_PATH environment variable, and reset with the '--system-acdir'
 # option.
 my @user_includes = ();
-my @automake_includes = ('/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/aclocal-' . $APIVERSION);
-my @system_includes = ('/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/aclocal');
+my @automake_includes = ('/home/andrea/Documenti/ffmpeg-build-script/workspace/share/aclocal-' . $APIVERSION);
+my @system_includes = ('/home/andrea/Documenti/ffmpeg-build-script/workspace/share/aclocal');
 
 # Whether we should copy M4 file in $user_includes[0].
 my $install = 0;

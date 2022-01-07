@@ -412,8 +412,8 @@ exit_missing_arg='
 # restore font-lock: '
 
 # Variables.
-: ${AUTOM4TE='/home/xubuntu/Documents/ffmpeg-build-script/workspace/bin/autom4te'}
-: ${trailer_m4='/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/autoconf/autoconf/trailer.m4'}
+: ${AUTOM4TE='/home/andrea/Documenti/ffmpeg-build-script/workspace/bin/autom4te'}
+: ${trailer_m4='/home/andrea/Documenti/ffmpeg-build-script/workspace/share/autoconf/autoconf/trailer.m4'}
 autom4te_options=
 outfile=
 verbose=false

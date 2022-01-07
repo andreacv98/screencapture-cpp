@@ -21,12 +21,14 @@ void sleep(unsigned milliseconds)
 int main() {
     ScreenRecorder sc;
 
+    std::cout << "Started!" << std::endl;
+
     /*settings*/
     sc.settings.filename = "output.mp4";
     sc.settings._recaudio = true;
     sc.settings._recvideo = true;
 
-    sc.settings._inscreenres = {1920,1080};
+    sc.settings._inscreenres = {1280,720};
     sc.settings._outscreenres = {1920,1080};
     sc.settings._fps = 14;
     sc.settings._screenoffset = {0,0};

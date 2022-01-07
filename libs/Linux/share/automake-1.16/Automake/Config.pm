@@ -34,7 +34,7 @@ our $PACKAGE = 'automake';
 our $PACKAGE_BUGREPORT = 'bug-automake@gnu.org';
 our $VERSION = '1.16.4';
 our $RELEASE_YEAR = '2021';
-our $libdir = $ENV{"AUTOMAKE_LIBDIR"} || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/automake-1.16';
+our $libdir = $ENV{"AUTOMAKE_LIBDIR"} || '/home/andrea/Documenti/ffmpeg-build-script/workspace/share/automake-1.16';
 
 our $perl_threads = 0;
 # We need at least this version for CLONE support.

@@ -1,189 +1,67 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.20)
 project(video_app)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
-add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.h)
+
+include_directories(libs/Linuxv2/include)
+link_directories(libs/Linuxv2/lib)
+
+add_executable(video_app src/ScreenRecorder.cpp src/ScreenRecorder.h)
+
+target_link_libraries(
+        video_app
+        avformat
+        avutil
+        avdevice
+        avfilter
+        avcodec
+        swscale
+        pthread
+        swresample
+)
+
+
+
+
+
+
+
+cmake_minimum_required(VERSION 3.20)
+project(video_app)
+
+set(CMAKE_CXX_STANDARD 14)
 
 set (CMAKE_VERBOSE_MAKEFILE true)
 
-SET(CMAKE_CXX_FLAGS  "-pthread -lm -lz")
-
-set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/libs/Linux/lib)
+set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/libs/Linuxv2)
 message(STATUS ${CMAKE_PREFIX_PATH})
+set(CMAKE_FRAMEWORK_PATH ${CMAKE_SOURCE_DIR}/libs/Linuxv2)
 message(STATUS ${CMAKE_FRAMEWORK_PATH})
 
-include_directories(${CMAKE_SOURCE_DIR}/libs/Linux/include)
-
-find_library(AVCODEC_LIBRARY avcodec)
-find_library(AVFORMAT_LIBRARY avformat)
-find_library(SWSCALE_LIBRARY swscale)
-find_library(AVDEVICE_LIBRARY avdevice)
-find_library(AVUTIL_LIBRARY avutil)
-find_library(SWRESAMPLE_LIBRARY swresample)
-find_library(SWSCALE_LIBRARY swscale)
-
-target_link_libraries(video_app PRIVATE ${AVCODEC_LIBRARY} ${AVFORMAT_LIBRARY} ${AVUTIL_LIBRARY} ${AVDEVICE_LIBRARY} ${SWSCALE_LIBRARY} ${SWSCALE_LIBRARY})
+set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/libs/Linuxv2)
 
 
-
-
-
-
-
-
-cmake_minimum_required(VERSION 3.21)
-project(video_app)
-
-set(CMAKE_CXX_STANDARD 17)
-
-set (CMAKE_VERBOSE_MAKEFILE true)
-
-SET(CMAKE_CXX_FLAGS  "-pthread -lm -lz")
-
-set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/libs/Linux)
-message(STATUS ${CMAKE_PREFIX_PATH})
-set(CMAKE_FRAMEWORK_PATH ${CMAKE_SOURCE_DIR}/libs/Linux)
-message(STATUS ${CMAKE_FRAMEWORK_PATH})
 
 find_package(PkgConfig REQUIRED)
+
+#message(STATUS ${PKG_CONFIG_EXECUTABLE})
+#set(PKG_CONFIG_EXECUTABLE "${PKG_CONFIG_EXECUTABLE} --define-variable=CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}")
+#message(STATUS ${PKG_CONFIG_EXECUTABLE})
+
+
 pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
         libavcodec
         libavdevice
         libavfilter
         libavformat
         libavutil
+        libswresample
+        libswscale
         )
+
+add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.h)
 
 target_link_libraries(${PROJECT_NAME}
         PkgConfig::LIBAV
-        )
-
-add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.h)
-
-
-
-
-
-
-
-
-
-
-
-
-cmake_minimum_required(VERSION 3.21)
-project(video_app)
-
-set(CMAKE_CXX_STANDARD 17)
-
-set (CMAKE_VERBOSE_MAKEFILE true)
-
-set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/libs/Linux/lib)
-message(STATUS ${CMAKE_PREFIX_PATH})
-message(STATUS ${CMAKE_FRAMEWORK_PATH})
-
-include_directories(${CMAKE_SOURCE_DIR}/libs/Linux/include)
-
-find_library(AVCODEC_LIBRARY avcodec)
-find_library(AVFORMAT_LIBRARY avformat)
-find_library(AVFILTER_LIBRARY avfilter)
-find_library(SWSCALE_LIBRARY swscale)
-find_library(AVDEVICE_LIBRARY avdevice)
-find_library(AVUTIL_LIBRARY avutil)
-find_library(SWRESAMPLE_LIBRARY swresample)
-find_library(SWSCALE_LIBRARY swscale)
-
-find_library(AOM_LIBRARY aom)
-find_library(GIF_LIBRARY gif)
-find_library(LILV_LIBRARY lilv-0)
-find_library(LTDL_LIBRARY ltdl)
-find_library(MP3LAME_LIBRARY mp3lame)
-find_library(OPENCORE_LIBRARY opencore-amrnb)
-find_library(OPENCOREWB_LIBRARY opencore-amrwb)
-find_library(OGG_LIBRARY ogg)
-find_library(OPUS_LIBRARY opus)
-find_library(PCRE_LIBRARY pcre)
-find_library(PCRECPP_LIBRARY pcrecpp)
-find_library(PCREPOSIX_LIBRARY pcreposix)
-find_library(PNG_LIBRARY png)
-find_library(PNG16_LIBRARY png16)
-find_library(SDL2_LIBRARY SDL2)
-find_library(SDL2TEST_LIBRARY SDL2_test)
-find_library(SDL2MAIN_LIBRARY SDL2main)
-find_library(SERD0_LIBRARY serd-0)
-
-find_library(SRATOM0_LIBRARY sratom-0)
-find_library(SVTAV1DEC_LIBRARY SvtAv1Dec)
-find_library(SVTAV1ENC_LIBRARY SvtAv1Enc)
-find_library(THEORA_LIBRARY theora)
-find_library(THEORADEC_LIBRARY theoradec)
-find_library(THEORAENC_LIBRARY theoraenc)
-find_library(TIFF_LIBRARY tiff)
-find_library(TIFFXX_LIBRARY tiffxx)
-find_library(VORBIS_LIBRARY vorbis)
-find_library(VORBISENC_LIBRARY vorbisenc)
-find_library(VORBISFILE_LIBRARY vorbisfile)
-
-find_library(VPX_LIBRARY vpx)
-find_library(WEBP_LIBRARY webp)
-find_library(WEBPDECODE_LIBRARY webpdecoder)
-find_library(WEBPDEMUX_LIBRARY webpdemux)
-find_library(WEBPMUX_LIBRARY webpmux)
-find_library(YASM_LIBRARY yasm)
-find_library(Z_LIBRARY z)
-find_library(ZIMG_LIBRARY zimg)
-
-add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.h)
-
-target_link_libraries(video_app PRIVATE
-        ${AVCODEC_LIBRARY}
-        ${AVFORMAT_LIBRARY}
-        ${AVUTIL_LIBRARY}
-        ${AVDEVICE_LIBRARY}
-        ${SWSCALE_LIBRARY}
-        ${SWSCALE_LIBRARY}
-        ${AVFILTER_LIBRARY}
-
-        ${AOM_LIBRARY}
-        ${GIF_LIBRARY}
-        ${LILV_LIBRARY}
-        ${LTDL_LIBRARY}
-        ${MP3LAME_LIBRARY}
-        ${OPENCORE_LIBRARY}
-        ${OPENCOREWB_LIBRARY}
-        ${OGG_LIBRARY}
-        ${OPUS_LIBRARY}
-        ${PCRE_LIBRARY}
-        ${PCRECPP_LIBRARY}
-        ${PCREPOSIX_LIBRARY}
-        ${PNG_LIBRARY}
-        ${PNG16_LIBRARY}
-        ${SDL2_LIBRARY}
-        ${SDL2TEST_LIBRARY}
-        ${SDL2MAIN_LIBRARY}
-        ${SERD0_LIBRARY}
-
-        ${SRATOM0_LIBRARY}
-        ${SVTAV1DEC_LIBRARY}
-        ${SVTAV1ENC_LIBRARY}
-        ${THEORA_LIBRARY}
-        ${THEORADEC_LIBRARY}
-        ${THEORAENC_LIBRARY}
-        ${TIFF_LIBRARY}
-        ${TIFFXX_LIBRARY}
-        ${VORBIS_LIBRARY}
-        ${VORBISENC_LIBRARY}
-        ${VORBISFILE_LIBRARY}
-
-        ${VPX_LIBRARY}
-        ${WEBP_LIBRARY}
-        ${WEBPDECODE_LIBRARY}
-        ${WEBPDEMUX_LIBRARY}
-        ${WEBPMUX_LIBRARY}
-        ${YASM_LIBRARY}
-        ${Z_LIBRARY}
-        ${ZIMG_LIBRARY}
-
-        m
         )

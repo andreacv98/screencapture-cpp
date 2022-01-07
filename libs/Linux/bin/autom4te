@@ -28,7 +28,7 @@ use warnings FATAL => 'all';
 
 BEGIN
 {
-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/autoconf';
+  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '/home/andrea/Documenti/ffmpeg-build-script/workspace/share/autoconf';
   unshift @INC, $pkgdatadir;
 
   # Override SHELL.  On DJGPP SHELL may not be set to a shell
@@ -48,7 +48,7 @@ use Autom4te::General;
 use Autom4te::XFile;
 
 # Data directory.
-my $pkgdatadir = $ENV{'AC_MACRODIR'} || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/autoconf';
+my $pkgdatadir = $ENV{'AC_MACRODIR'} || '/home/andrea/Documenti/ffmpeg-build-script/workspace/share/autoconf';
 
 # $LANGUAGE{LANGUAGE} -- Automatic options for LANGUAGE.
 my %language;
@@ -91,7 +91,7 @@ my @include;
 my $freeze = 0;
 
 # $M4.
-my $m4 = $ENV{"M4"} || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/bin/m4';
+my $m4 = $ENV{"M4"} || '/home/andrea/Documenti/ffmpeg-build-script/workspace/bin/m4';
 # Some non-GNU m4's don't reject the --help option, so give them /dev/null.
 fatal "need GNU m4 1.4 or later: $m4"
   if system "$m4 --help </dev/null 2>&1 | grep reload-state >/dev/null";

@@ -1,5 +1,5 @@
 # pkg-config file from libvpx v1.10.0
-prefix=/home/xubuntu/Documents/ffmpeg-build-script/workspace
+prefix=/home/andrea/Documenti/ffmpeg-build-script/workspace
 exec_prefix=${prefix}
 libdir=${prefix}/lib
 includedir=${prefix}/include

@@ -1,5 +1,5 @@
 # libaom pkg-config.
-prefix=/home/xubuntu/Documents/ffmpeg-build-script/workspace
+prefix=/home/andrea/Documenti/ffmpeg-build-script/workspace
 exec_prefix=${prefix}
 includedir=${prefix}/include
 libdir=${exec_prefix}/lib

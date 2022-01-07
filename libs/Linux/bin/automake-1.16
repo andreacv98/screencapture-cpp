@@ -28,7 +28,7 @@ use warnings FATAL => 'all';
 
 BEGIN
 {
-  unshift (@INC, '/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/automake-1.16')
+  unshift (@INC, '/home/andrea/Documenti/ffmpeg-build-script/workspace/share/automake-1.16')
     unless $ENV{AUTOMAKE_UNINSTALLED};
 
   # Override SHELL.  This is required on DJGPP so that system() uses

@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.20)
 project(video_app)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 
 set (CMAKE_VERBOSE_MAKEFILE true)
 
@@ -16,9 +16,9 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/libs/Linux)
 
 find_package(PkgConfig REQUIRED)
 
-#message(STATUS ${PKG_CONFIG_EXECUTABLE})
-#set(PKG_CONFIG_EXECUTABLE "${PKG_CONFIG_EXECUTABLE} --define-variable=CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}")
-#message(STATUS ${PKG_CONFIG_EXECUTABLE})
+message(STATUS ${PKG_CONFIG_EXECUTABLE})
+set(PKG_CONFIG_EXECUTABLE "${PKG_CONFIG_EXECUTABLE};--define-variable=CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}")
+message(STATUS ${PKG_CONFIG_EXECUTABLE})
 
 
 pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
@@ -36,4 +36,3 @@ add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.
 target_link_libraries(${PROJECT_NAME}
         PkgConfig::LIBAV
         )
-

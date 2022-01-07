@@ -17,7 +17,7 @@ old_library='libvorbisenc.a'
 inherited_linker_flags=''
 
 # Libraries that this one depends upon.
-dependency_libs=' /home/xubuntu/Documents/ffmpeg-build-script/workspace/lib/libvorbis.la -L/home/xubuntu/Documents/ffmpeg-build-script/workspace/lib -lm /home/xubuntu/Documents/ffmpeg-build-script/workspace/lib/libogg.la'
+dependency_libs=' /home/andrea/Documenti/ffmpeg-build-script/workspace/lib/libvorbis.la -L/home/andrea/Documenti/ffmpeg-build-script/workspace/lib -lm /home/andrea/Documenti/ffmpeg-build-script/workspace/lib/libogg.la'
 
 # Names of additional weak libraries provided by this library
 weak_library_names=''
@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/home/xubuntu/Documents/ffmpeg-build-script/workspace/lib'
+libdir='/home/andrea/Documenti/ffmpeg-build-script/workspace/lib'

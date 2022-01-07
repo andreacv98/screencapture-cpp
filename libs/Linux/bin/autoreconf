@@ -32,7 +32,7 @@ use warnings FATAL => 'all';
 my $buildauxdir;
 BEGIN
 {
-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/autoconf';
+  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '/home/andrea/Documenti/ffmpeg-build-script/workspace/share/autoconf';
   unshift @INC, $pkgdatadir;
 
   $buildauxdir = $ENV{'autom4te_buildauxdir'} || $pkgdatadir . '/build-aux';
@@ -117,9 +117,9 @@ Written by David J. MacKenzie and Akim Demaille.
 ";
 
 # Lib files.
-my $autoconf    = $ENV{'AUTOCONF'}    || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/bin/autoconf';
-my $autoheader  = $ENV{'AUTOHEADER'}  || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/bin/autoheader';
-my $autom4te    = $ENV{'AUTOM4TE'}    || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/bin/autom4te';
+my $autoconf    = $ENV{'AUTOCONF'}    || '/home/andrea/Documenti/ffmpeg-build-script/workspace/bin/autoconf';
+my $autoheader  = $ENV{'AUTOHEADER'}  || '/home/andrea/Documenti/ffmpeg-build-script/workspace/bin/autoheader';
+my $autom4te    = $ENV{'AUTOM4TE'}    || '/home/andrea/Documenti/ffmpeg-build-script/workspace/bin/autom4te';
 my $automake    = $ENV{'AUTOMAKE'}    || 'automake';
 my $aclocal     = $ENV{'ACLOCAL'}     || 'aclocal';
 my $libtoolize  = $ENV{'LIBTOOLIZE'}  || 'libtoolize';

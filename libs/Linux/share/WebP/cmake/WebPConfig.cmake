@@ -29,7 +29,7 @@ endmacro()
 
 include ("${CMAKE_CURRENT_LIST_DIR}/WebPTargets.cmake")
 
-set(WebP_INCLUDE_DIRS "/home/xubuntu/Documents/ffmpeg-build-script/workspace/include")
+set(WebP_INCLUDE_DIRS "/home/andrea/Documenti/ffmpeg-build-script/workspace/include")
 set(WEBP_INCLUDE_DIRS ${WebP_INCLUDE_DIRS})
 set(WebP_LIBRARIES "webpdecoder;webp;webpdemux;libwebpmux")
 set(WEBP_LIBRARIES "${WebP_LIBRARIES}")

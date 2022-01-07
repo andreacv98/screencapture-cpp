@@ -21,14 +21,14 @@
 
 extern "C"
 {
-#include <libavcodec/avcodec.h>
-#include <libavcodec/avfft.h>
-#include <libavdevice/avdevice.h>
-#include <libavfilter/avfilter.h>
-#include <libavfilter/buffersink.h>
-#include <libavfilter/buffersrc.h>
-#include <libavformat/avformat.h>
-#include <libavformat/avio.h>
+#include "libavcodec/avcodec.h"
+#include "libavcodec/avfft.h"
+#include "libavdevice/avdevice.h"
+#include "libavfilter/avfilter.h"
+#include "libavfilter/buffersink.h"
+#include "libavfilter/buffersrc.h"
+#include "libavformat/avformat.h"
+#include "libavformat/avio.h"
 
 #include "libavutil/opt.h"
 #include "libavutil/common.h"
@@ -56,7 +56,7 @@ extern "C"
 #define VIDEO_SOURCE ("x11grab")
 #define VIDEO_URL (":0.0+0,0")
 #define AUDIO_SOURCE ("pulse")
-#define AUDIO_URL ("alsa_output.pci-0000_00_1b.0.analog-stereo.monitor")
+#define AUDIO_URL ("alsa_input.platform-2300000.pci-pci-0000_00_01.0.analog-stereo")
 #endif
 
 #ifdef _WIN32

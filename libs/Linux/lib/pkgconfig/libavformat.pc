@@ -1,9 +1,7 @@
-CMAKE_INSTALL_PREFIX=/home/andrea/CLionProjects/video-app/
-
-prefix=${CMAKE_INSTALL_PREFIX}libs/Linux/
+prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=${prefix}
-libdir=${CMAKE_INSTALL_PREFIX}libs/Linux/lib
-includedir=${CMAKE_INSTALL_PREFIX}libs/Linux/include
+libdir=${CMAKE_INSTALL_PREFIX}/lib
+includedir=${CMAKE_INSTALL_PREFIX}/include
 
 Name: libavformat
 Description: FFmpeg container format library
@@ -11,6 +9,6 @@ Version: 58.76.100
 Requires: libavcodec >= 58.134.100, libswresample >= 3.9.100, libavutil >= 56.70.100
 Requires.private: 
 Conflicts:
-Libs: -L${libdir}  -lavformat -lm -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lz
+Libs: -L${libdir}  -lavformat -lm -L/usr/lib/x86_64-linux-gnu -lz
 Libs.private: 
 Cflags: -I${includedir}

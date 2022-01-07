@@ -1,6 +1,6 @@
 #!/bin/sh
 
-LV2DIR="/home/xubuntu/.lv2"
+LV2DIR="/home/andrea/.lv2"
 
 if [ "$#" -eq "0" ]; then
     echo "lv2_validate: missing operand" 1>&2;

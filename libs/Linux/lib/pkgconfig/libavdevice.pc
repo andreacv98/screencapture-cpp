@@ -1,9 +1,7 @@
-CMAKE_INSTALL_PREFIX=/home/andrea/CLionProjects/video-app/
-
-prefix=${CMAKE_INSTALL_PREFIX}libs/Linux/
+prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=${prefix}
-libdir=${CMAKE_INSTALL_PREFIX}libs/Linux/lib
-includedir=${CMAKE_INSTALL_PREFIX}libs/Linux/include
+libdir=${CMAKE_INSTALL_PREFIX}/lib
+includedir=${CMAKE_INSTALL_PREFIX}/include
 
 Name: libavdevice
 Description: FFmpeg device handling library
@@ -11,6 +9,6 @@ Version: 58.13.100
 Requires: libavfilter >= 7.110.100, libswscale >= 5.9.100, libavformat >= 58.76.100, libavcodec >= 58.134.100, libswresample >= 3.9.100, libavutil >= 56.70.100
 Requires.private: 
 Conflicts:
-Libs: -L${libdir}  -lavdevice -lm -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lSDL2 -Wl,--no-undefined -lm -lpthread -lrt
+Libs: -L${libdir}  -lavdevice -lm -L/usr/lib/x86_64-linux-gnu -lxcb -lXau -lXdmcp -L/usr/lib/x86_64-linux-gnu -L/usr/lib/x86_64-linux-gnu/pulseaudio -lpulse -pthread -lpulsecommon-15.0 -L${CMAKE_INSTALL_PREFIX}/lib -lSDL2 -Wl,--no-undefined -lm -lpthread -lrt
 Libs.private: 
 Cflags: -I${includedir}

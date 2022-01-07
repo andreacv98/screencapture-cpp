@@ -35,7 +35,7 @@ use warnings FATAL => 'all';
 
 BEGIN
 {
-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/autoconf';
+  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '/home/andrea/Documenti/ffmpeg-build-script/workspace/share/autoconf';
   unshift @INC, $pkgdatadir;
 
   # Override SHELL.  On DJGPP SHELL may not be set to a shell

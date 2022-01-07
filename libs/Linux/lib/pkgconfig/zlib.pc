@@ -1,4 +1,4 @@
-prefix=/home/xubuntu/Documents/ffmpeg-build-script/workspace
+prefix=/home/andrea/Documenti/ffmpeg-build-script/workspace
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 sharedlibdir=${libdir}

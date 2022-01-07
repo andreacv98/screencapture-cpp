@@ -1,9 +1,7 @@
-CMAKE_INSTALL_PREFIX=/home/andrea/CLionProjects/video-app/
-
-prefix=${CMAKE_INSTALL_PREFIX}libs/Linux/
+prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=${prefix}
-libdir=${CMAKE_INSTALL_PREFIX}libs/Linux/lib
-includedir=${CMAKE_INSTALL_PREFIX}libs/Linux/include
+libdir=${CMAKE_INSTALL_PREFIX}/lib
+includedir=${CMAKE_INSTALL_PREFIX}/include
 
 Name: libavfilter
 Description: FFmpeg audio/video filtering library
@@ -11,6 +9,6 @@ Version: 7.110.100
 Requires: libswscale >= 5.9.100, libavformat >= 58.76.100, libavcodec >= 58.134.100, libswresample >= 3.9.100, libavutil >= 56.70.100
 Requires.private: 
 Conflicts:
-Libs: -L${libdir}  -lavfilter -pthread -lm -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -llilv-0 -ldl -lsratom-0 -lsord-0 -lserd-0 -lm -L${CMAKE_INSTALL_PREFIX}libs/Linux/lib -lzimg -lstdc++
+Libs: -L${libdir}  -lavfilter -pthread -lm -L${CMAKE_INSTALL_PREFIX}/lib -llilv-0 -ldl -lsratom-0 -lsord-0 -lserd-0 -lm -L${CMAKE_INSTALL_PREFIX}/lib -lzimg -lstdc++
 Libs.private: 
 Cflags: -I${includedir}

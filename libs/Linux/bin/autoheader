@@ -32,7 +32,7 @@ use warnings FATAL => 'all';
 
 BEGIN
 {
-  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/share/autoconf';
+  my $pkgdatadir = $ENV{'autom4te_perllibdir'} || '/home/andrea/Documenti/ffmpeg-build-script/workspace/share/autoconf';
   unshift @INC, "$pkgdatadir";
 
   # Override SHELL.  On DJGPP SHELL may not be set to a shell
@@ -54,7 +54,7 @@ use Autom4te::XFile;
 our ($config_h, %symbol, %verbatim);
 
 # Lib files.
-my $autom4te = $ENV{'AUTOM4TE'} || '/home/xubuntu/Documents/ffmpeg-build-script/workspace/bin/autom4te';
+my $autom4te = $ENV{'AUTOM4TE'} || '/home/andrea/Documenti/ffmpeg-build-script/workspace/bin/autom4te';
 my $config_h_in;
 my @prepend_include;
 my @include;
