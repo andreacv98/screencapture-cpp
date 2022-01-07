@@ -56,7 +56,7 @@ extern "C"
 #define VIDEO_SOURCE ("x11grab")
 #define VIDEO_URL (":0.0+0,0")
 #define AUDIO_SOURCE ("pulse")
-#define AUDIO_URL ("alsa_input.platform-2300000.pci-pci-0000_00_01.0.analog-stereo")
+#define AUDIO_URL ("alsa_input.pci-0000_00_05.0.analog-stereo")
 #endif
 
 #ifdef _WIN32

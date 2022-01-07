@@ -69,7 +69,7 @@ int ScreenRecorder::openVideoSource() {
     inVOptions = nullptr;
     inVFormatContext = avformat_alloc_context();
 
-    std::cout << "DEMUXER" << std::endl;
+    /*std::cout << "DEMUXER" << std::endl;
     const AVInputFormat *fmt = NULL;
     void *i = 0;
     while ((fmt = av_demuxer_iterate(&i)))
@@ -91,7 +91,7 @@ int ScreenRecorder::openVideoSource() {
     }
 
 #endif
-
+    std::cout << "Video Input setup started" << std::endl;
     // value = av_dict_set(&inVOptions, "framerate", "25", 0);
     if (value < 0) {
         cout << "\nerror in setting dictionary value";
@@ -169,6 +169,8 @@ int ScreenRecorder::openAudioSource() {
     int value = 0;
     inAOptions = nullptr;
     inAFormatContext = avformat_alloc_context();
+
+    std::cout << "Audio Input setup started" << std::endl;
 
     inAInputFormat = av_find_input_format(AUDIO_SOURCE);
     value = avformat_open_input(&inAFormatContext, AUDIO_URL, inAInputFormat, &inAOptions);
