@@ -847,6 +847,21 @@ int ScreenRecorder::initConvertedSamples(uint8_t ***converted_input_samples, AVC
     return 0;
 }
 
+void ScreenRecorder::infoDisplay() {
+
+    printf ("\nname of display:    %s\n", DisplayString (dpy));
+    printf ("default screen number:    %d\n", DefaultScreen (dpy));
+    printf ("number of screens:    %d\n", ScreenCount (dpy));
+
+    for (int i = 0; i < ScreenCount (dpy); i++) {
+        printf ("\n");
+        printf ("screen #%d:\n", i);
+        printf ("  dimensions:    %dx%d pixels\n\n",
+                XDisplayWidth (dpy, i),  XDisplayHeight (dpy, i));
+    }
+
+}
+
 void ScreenRecorder::listDevices() {
     int value = 0;
     AVDictionary *opts = nullptr;
