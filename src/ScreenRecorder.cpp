@@ -14,7 +14,10 @@ ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVid
                  XDisplayName (NULL));
         exit (1);
     }
-    infoDisplay();
+
+    printf ("\nname of display:    %s\n", DisplayString (dpy));
+    printf ("default screen number:    %d\n", DefaultScreen (dpy));
+    printf ("number of screens:    %d\n", ScreenCount (dpy));
 
 }
 ScreenRecorder::~ScreenRecorder() {
@@ -847,11 +850,7 @@ int ScreenRecorder::initConvertedSamples(uint8_t ***converted_input_samples, AVC
     return 0;
 }
 
-void ScreenRecorder::infoDisplay() {
-
-    printf ("\nname of display:    %s\n", DisplayString (dpy));
-    printf ("default screen number:    %d\n", DefaultScreen (dpy));
-    printf ("number of screens:    %d\n", ScreenCount (dpy));
+void ScreenRecorder::infoDisplays() {
 
     for (int i = 0; i < ScreenCount (dpy); i++) {
         printf ("\n");

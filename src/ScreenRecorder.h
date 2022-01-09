@@ -121,8 +121,6 @@ private:
     AVCodecContext *inVCodecContext;
     AVCodec *inVCodec;
 
-    Display *dpy;       //display from X11
-
     AVFormatContext *outAVFormatContext;
     AVDictionary *outVOptions;
     AVCodecContext *outVCodecContext;
@@ -168,6 +166,9 @@ private:
 public:
     SRSettings settings;
 
+    Display *dpy;       //display from X11
+
+
     ScreenRecorder();
     ~ScreenRecorder();
 
@@ -185,7 +186,7 @@ public:
 
     int add_samples_to_fifo(uint8_t **converted_input_samples, const int frame_size);
 
-    void infoDisplay();
+    void infoDisplays();
     void listDevices();
 };
 
