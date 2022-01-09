@@ -824,10 +824,7 @@ int ScreenRecorder::add_samples_to_fifo(uint8_t **converted_input_samples, const
     return 0;
 }
 
-
-int ScreenRecorder::initConvertedSamples(uint8_t ***converted_input_samples,
-                                         AVCodecContext *output_codec_context,
-                                         int frame_size){
+int ScreenRecorder::initConvertedSamples(uint8_t ***converted_input_samples, AVCodecContext *output_codec_context, int frame_size){
     int error;
     /* Allocate as many pointers as there are audio channels.
      * Each pointer will later point to the audio samples of the corresponding
