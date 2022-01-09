@@ -1,19 +1,21 @@
-//
-// Created by andrea on 19/12/21.
-//
-
-#include "ScreenRecorder.h"
-
 #include "ScreenRecorder.h"
 
 using namespace std;
-
 
 ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVideoFrame(nullptr), rawAudioFrame(nullptr) {
     initBuffers();
     initOptions();
     avdevice_register_all();
-    cout << "\nScreen Recorder initialized correctly";
+    cout << "\nScreen Recorder initialized correctly\n";
+
+    dpy = XOpenDisplay (NULL);          //open connection to the default X server
+    if (!dpy) {
+        fprintf (stderr, "unable to open display \"%s\".\n",
+                 XDisplayName (NULL));
+        exit (1);
+    }
+    infoDisplay();
+
 }
 ScreenRecorder::~ScreenRecorder() {
 
