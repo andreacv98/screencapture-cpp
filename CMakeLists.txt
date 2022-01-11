@@ -57,5 +57,4 @@ add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.
 
 target_link_libraries(${PROJECT_NAME}
         PkgConfig::LIBAV
-        -liconv
         )
