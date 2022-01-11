@@ -1,0 +1,13 @@
+prefix=/local64/opt/lightffmpeg
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: liblsmash
+Description: Loyal to Spec of MPEG4, and Ad-hock Simple Hackwork
+Version: 2.16.1 rev.1477
+Requires:
+URL: https://github.com/l-smash/l-smash
+Libs: -L${exec_prefix}/lib -llsmash -lm
+Libs.private: 
+Cflags: -I${prefix}/include

@@ -1,0 +1,14 @@
+prefix=/local64
+exec_prefix=${prefix}
+libdir=/local64/lib
+includedir=/local64/include
+
+Name: libavcodec
+Description: FFmpeg codec library
+Version: 58.134.100
+Requires: libswresample >= 3.9.100, libavutil >= 56.70.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavcodec -LD:/mas/local64/lib -lvpx -lm -lm -lpthread -LD:/mas/local64/lib -lvpx -lm -lm -lpthread -LD:/mas/local64/lib -lvpx -lm -lm -lpthread -LD:/mas/local64/lib -lvpx -lm -lm -lpthread -lm -llzma -LD:/mas/local64/lib -ldav1d -LD:/mas/msys64/mingw64/lib -lz -LD:/mas/local64/lib -laom -lm -lpthread -LD:/mas/local64/lib -lfdk-aac -lmp3lame -lm -LD:/mas/local64/lib -lopus -lm -LD:/mas/msys64/mingw64/lib -lvorbis -lm -LD:/mas/msys64/mingw64/lib -logg -LD:/mas/msys64/mingw64/lib -lvorbisenc -LD:/mas/msys64/mingw64/lib -lvorbis -lm -LD:/mas/msys64/mingw64/lib -logg -LD:/mas/local64/lib -lx264 -LD:/mas/local64/lib -lx265 -LD:/mas/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/11.2.0 -lstdc++ -lgcc -lgcc -lole32 -luser32 -ldl
+Libs.private: 
+Cflags: -I${includedir}

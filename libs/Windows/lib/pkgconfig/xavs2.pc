@@ -1,0 +1,11 @@
+prefix=/local64
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: xavs2
+Description: AVS2 (IEEE 1857.4) encoder library
+Version: 1.3.232
+Libs: -L${exec_prefix}/lib -lxavs2 
+Libs.private: 
+Cflags: -I${prefix}/include

@@ -1,0 +1,11 @@
+prefix=/local64
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: davs2
+Description: AVS2 (IEEE 1857.4) decoder library
+Version: 1.6.205
+Libs: -L${exec_prefix}/lib -ldavs2 
+Libs.private: 
+Cflags: -I${prefix}/include
