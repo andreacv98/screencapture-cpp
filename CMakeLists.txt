@@ -20,9 +20,6 @@ if(WIN32)
 
     set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/${WINDOWS_PATH}")
     message(STATUS ${CMAKE_INSTALL_PREFIX})
-
-    # set(PKG_CONFIG_PATH "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig")
-    # message(FATAL_ERROR "!!NO WINDWOS IMPLEMETNATION!!")
 elseif(APPLE)
     message("Apple OS detected")
 elseif(UNIX)
@@ -60,4 +57,5 @@ add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.
 
 target_link_libraries(${PROJECT_NAME}
         PkgConfig::LIBAV
+        -liconv
         )
