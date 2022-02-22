@@ -34,7 +34,7 @@ int main() {
     sc.settings._recvideo = true;
 
     std::cout << "---Select screen # to record---" << std::endl;
-    sc.infoDisplays();
+    //sc.infoDisplays();
     std::cin >>screen_number;
 
     std::cout << "---Do you want audio record? 1 for yes, 0 for not ---" << std::endl;
@@ -54,7 +54,11 @@ int main() {
 
     sc.settings.filename = output_name;
 
+#ifdef __unix__
     sc.settings._inscreenres = {XDisplayWidth(sc.dpy,screen_number),  XDisplayHeight(sc.dpy,screen_number)};
+#endif
+
+    //sc.settings._inscreenres = {XDisplayWidth(sc.dpy,screen_number),  XDisplayHeight(sc.dpy,screen_number)};
 
     std::cout << "---Choose output resolution #" << std::endl;
     std::cout << "resolution #0: \t1280x720 pixels"

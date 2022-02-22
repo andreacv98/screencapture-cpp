@@ -12,6 +12,7 @@ ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVid
     avdevice_register_all();
     cout << "\nScreen Recorder initialized correctly\n";
 
+#ifdef __unix__
     dpy = XOpenDisplay (NULL);          //open connection to the default X server
     if (!dpy) {
         fprintf (stderr, "unable to open display \"%s\".\n",
@@ -22,6 +23,10 @@ ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVid
     printf ("\nname of display:    %s\n", DisplayString (dpy));
     printf ("default screen number:    %d\n", DefaultScreen (dpy));
     printf ("number of screens:    %d\n", ScreenCount (dpy));
+#endif
+
+
+
 
 }
 ScreenRecorder::~ScreenRecorder() {
@@ -448,10 +453,10 @@ void ScreenRecorder::captureVideo(){
     }
     av_init_packet(inPacket);
 
-    //allocate space for a packet
+    //allocate space for a frame
     rawFrame =av_frame_alloc();
     if(!rawFrame) {
-        cout << "\nCannot allocate an AVPacket for encoded video";
+        cout << "\nCannot allocate an AVFrame for encoded video";
         exit(1);
     }
 
@@ -464,7 +469,7 @@ void ScreenRecorder::captureVideo(){
     //allocate space for a packet
     scaledFrame = av_frame_alloc();
     if(!scaledFrame) {
-        cout << "\nCannot allocate an AVPacket for encoded video";
+        cout << "\nCannot allocate an AVFrame for encoded video";
         exit(1);
     }
 
@@ -489,7 +494,6 @@ void ScreenRecorder::captureVideo(){
 
     // Allocate and return swsContext.
     // a pointer to an allocated context, or NULL in case of error
-    // Deprecated : Use sws_getCachedContext() instead.
     swsCtx_ = sws_getContext(inVCodecContext->width,
                              inVCodecContext->height,
                              inVCodecContext->pix_fmt,
@@ -500,11 +504,11 @@ void ScreenRecorder::captureVideo(){
 
 
 
-
+    // Unique lock with defer lock to not lock automatically at the construction of the unique lock
+    std::unique_lock<std::mutex> r_lock(r_mutex, std::defer_lock);
 
 
     cout<<"\n\n[VideoThread] thread started!";
-    std::unique_lock<std::mutex> r_lock(r_mutex, std::defer_lock);
     bool paused = false;
     while(true) {
         r_lock.lock();
@@ -906,6 +910,7 @@ int ScreenRecorder::initConvertedSamples(uint8_t ***converted_input_samples, AVC
     return 0;
 }
 
+#ifdef __unix__
 void ScreenRecorder::infoDisplays() {
 
     for (int i = 0; i < ScreenCount (dpy); i++) {
@@ -916,6 +921,8 @@ void ScreenRecorder::infoDisplays() {
     }
 
 }
+#endif
+
 
 void ScreenRecorder::listDevices() {
     int value = 0;

@@ -15,10 +15,11 @@
 //#include <semaphore.h>
 
 #ifdef WIN32
-#include <X11/Xwindows.h>
 #endif
 
+#ifdef __unix__
 #include <X11/Xlib.h>
+#endif
 
 
 //FFMPEG LIBRARIES
@@ -167,8 +168,9 @@ private:
                                     int frame_size);
 public:
     SRSettings settings;
-
+    #ifdef __unix__
     Display *dpy;       //display from X11
+    #endif
 
 
     ScreenRecorder();

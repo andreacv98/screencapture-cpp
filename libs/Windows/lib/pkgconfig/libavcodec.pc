@@ -1,0 +1,14 @@
+prefix=${CMAKE_INSTALL_PREFIX}
+exec_prefix=${prefix}
+libdir=${CMAKE_INSTALL_PREFIX}/lib
+includedir=${CMAKE_INSTALL_PREFIX}/include
+
+Name: libavcodec
+Description: FFmpeg codec library
+Version: 58.134.100
+Requires: libswresample >= 3.9.100, libavutil >= 56.70.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir} -liconv -lavcodec -L${CMAKE_INSTALL_PREFIX}/lib -lvpx -lm -lm -lpthread -L${CMAKE_INSTALL_PREFIX}/lib -lvpx -lm -lm -lpthread -L${CMAKE_INSTALL_PREFIX}/lib -lvpx -lm -lm -lpthread -L${CMAKE_INSTALL_PREFIX}/lib -lvpx -lm -lm -lpthread -lm -llzma -L${CMAKE_INSTALL_PREFIX}/lib -ldav1d  -lz -L${CMAKE_INSTALL_PREFIX}/lib -laom -lm -lpthread -L${CMAKE_INSTALL_PREFIX}/lib -lfdk-aac -lmp3lame -lm -L${CMAKE_INSTALL_PREFIX}/lib -lopus -lm  -lvorbis -lm  -logg  -lvorbisenc  -lvorbis -lm  -logg -L${CMAKE_INSTALL_PREFIX}/lib -lx264 -L${CMAKE_INSTALL_PREFIX}/lib -lx265 -lstdc++ -lgcc -lgcc -lole32 -luser32 -ldl
+Libs.private: 
+Cflags: -I${includedir}

@@ -1,0 +1,14 @@
+prefix=${CMAKE_INSTALL_PREFIX}
+exec_prefix=${prefix}
+libdir=${CMAKE_INSTALL_PREFIX}/lib
+includedir=${CMAKE_INSTALL_PREFIX}/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 56.70.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil -lm -luser32 -lbcrypt -ldl
+Libs.private: 
+Cflags: -I${includedir}
