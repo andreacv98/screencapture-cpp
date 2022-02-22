@@ -55,7 +55,16 @@ pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
 
 add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.h)
 
-target_link_libraries(${PROJECT_NAME}
-        PkgConfig::LIBAV
-        X11
-        )
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME}
+            PkgConfig::LIBAV
+            )
+elseif(APPLE)
+    message("Apple OS detected")
+elseif(UNIX)
+    target_link_libraries(${PROJECT_NAME}
+            PkgConfig::LIBAV
+            X11
+            )
+endif()
+

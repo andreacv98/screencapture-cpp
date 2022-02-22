@@ -35,7 +35,7 @@ int main() {
 
 
     std::cout << "---Select screen # to record---" << std::endl;
-    sc.infoDisplays();
+    //sc.infoDisplays();
     std::cin >>screen_number;
 
     std::cout << "---Do you want audio record? 1 for yes, 0 for not ---" << std::endl;
