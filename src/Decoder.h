@@ -12,9 +12,9 @@ public:
     /**
      * Send a packet to the decoder
      * @param packet the packet to send
-     * @return true if the decoder correctly received the packet, false otherwise
+     * @return 0 if the decoder correctly received the packet
      */
-    bool sendPacket(const AVPacket* packet);
+    int sendPacket(const AVPacket* packet);
 
     /**
      * Return decoded output data from a decoder
@@ -22,10 +22,6 @@ public:
      */
     int getDecodedOutput(AVFrame* rawFrame);
 
-    /**
-     *
-     * @return AVCodecContext
-     */
     const AVCodecContext* getCodecContext() const;
 
     void setCodecContext(AVCodecContext* context);

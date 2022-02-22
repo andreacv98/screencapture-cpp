@@ -23,6 +23,7 @@
 
 #include "utils.h"
 #include "Decoder.h"
+#include "Encoder.h"
 
 #ifdef __APPLE__
 #define VIDEO_SOURCE ("avfoundation")
@@ -78,6 +79,9 @@ private:
 
     Decoder decoderAudio;
     Decoder decoderVideo;
+    Encoder encoderAudio;
+    Encoder encoderVideo;
+
     // ---------------------------------------------------------------------
     //synchro stuff
     std::mutex r_mutex;
@@ -96,11 +100,13 @@ private:
     AVInputFormat *inVInputFormat;
     AVFormatContext *inVFormatContext;
     AVDictionary *inVOptions;
+    //
     AVCodecContext *inVCodecContext;
     AVCodec *inVCodec;
 
     AVFormatContext *outAVFormatContext;
     AVDictionary *outVOptions;
+    //
     AVCodecContext *outVCodecContext;
     AVCodec *outVCodec;
 

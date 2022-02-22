@@ -1,7 +1,12 @@
 #include "Decoder.h"
+#include <stdexcept>
 
-bool Decoder::sendPacket(const AVPacket *packet) {
-
+int Decoder::sendPacket(const AVPacket *packet) {
+    int ret;
+    if((ret = avcodec_send_packet(codecContext, packet)) < 0){
+        throw std::runtime_error("Decoder: failed to send frame to decoder");
+    }
+    return ret;
 }
 
 int Decoder::getDecodedOutput(AVFrame* rawFrame) {
@@ -9,14 +14,13 @@ int Decoder::getDecodedOutput(AVFrame* rawFrame) {
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
         return ret;
     else if (ret < 0) {
-        fprintf(stderr, "Error during decoding\n");
-        exit(1);
+        throw std::runtime_error("Decoder: failed to receive frame from decoder");
     }
     return ret;
 }
 
 const AVCodecContext *Decoder::getCodecContext() const {
-    return codecContext
+    return codecContext;
 }
 
 void Decoder::setCodecContext(AVCodecContext *context){
