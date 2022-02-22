@@ -8,6 +8,7 @@ ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVid
     avdevice_register_all();
     cout << "\nScreen Recorder initialized correctly\n";
 
+#ifdef __unix__
     dpy = XOpenDisplay (NULL);          //open connection to the default X server
     if (!dpy) {
         fprintf (stderr, "unable to open display \"%s\".\n",
@@ -18,6 +19,10 @@ ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVid
     printf ("\nname of display:    %s\n", DisplayString (dpy));
     printf ("default screen number:    %d\n", DefaultScreen (dpy));
     printf ("number of screens:    %d\n", ScreenCount (dpy));
+#endif
+
+
+
 
 }
 ScreenRecorder::~ScreenRecorder() {
@@ -850,6 +855,7 @@ int ScreenRecorder::initConvertedSamples(uint8_t ***converted_input_samples, AVC
     return 0;
 }
 
+#ifdef __unix__
 void ScreenRecorder::infoDisplays() {
 
     for (int i = 0; i < ScreenCount (dpy); i++) {
@@ -860,6 +866,8 @@ void ScreenRecorder::infoDisplays() {
     }
 
 }
+#endif
+
 
 void ScreenRecorder::listDevices() {
     int value = 0;

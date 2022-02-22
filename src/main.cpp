@@ -55,7 +55,11 @@ int main() {
 
     sc.settings.filename = output_name;
 
+#ifdef __unix__
     sc.settings._inscreenres = {XDisplayWidth(sc.dpy,screen_number),  XDisplayHeight(sc.dpy,screen_number)};
+#endif
+
+    //sc.settings._inscreenres = {XDisplayWidth(sc.dpy,screen_number),  XDisplayHeight(sc.dpy,screen_number)};
 
     std::cout << "---Choose output resolution #" << std::endl;
     std::cout << "resolution #0: \t1280x720 pixels"
