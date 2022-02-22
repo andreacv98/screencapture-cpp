@@ -153,8 +153,9 @@ private:
     void generateVideoOutputStream();
     void generateAudioOutputStream();
     void captureVideo();
+    void closeVideoInput();
+    void closeAudioInput();
     void captureAudio();
-    void produce();
     void initOptions();
     void initBuffers();
     static int initConvertedSamples(uint8_t ***converted_input_samples,
@@ -172,6 +173,7 @@ public:
 
     void startCapture();
     void pauseCapture();
+    void resumeCapture();
     void endCapture();
 
     void initThreads();

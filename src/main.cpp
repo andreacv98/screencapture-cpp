@@ -30,7 +30,7 @@ int main() {
 
     sc.settings._inscreenres = {1280,720};
     sc.settings._outscreenres = {1920,1080};
-    sc.settings._fps = 14;
+    sc.settings._fps = 30;
     sc.settings._screenoffset = {0,0};
 
     /*open input devices*/
@@ -42,10 +42,17 @@ int main() {
     sc.initThreads();
 
 
-
     /* sample capture routine*/
+    sleep(2);
     sc.startCapture();
-    sleep(10);
+
+    sleep(5);
+    sc.pauseCapture();
+
+    sleep(5);
+    sc.resumeCapture();
+
+    sleep(5);
     sc.endCapture();
 
     return 0;
