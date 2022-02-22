@@ -1,21 +1,28 @@
-//
-// Created by andrea on 19/12/21.
-//
-
-#include "ScreenRecorder.h"
-
 #include "ScreenRecorder.h"
 
 #include <unistd.h>
+#include <chrono>
+#include <ctime>
 
 using namespace std;
-
 
 ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVideoFrame(nullptr), rawAudioFrame(nullptr) {
     initBuffers();
     initOptions();
     avdevice_register_all();
-    cout << "\nScreen Recorder initialized correctly";
+    cout << "\nScreen Recorder initialized correctly\n";
+
+    dpy = XOpenDisplay (NULL);          //open connection to the default X server
+    if (!dpy) {
+        fprintf (stderr, "unable to open display \"%s\".\n",
+                 XDisplayName (NULL));
+        exit (1);
+    }
+
+    printf ("\nname of display:    %s\n", DisplayString (dpy));
+    printf ("default screen number:    %d\n", DefaultScreen (dpy));
+    printf ("number of screens:    %d\n", ScreenCount (dpy));
+
 }
 ScreenRecorder::~ScreenRecorder() {
 
@@ -497,12 +504,13 @@ void ScreenRecorder::captureVideo(){
 
 
     cout<<"\n\n[VideoThread] thread started!";
+    std::unique_lock<std::mutex> r_lock(r_mutex, std::defer_lock);
     bool paused = false;
     while(true) {
-        std::unique_lock<std::mutex> r_lock(r_mutex);
-        /*checks if capture is enabled or stopped*/
-        paused = !captureSwitch;
-        if (!captureSwitch) closeVideoInput();
+        r_lock.lock();
+        paused = !captureSwitch && captureStarted;
+        if (paused) closeVideoInput();
+
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
         if(killSwitch) {
             cout << "\n[VideoThread] thread stopped!";
@@ -516,7 +524,7 @@ void ScreenRecorder::captureVideo(){
         }
 
         if (paused) openVideoSource();
-
+        r_lock.unlock();
 
 
         if(av_read_frame(inVFormatContext, inPacket) >= 0 && inPacket->stream_index == inVideoStreamIndex) {
@@ -652,13 +660,14 @@ void ScreenRecorder::captureAudio() {
 
 
     cout<<"\n\n[AudioThread] thread started!";
+    std::unique_lock<std::mutex> r_lock(r_mutex, std::defer_lock);
     bool paused = false;
     while(true) {
 
-        std::unique_lock<std::mutex> r_lock(r_mutex);
 
-        paused = !captureSwitch;
-        if (!captureSwitch) closeAudioInput();
+        r_lock.lock();
+        paused = !captureSwitch && captureStarted;
+        if (paused) closeAudioInput();
 
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
 
@@ -668,6 +677,7 @@ void ScreenRecorder::captureAudio() {
         }
 
         if (paused) openAudioSource();
+        r_lock.unlock();
 
         if(av_read_frame(inAFormatContext, inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
             //decode video routing
@@ -770,6 +780,7 @@ void ScreenRecorder::startCapture() {
     if (settings._recaudio)
         init_fifo();
     captureSwitch = true;
+    captureStarted = true;
     r_cv.notify_all();
 }
 /**
@@ -778,6 +789,8 @@ void ScreenRecorder::startCapture() {
  */
 void ScreenRecorder::pauseCapture() {
     if (!captureSwitch || killSwitch) return;
+    std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    cout<<"\n[MainThread] Trying to pause capture... "<<std::ctime(&time);
     std::lock_guard<std::mutex> r_lock(r_mutex);
     cout<<"\n[MainThread] Capture paused";
     captureSwitch = false;
@@ -789,6 +802,7 @@ void ScreenRecorder::pauseCapture() {
  */
 void ScreenRecorder::resumeCapture() {
     if (captureSwitch || killSwitch) return;
+    cout<<"\n[MainThread] Trying to resume capture...";
     std::lock_guard<std::mutex> r_lock(r_mutex);
     captureSwitch = true;
     cout<<"\n[MainThread] Capture resumed";
@@ -800,6 +814,7 @@ void ScreenRecorder::resumeCapture() {
  */
 void ScreenRecorder::endCapture() {
     if (killSwitch) return;
+    cout<<"\n[MainThread] Trying to end capture...";
     std::lock_guard<std::mutex> r_lock(r_mutex);
     killSwitch = true;
     cout<<"\n[MainThread] Capture ended";
@@ -868,10 +883,7 @@ int ScreenRecorder::add_samples_to_fifo(uint8_t **converted_input_samples, const
     return 0;
 }
 
-
-int ScreenRecorder::initConvertedSamples(uint8_t ***converted_input_samples,
-                                         AVCodecContext *output_codec_context,
-                                         int frame_size){
+int ScreenRecorder::initConvertedSamples(uint8_t ***converted_input_samples, AVCodecContext *output_codec_context, int frame_size){
     int error;
     /* Allocate as many pointers as there are audio channels.
      * Each pointer will later point to the audio samples of the corresponding
@@ -892,6 +904,17 @@ int ScreenRecorder::initConvertedSamples(uint8_t ***converted_input_samples,
         exit(1);
     }
     return 0;
+}
+
+void ScreenRecorder::infoDisplays() {
+
+    for (int i = 0; i < ScreenCount (dpy); i++) {
+        printf ("\n");
+        printf ("screen #%d:\n", i);
+        printf ("  dimensions:    %dx%d pixels\n\n",
+                XDisplayWidth (dpy, i),  XDisplayHeight (dpy, i));
+    }
+
 }
 
 void ScreenRecorder::listDevices() {

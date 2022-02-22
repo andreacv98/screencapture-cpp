@@ -1,7 +1,3 @@
-//
-// Created by andrea on 19/12/21.
-//
-
 #ifndef VIDEO_APP_SCREENRECORDER_H
 #define VIDEO_APP_SCREENRECORDER_H
 
@@ -17,8 +13,15 @@
 #include <condition_variable>
 #include <thread>
 //#include <semaphore.h>
-//FFMPEG LIBRARIES
 
+#ifdef WIN32
+#include <X11/Xwindows.h>
+#endif
+
+#include <X11/Xlib.h>
+
+
+//FFMPEG LIBRARIES
 extern "C"
 {
 #include "libavcodec/avcodec.h"
@@ -146,6 +149,7 @@ private:
     int outAudioStreamIndex;
 
     bool captureSwitch;
+    bool captureStarted;
     bool killSwitch;
 
     AVAudioFifo *fifo;
@@ -163,6 +167,9 @@ private:
                                     int frame_size);
 public:
     SRSettings settings;
+
+    Display *dpy;       //display from X11
+
 
     ScreenRecorder();
     ~ScreenRecorder();
@@ -182,6 +189,7 @@ public:
 
     int add_samples_to_fifo(uint8_t **converted_input_samples, const int frame_size);
 
+    void infoDisplays();
     void listDevices();
 };
 
