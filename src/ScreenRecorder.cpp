@@ -6,7 +6,7 @@
 
 using namespace std;
 
-ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVideoFrame(nullptr), rawAudioFrame(nullptr) {
+ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), captureStarted(false), rawVideoFrame(nullptr), rawAudioFrame(nullptr) {
     initBuffers();
     initOptions();
     avdevice_register_all();
@@ -31,8 +31,8 @@ ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVid
 }
 ScreenRecorder::~ScreenRecorder() {
 
-    if(settings._recvideo) videoThread.join();
-    if(settings._recaudio) audioThread.join();
+    if(settings._recvideo && videoThread.joinable()) videoThread.join();
+    if(settings._recaudio && audioThread.joinable()) audioThread.join();
     //producerThread.join();
 
     if( av_write_trailer(outAVFormatContext) < 0)
@@ -620,7 +620,7 @@ void ScreenRecorder::captureAudio() {
     AVFrame *rawFrame, *scaledFrame;
     uint8_t  **resampledData;
     //allocate space for a packet
-    inPacket = (AVPacket *) av_malloc(sizeof (AVPacket));
+    inPacket = (AVPacket *) av_packet_alloc();
     if(!inPacket) {
         cout << "\nCannot allocate an AVPacket for encoded video";
         exit(1);
@@ -634,7 +634,7 @@ void ScreenRecorder::captureAudio() {
         exit(1);
     }
 
-    outPacket = (AVPacket *) av_malloc(sizeof (AVPacket));
+    outPacket = (AVPacket *) av_packet_alloc();
     if(!outPacket) {
         cout << "\nCannot allocate an AVPacket for encoded video";
         exit(1);

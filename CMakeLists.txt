@@ -53,7 +53,7 @@ pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
         libswscale
         )
 
-add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.h)
+add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.h src/Decoder.h src/utils.h src/Decoder.cpp src/Encoder.h src/Encoder.cpp)
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME}
