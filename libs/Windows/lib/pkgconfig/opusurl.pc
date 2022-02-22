@@ -1,0 +1,14 @@
+# opusurl installed pkg-config file
+
+prefix=/local64
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: opusurl
+Description: High-level Opus decoding library, URL support
+Version: 0.12-14-g7a4505c
+Requires: opusfile
+Requires.private: openssl
+Conflicts:
+Libs: -L${libdir} -lopusurl

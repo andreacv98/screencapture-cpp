@@ -1,0 +1,51 @@
+MSYSTEM=MINGW64
+source /etc/msystem
+
+# package build directory
+LOCALBUILDDIR=/build
+# package installation prefix
+LOCALDESTDIR=/local64
+export LOCALBUILDDIR LOCALDESTDIR
+
+bits='64bit'
+
+export CONFIG_SITE=/etc/config.site
+alias dir='ls -la --color=auto'
+alias ls='ls --color=auto'
+export CC="ccache gcc"
+export CXX="ccache g++"
+
+CARCH="${MINGW_CHOST%%-*}"
+CPATH="$(cygpath -pm $LOCALDESTDIR/include:$MINGW_PREFIX/include)"
+LIBRARY_PATH="$(cygpath -pm $LOCALDESTDIR/lib:$MINGW_PREFIX/lib)"
+export CPATH LIBRARY_PATH
+
+MANPATH="${LOCALDESTDIR}/share/man:${MINGW_PREFIX}/share/man:/usr/share/man"
+INFOPATH="${LOCALDESTDIR}/share/info:${MINGW_PREFIX}/share/info:/usr/share/info"
+
+DXSDK_DIR="${MINGW_PREFIX}/${MINGW_CHOST}"
+ACLOCAL_PATH="${LOCALDESTDIR}/share/aclocal:${MINGW_PREFIX}/share/aclocal:/usr/share/aclocal"
+PKG_CONFIG="${MINGW_PREFIX}/bin/pkgconf --keep-system-libs --keep-system-cflags --static"
+PKG_CONFIG_PATH="${LOCALDESTDIR}/lib/pkgconfig:${MINGW_PREFIX}/lib/pkgconfig"
+CPPFLAGS="-D_FORTIFY_SOURCE=0 -D__USE_MINGW_ANSI_STDIO=1"
+CFLAGS="-mthreads -mtune=generic -O2 -pipe"
+CXXFLAGS="${CFLAGS}"
+LDFLAGS="-pipe -static-libgcc -static-libstdc++"
+export DXSDK_DIR ACLOCAL_PATH PKG_CONFIG PKG_CONFIG_PATH CPPFLAGS CFLAGS CXXFLAGS LDFLAGS MSYSTEM
+
+export CARGO_HOME="/opt/cargo" RUSTUP_HOME="/opt/cargo"
+export CCACHE_DIR="${LOCALBUILDDIR}/cache"
+
+export PYTHONPATH=
+
+LANG=en_US.UTF-8
+PATH="${MINGW_PREFIX}/bin:${INFOPATH}:${MSYS2_PATH}:${ORIGINAL_PATH}"
+PATH="${LOCALDESTDIR}/bin-audio:${LOCALDESTDIR}/bin-global:${LOCALDESTDIR}/bin-video:${LOCALDESTDIR}/bin:${PATH}"
+PATH="/opt/cargo/bin:/opt/bin:${PATH}"
+source '/etc/profile.d/perlbin.sh'
+PS1='\[\033[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ '
+HOME="/home/${USERNAME}"
+GIT_GUI_LIB_DIR=`cygpath -w /usr/share/git-gui/lib`
+export LANG PATH PS1 HOME GIT_GUI_LIB_DIR
+stty susp undef
+test -f "$LOCALDESTDIR/etc/custom_profile" && source "$LOCALDESTDIR/etc/custom_profile"
