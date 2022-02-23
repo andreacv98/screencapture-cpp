@@ -12,9 +12,6 @@
  * @throw runtime_error
  */
 AVFormatContext *AudioDemuxer::open() {
-    //if one of them != nullptr then input already initialized
-    if(inFormatContext != nullptr || inCodecContext!= nullptr || streamIndex != -1)
-        return inFormatContext;
 
     inFormat = av_find_input_format(src);
     inFormatContext = avformat_alloc_context();

@@ -80,7 +80,7 @@ int main() {
        c.resumeCapture();
 
        sleep(5);
-       c.endCapture();
+       c.endCapture();*/
        return 0;
     }
 
