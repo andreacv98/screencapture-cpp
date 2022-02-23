@@ -62,8 +62,10 @@
 class Controller {
 
 private:
-    //AudioDemuxer inAudio;
-    //VideoDemuxer inVideo;
+    AudioDemuxer inAudio;
+    VideoDemuxer inVideo;
+
+    SRSettings settings;
 
 private:
 
@@ -95,17 +97,20 @@ private:
     AVCodecContext *inVCodecContext;
     AVCodec *inVCodec;
 
+
     AVFormatContext *outAVFormatContext;
     AVDictionary *outVOptions;
     //
     AVCodecContext *outVCodecContext;
     AVCodec *outVCodec;
 
+
     //audio
     AVDictionary *inAOptions;
     AVFormatContext *inAFormatContext;
     AVInputFormat *inAInputFormat;
     AVCodecContext *inACodecContext;
+
 
     AVCodecContext *outACodecContext;
     AVCodec *outACodec;
@@ -132,8 +137,6 @@ private:
     void generateVideoOutputStream();
     void generateAudioOutputStream();
     void captureVideo();
-    void closeVideoInput();
-    void closeAudioInput();
     void captureAudio();
     void initOptions();
     void initBuffers();
@@ -142,13 +145,9 @@ private:
                                     int frame_size);
 
 public:
-    Controller();
+    Controller(char * audioUrl, char * videoUrl, SRSettings settings);
     ~Controller();
-    int openVideoSource();
-    int openAudioSource();
 
-
-    SRSettings settings;
 #ifdef __unix__
     Display *dpy;       //display from X11
 #endif

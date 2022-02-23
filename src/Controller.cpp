@@ -7,9 +7,33 @@
 
 using namespace std;
 
-Controller::Controller():captureSwitch(false), killSwitch(false), captureStarted(false), rawVideoFrame(nullptr), rawAudioFrame(nullptr) {
-    initBuffers();
-    initOptions();
+Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): settings(settings),
+                                                                                captureSwitch(false),
+                                                                                killSwitch(false),
+                                                                                captureStarted(false),
+                                                                                rawVideoFrame(nullptr),
+                                                                                rawAudioFrame(nullptr),
+                                                                                inVideo(VideoDemuxer(videoUrl, VIDEO_SOURCE, settings._fps, settings._inscreenres)),
+                                                                                inAudio(AudioDemuxer(audioUrl, AUDIO_SOURCE))
+                                                                                {
+    inVideoBuffer.np = 0;
+    inAudioBuffer.np = 0;
+
+    try {
+        inVFormatContext = inVideo.open();
+    } catch (const std::runtime_error& e) {
+        cerr << "Error opening video input: " << e.what() << endl;
+        throw;
+    }
+
+    try {
+        inAFormatContext = inAudio.open();
+    } catch (const std::runtime_error& e) {
+        cerr << "Error opening audio input: " << e.what() << endl;
+        throw;
+    }
+
+
     avdevice_register_all();
     cout << "\nScreen Recorder initialized correctly\n";
 
@@ -77,209 +101,6 @@ Controller::~Controller() {
     }
 }
 
-void Controller::closeVideoInput(){
-    avformat_close_input(&inVFormatContext);
-    if (!inVFormatContext) {
-        cout << "\nvideo file closed sucessfully";
-    } else {
-        cout << "\nunable to close the video file";
-        exit(1);
-    }
-}
-
-void Controller::closeAudioInput(){
-    avformat_close_input(&inAFormatContext);
-    if (!inAFormatContext) {
-        cout << "\naudio file closed sucessfully";
-    } else {
-        cout << "\nunable to close the audio file";
-        exit(1);
-    }
-}
-
-
-int Controller::openVideoSource() {
-    int value = 0;
-    inVOptions = nullptr;
-    inVFormatContext = avformat_alloc_context();
-
-    /*std::cout << "DEMUXER" << std::endl;
-    const AVInputFormat *fmt = NULL;
-    void *i = 0;
-    while ((fmt = av_demuxer_iterate(&i)))
-        std::cout << fmt->name << std::endl;
-
-    /*Defining options for the device initialization*/
-
-#ifdef __APPLE__
-    value = av_dict_set(&inVOptions, "pixel_format", "0rgb", 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value";
-        exit(1);
-    }
-    value = av_dict_set(&inVOptions, "video_device_index", "1", 0);
-
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value";
-        exit(1);
-    }
-
-#endif
-    std::cout << "Video Input setup started" << std::endl;
-    value = av_dict_set(&inVOptions, "framerate", "15", 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value";
-        exit(1);
-    }
-    char s[30];
-    sprintf(s,"%dx%d", settings._inscreenres.width,settings._inscreenres.height);
-
-    value = av_dict_set(&inVOptions, "video_size", s, 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value";
-        exit(1);
-    }
-
-    char off_x[30];
-    sprintf(off_x,"%d", settings._screenoffset.x);
-    char off_y[30];
-    sprintf(off_y,"%d", settings._screenoffset.y);
-
-
-    value = av_dict_set(&inVOptions, "offset_x", off_x, 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value off_x";
-        exit(1);
-    }
-
-    value = av_dict_set(&inVOptions, "offset_y", off_y, 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value off_y";
-        exit(1);
-    }
-
-
-    value = av_dict_set(&inVOptions, "preset", "medium", 0);
-    if (value < 0) {
-        cout << "\nerror in setting preset values";
-        exit(1);
-    }
-
-    value = av_dict_set(&inVOptions, "probesize", "60M", 0);
-    if (value < 0) {
-        cout << "\nerror in setting preset values";
-        exit(1);
-    }
-
-    //get input format
-    inVInputFormat = av_find_input_format(VIDEO_SOURCE);
-    value = avformat_open_input(&inVFormatContext, VIDEO_URL, inVInputFormat, &inVOptions);
-    if (value != 0) {
-        cout << "\nCannot open selected device";
-        exit(1);
-    }
-
-
-    //get video stream infos from context
-    value = avformat_find_stream_info(inVFormatContext, nullptr);
-    if (value < 0) {
-        cout << "\nCannot find the stream information";
-        exit(1);
-    }
-
-    //find the first video stream with a given code
-    inVideoStreamIndex = -1;
-    for (int i = 0; i < inVFormatContext->nb_streams; i++){
-        if (inVFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-            inVideoStreamIndex = i;
-            break;
-        }
-    }
-
-    if (inVideoStreamIndex == -1) {
-        cout << "\nCannot find the video stream index. (-1)";
-        exit(1);
-    }
-
-    if (inVCodec != nullptr) return 0;
-
-    AVCodecParameters *params = inVFormatContext->streams[inVideoStreamIndex]->codecpar;
-    inVCodec = avcodec_find_decoder(params->codec_id);
-    if (inVCodec == nullptr) {
-        cout << "\nCannot find the decoder";
-        exit(1);
-    }
-
-    inVCodecContext = avcodec_alloc_context3(inVCodec);
-    avcodec_parameters_to_context(inVCodecContext, params);
-
-    value = avcodec_open2(inVCodecContext, inVCodec, nullptr);
-    if (value < 0) {
-        cout << "\nCannot open the av codec";
-        exit(1);
-    }
-
-    return 0;
-}
-int Controller::openAudioSource() {
-    int value = 0;
-    inAOptions = nullptr;
-    inAFormatContext = avformat_alloc_context();
-
-    std::cout << "Audio Input setup started" << std::endl;
-
-    inAInputFormat = av_find_input_format(AUDIO_SOURCE);
-    value = avformat_open_input(&inAFormatContext, AUDIO_URL, inAInputFormat, &inAOptions);
-    if (value != 0) {
-        cout << "\nCannot open selected device";
-        exit(1);
-    }
-
-    value = avformat_find_stream_info(inAFormatContext, nullptr);
-    if (value < 0) {
-        cout << "\nCannot find the audio stream information";
-        exit(1);
-    }
-
-    //find the first video stream with a given code
-    inAudioStreamIndex = -1;
-    for (int i = 0; i < inAFormatContext->nb_streams; i++){
-        if (inAFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-            inAudioStreamIndex = i;
-            break;
-        }
-    }
-
-    if (inAudioStreamIndex == -1) {
-        cout << "\nCannot find the audio stream index. (-1)";
-        exit(1);
-    }
-
-    if (inACodec != nullptr) return 0;
-
-    AVCodecParameters *params = inAFormatContext->streams[inAudioStreamIndex]->codecpar;
-    inACodec = avcodec_find_decoder(params->codec_id);
-    if (inACodec == nullptr) {
-        cout << "\nCannot find the audio decoder";
-        exit(1);
-    }
-    cout << "Input audio codec:" << inACodec->name;
-
-    inACodecContext = avcodec_alloc_context3(inACodec);
-
-    if(avcodec_parameters_to_context(inACodecContext, params)<0)
-        cout<<"Cannot create codec context for audio input";
-
-
-    value = avcodec_open2(inACodecContext, inACodec, nullptr);
-    if (value < 0) {
-        cout << "\nCannot open the input audio codec";
-        exit(1);
-    }
-
-
-    return 0;
-}
 
 int Controller::initOutputFile(){
     char* filename = settings.filename;
@@ -533,7 +354,7 @@ void Controller::captureVideo(){
     while(true) {
         r_lock.lock();
         paused = !captureSwitch && captureStarted;
-        if (paused) closeVideoInput();
+        if (paused) inVideo.closeInput();
 
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
         if(killSwitch) {
@@ -547,7 +368,7 @@ void Controller::captureVideo(){
             return;
         }
 
-        if (paused) openVideoSource();
+        if (paused) inVideo.open();
         r_lock.unlock();
 
 
@@ -691,7 +512,7 @@ void Controller::captureAudio() {
 
         r_lock.lock();
         paused = !captureSwitch && captureStarted;
-        if (paused) closeAudioInput();
+        if (paused) inAudio.closeInput();
 
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
 
@@ -700,7 +521,7 @@ void Controller::captureAudio() {
             return;
         }
 
-        if (paused) openAudioSource();
+        if (paused) inAudio.open();
         r_lock.unlock();
 
         if(av_read_frame(inAFormatContext, inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
@@ -867,17 +688,11 @@ void Controller::initThreads() {
  * @note Has to be called before initOutput() and initThreads()
  */
 void Controller::initOptions() {
-    settings.filename = "output.mp4";
+    settings.filename = strdup("");
     settings._recaudio=false;
     settings._inscreenres={0,0};
     settings._outscreenres={0,0};
-
     settings._screenoffset={0,0};
-}
-
-void Controller::initBuffers() {
-    inVideoBuffer.np = 0;
-    inAudioBuffer.np = 0;
 }
 
 int Controller::init_fifo()
