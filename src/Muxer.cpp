@@ -1,5 +1,6 @@
 #include "Muxer.h"
 #include <stdexcept>
+#include <iostream>
 
 Muxer::Muxer(SRSettings outputSettings, std::string outputFilename) {
     this->outputSettings = outputSettings;
@@ -14,18 +15,30 @@ Muxer::Muxer(SRSettings outputSettings, std::string outputFilename) {
 
 Muxer::~Muxer() {
     if(outAVFormatContext){
-        if( av_write_trailer(outAVFormatContext) < 0) throw std::runtime_error("Muxer: error in writing av trailer");
+        if( av_write_trailer(outAVFormatContext) < 0) {
+            std::cerr << "Muxer: error in writing av trailer" << std::endl;
+            exit(1);
+        }
 
         if(outputSettings._recvideo){
             avcodec_free_context(&outVCodecContext);
-            if (outVCodecContext) throw std::runtime_error("Muxer: unable to free video avformat context");
+            if (outVCodecContext) {
+                std::cerr << "Muxer: unable to free video avformat context" << std::endl;
+                exit(1);
+            }
         }
         if(outputSettings._recaudio){
             avcodec_free_context(&outACodecContext);
-            if (outACodecContext) throw std::runtime_error("Muxer: unable to free audio avformat context");
+            if (outACodecContext) {
+                std::cerr << "Muxer: unable to free audio avformat context" << std::endl;
+                exit(1);
+            }
         }
         avformat_close_input(&outAVFormatContext);
-        if (outAVFormatContext) throw std::runtime_error("Muxer: unable to free output avformat context");
+        if (outAVFormatContext){
+            std::cerr << "Muxer: unable to free audio avformat context" << std::endl;
+            exit(1);
+        }
     }
 }
 
