@@ -8,15 +8,17 @@
 using namespace std;
 
 Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): settings(settings),
-                                                                                captureSwitch(false),
-                                                                                killSwitch(false),
-                                                                                captureStarted(false),
-                                                                                inVideo(VideoDemuxer(VIDEO_SOURCE, videoUrl, settings._fps, settings._inscreenres)),
-                                                                                inAudio(AudioDemuxer(AUDIO_SOURCE, audioUrl)),
-                                                                                output(Muxer(settings, settings.filename))
-                                                                                {
+                                                                               captureSwitch(false),
+                                                                               killSwitch(false),
+                                                                               captureStarted(false),
+                                                                               inVideo(VIDEO_SOURCE, videoUrl, settings._fps, settings._inscreenres),
+                                                                               inAudio(AUDIO_SOURCE, audioUrl),
+                                                                               output(Muxer(settings, settings.filename))
+                                                                               {
     inVideoBuffer.np = 0;
     inAudioBuffer.np = 0;
+
+    avdevice_register_all();
 
     // INPUT
     if (settings._recvideo){
@@ -65,9 +67,6 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
             throw;
         }
     }
-
-
-    avdevice_register_all();
     cout << "\nScreen Recorder initialized correctly\n";
 
 #ifdef __unix__

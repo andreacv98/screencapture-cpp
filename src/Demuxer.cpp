@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Demuxer.h"
 
-Demuxer::Demuxer(char *src, char *url) : 
+Demuxer::Demuxer(char *src, char *url) :
                                         src(src),
                                         url(url),
                                         value(0),
@@ -15,7 +15,7 @@ Demuxer::Demuxer(char *src, char *url) :
                                         inCodecContext(nullptr),
                                         inCodec(nullptr)
 {
-    inFormat = av_find_input_format(src);
+
 }
 
 AVCodecContext *Demuxer::getInCodecContext() const {

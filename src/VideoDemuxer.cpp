@@ -7,7 +7,6 @@
 
 VideoDemuxer::VideoDemuxer(char *src, char *url, uint16_t fps, SRResolution resolution) : Demuxer(src, url),fps(fps),
                                                                                      resolution(resolution) {
-    setOptions();
 }
 
 /**
@@ -32,16 +31,18 @@ void VideoDemuxer::setOptions() {
 
 #endif
 
-    char s[30];
-    sprintf(s,"%dx%d", resolution.width, resolution.height);
+
 
     char framerate[30];
-    sprintf(s, "%d", fps);
+    sprintf(framerate, "%d", fps);
 
     value = av_dict_set(&options, "framerate", framerate, 0);
     if (value < 0) {
         throw std::invalid_argument("Error in setting framerate");
     }
+
+    char s[30];
+    sprintf(s,"%dx%d", resolution.width, resolution.height);
 
     value = av_dict_set(&options, "video_size", s, 0);
 
@@ -73,7 +74,11 @@ AVFormatContext *VideoDemuxer::open() {
     if(inFormatContext != nullptr || inCodecContext!= nullptr || streamIndex != -1)
         return inFormatContext;
 
+
+
+    inFormat = av_find_input_format(src);
     inFormatContext = avformat_alloc_context();
+    setOptions();
     value = avformat_open_input(&inFormatContext, url, inFormat, &options);
     if (value != 0) {
         throw std::runtime_error("Cannot open selected device");

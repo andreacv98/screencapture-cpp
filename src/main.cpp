@@ -38,8 +38,8 @@ int main() {
        settings._recaudio = true;
        x_start = 0;
        y_start = 0;
-       x_toadd = 0;
-       y_toadd = 0;
+       x_toadd = 1920;
+       y_toadd = 800;
        settings._screenoffset = {x_start, y_start};
        settings._inscreenres= {x_toadd, y_toadd};
        settings.filename = "test.mp4";

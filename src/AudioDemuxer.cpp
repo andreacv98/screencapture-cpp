@@ -17,12 +17,16 @@ AVFormatContext *AudioDemuxer::open() {
     if(inFormatContext != nullptr || inCodecContext!= nullptr || streamIndex != -1)
         return inFormatContext;
     std::cout<<"test"<<std::endl;
+
+    inFormat = av_find_input_format(src);
     inFormatContext = avformat_alloc_context();
+    setOptions();
     value = avformat_open_input(&inFormatContext, url, inFormat, &options);
     if (value != 0) {
         throw std::runtime_error("Cannot open selected device");
         exit(1);
     }
+
 
     value = avformat_find_stream_info(inFormatContext, nullptr);
     if (value < 0) {

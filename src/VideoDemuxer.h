@@ -10,6 +10,8 @@
 class VideoDemuxer: public Demuxer {
 
 private:
+
+
     uint16_t fps;
     SRResolution resolution;
     void setOptions() override;
