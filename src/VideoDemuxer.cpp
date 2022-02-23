@@ -2,6 +2,7 @@
 // Created by Andrea on 22/02/2022.
 //
 
+#include <iostream>
 #include "VideoDemuxer.h"
 
 VideoDemuxer::VideoDemuxer(char *url, char *src, int fps, int width, int height) : Demuxer(url, src), fps(fps), width(width),height(height) {
@@ -15,6 +16,7 @@ VideoDemuxer::VideoDemuxer(char *url, char *src, int fps, int width, int height)
  * @throw invalid_argument
  */
 void VideoDemuxer::setOptions() {
+    std::cout << "Video Input setup started" << std::endl;
 
 #ifdef __APPLE__
     value = av_dict_set(&inVOptions, "pixel_format", "0rgb", 0);
@@ -31,6 +33,16 @@ void VideoDemuxer::setOptions() {
 
     char s[30];
     sprintf(s,"%dx%d", width, height);
+
+    char framerate[30];
+    sprintf(s, "%d", fps);
+
+    value = av_dict_set(&options, "framerate", framerate, 0);
+    if (value < 0) {
+        throw std::invalid_argument("Error in setting framerate");
+        cout << "\nerror in setting dictionary value";
+        exit(1);
+    }
 
     value = av_dict_set(&options, "video_size", s, 0);
 
