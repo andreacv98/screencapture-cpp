@@ -16,7 +16,7 @@ private:
 
 public:
 
-    VideoDemuxer(char *url, char *src, uint16_t fps, SRResolution resolution);
+    VideoDemuxer(char *src, char *url, uint16_t fps, SRResolution resolution);
     AVFormatContext* open() override;
 
 };

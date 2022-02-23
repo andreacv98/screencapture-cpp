@@ -5,7 +5,10 @@
 #include <iostream>
 #include "Demuxer.h"
 
-Demuxer::Demuxer(char *src, char *url) : value(0),
+Demuxer::Demuxer(char *src, char *url) : 
+                                        src(src),
+                                        url(url),
+                                        value(0),
                                         streamIndex(-1),
                                         options(nullptr),
                                         inFormatContext(nullptr),

@@ -11,8 +11,8 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
                                                                                 captureSwitch(false),
                                                                                 killSwitch(false),
                                                                                 captureStarted(false),
-                                                                                inVideo(VideoDemuxer(videoUrl, VIDEO_SOURCE, settings._fps, settings._inscreenres)),
-                                                                                inAudio(AudioDemuxer(audioUrl, AUDIO_SOURCE)),
+                                                                                inVideo(VideoDemuxer(VIDEO_SOURCE, videoUrl, settings._fps, settings._inscreenres)),
+                                                                                inAudio(AudioDemuxer(AUDIO_SOURCE, audioUrl)),
                                                                                 output(Muxer(settings, settings.filename))
                                                                                 {
     inVideoBuffer.np = 0;
