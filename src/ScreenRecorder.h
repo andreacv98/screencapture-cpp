@@ -15,6 +15,7 @@
 //#include <semaphore.h>
 
 #ifdef WIN32
+#include <windows.h>
 #endif
 
 #ifdef __unix__
@@ -44,7 +45,7 @@
 #define VIDEO_SOURCE ("gdigrab")
 #define VIDEO_URL ("desktop")
 #define AUDIO_SOURCE ("dshow")
-#define AUDIO_URL ("audio=Microfono (USB Microphone)")
+#define AUDIO_URL ("audio=Microfono (Logitech G533 Gaming Headset)")
 #endif
 
 #define CAPTURE_BUFFER 10

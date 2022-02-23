@@ -53,7 +53,23 @@ pkg_check_modules(LIBAV REQUIRED IMPORTED_TARGET
         libswscale
         )
 
-add_executable(video_app src/main.cpp src/ScreenRecorder.cpp src/ScreenRecorder.h src/Decoder.h src/utils.h src/Decoder.cpp src/Encoder.h src/Encoder.cpp src/Muxer.h src/Muxer.cpp)
+add_executable(
+        video_app
+        src/main.cpp
+        src/ScreenRecorder.cpp
+        src/ScreenRecorder.h
+        src/Demuxer.cpp
+        src/Demuxer.h
+        src/VideoDemuxer.cpp
+        src/AudioDemuxer.cpp
+        src/AudioDemuxer.h
+        src/Decoder.h
+        src/Decoder.cpp
+        src/Encoder.h
+        src/Encoder.cpp
+        src/Muxer.h src/Muxer.cpp
+        src/utils.h
+)
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME}
