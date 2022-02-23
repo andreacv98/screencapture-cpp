@@ -37,10 +37,9 @@ int main() {
     /*settings*/
     sc.settings._recvideo = true;
 
-
 #ifdef __unix__
     std::cout << "---Select screen # to record---" << std::endl;
-    sc.infoDisplays();
+    //sc.infoDisplays();
     std::cin >>screen_number;
 #endif
 
@@ -116,10 +115,17 @@ int main() {
     sc.initThreads();
 
 
-
     /* sample capture routine*/
+    sleep(2);
     sc.startCapture();
-    sleep(10);
+
+    sleep(5);
+    sc.pauseCapture();
+
+    sleep(5);
+    sc.resumeCapture();
+
+    sleep(5);
     sc.endCapture();
 
     return 0;

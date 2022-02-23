@@ -1,8 +1,12 @@
 #include "ScreenRecorder.h"
 
+#include <unistd.h>
+#include <chrono>
+#include <ctime>
+
 using namespace std;
 
-ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVideoFrame(nullptr), rawAudioFrame(nullptr) {
+ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), captureStarted(false), rawVideoFrame(nullptr), rawAudioFrame(nullptr) {
     initBuffers();
     initOptions();
     avdevice_register_all();
@@ -27,8 +31,8 @@ ScreenRecorder::ScreenRecorder():captureSwitch(false), killSwitch(false), rawVid
 }
 ScreenRecorder::~ScreenRecorder() {
 
-    if(settings._recvideo) videoThread.join();
-    if(settings._recaudio) audioThread.join();
+    if(settings._recvideo && videoThread.joinable()) videoThread.join();
+    if(settings._recaudio && audioThread.joinable()) audioThread.join();
     //producerThread.join();
 
     if( av_write_trailer(outAVFormatContext) < 0)
@@ -69,6 +73,26 @@ ScreenRecorder::~ScreenRecorder() {
         cout << "\navformat free successfully";
     } else {
         cout << "\nunable to free avformat context";
+        exit(1);
+    }
+}
+
+void ScreenRecorder::closeVideoInput(){
+    avformat_close_input(&inVFormatContext);
+    if (!inVFormatContext) {
+        cout << "\nvideo file closed sucessfully";
+    } else {
+        cout << "\nunable to close the video file";
+        exit(1);
+    }
+}
+
+void ScreenRecorder::closeAudioInput(){
+    avformat_close_input(&inAFormatContext);
+    if (!inAFormatContext) {
+        cout << "\naudio file closed sucessfully";
+    } else {
+        cout << "\nunable to close the audio file";
         exit(1);
     }
 }
@@ -177,6 +201,8 @@ int ScreenRecorder::openVideoSource() {
         exit(1);
     }
 
+    if (inVCodec != nullptr) return 0;
+
     AVCodecParameters *params = inVFormatContext->streams[inVideoStreamIndex]->codecpar;
     inVCodec = avcodec_find_decoder(params->codec_id);
     if (inVCodec == nullptr) {
@@ -228,6 +254,8 @@ int ScreenRecorder::openAudioSource() {
         cout << "\nCannot find the audio stream index. (-1)";
         exit(1);
     }
+
+    if (inACodec != nullptr) return 0;
 
     AVCodecParameters *params = inAFormatContext->streams[inAudioStreamIndex]->codecpar;
     inACodec = avcodec_find_decoder(params->codec_id);
@@ -501,10 +529,12 @@ void ScreenRecorder::captureVideo(){
 
 
     cout<<"\n\n[VideoThread] thread started!";
+    bool paused = false;
     while(true) {
-
-        /*checks if capture is enabled or stopped*/
         r_lock.lock();
+        paused = !captureSwitch && captureStarted;
+        if (paused) closeVideoInput();
+
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
         if(killSwitch) {
             cout << "\n[VideoThread] thread stopped!";
@@ -516,8 +546,9 @@ void ScreenRecorder::captureVideo(){
               }*/
             return;
         }
-        r_lock.unlock();
 
+        if (paused) openVideoSource();
+        r_lock.unlock();
 
 
         if(av_read_frame(inVFormatContext, inPacket) >= 0 && inPacket->stream_index == inVideoStreamIndex) {
@@ -609,7 +640,7 @@ void ScreenRecorder::captureAudio() {
     AVFrame *rawFrame, *scaledFrame;
     uint8_t  **resampledData;
     //allocate space for a packet
-    inPacket = (AVPacket *) av_malloc(sizeof (AVPacket));
+    inPacket = (AVPacket *) av_packet_alloc();
     if(!inPacket) {
         cout << "\nCannot allocate an AVPacket for encoded video";
         exit(1);
@@ -623,7 +654,7 @@ void ScreenRecorder::captureAudio() {
         exit(1);
     }
 
-    outPacket = (AVPacket *) av_malloc(sizeof (AVPacket));
+    outPacket = (AVPacket *) av_packet_alloc();
     if(!outPacket) {
         cout << "\nCannot allocate an AVPacket for encoded video";
         exit(1);
@@ -650,12 +681,18 @@ void ScreenRecorder::captureAudio() {
         swr_free(&resampleContext);
         exit(1);
     }
-    std::unique_lock<std::mutex> r_lock(r_mutex, std::defer_lock);
+
 
     cout<<"\n\n[AudioThread] thread started!";
+    std::unique_lock<std::mutex> r_lock(r_mutex, std::defer_lock);
+    bool paused = false;
     while(true) {
 
+
         r_lock.lock();
+        paused = !captureSwitch && captureStarted;
+        if (paused) closeAudioInput();
+
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
 
         if(killSwitch) {
@@ -663,8 +700,8 @@ void ScreenRecorder::captureAudio() {
             return;
         }
 
+        if (paused) openAudioSource();
         r_lock.unlock();
-
 
         if(av_read_frame(inAFormatContext, inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
             //decode video routing
@@ -767,6 +804,7 @@ void ScreenRecorder::startCapture() {
     if (settings._recaudio)
         init_fifo();
     captureSwitch = true;
+    captureStarted = true;
     r_cv.notify_all();
 }
 /**
@@ -774,19 +812,37 @@ void ScreenRecorder::startCapture() {
  * @Note is callable only after thread initialization by mean of initThreads();
  */
 void ScreenRecorder::pauseCapture() {
-    cout<<"\n[MainThread] Capture paused";
+    if (!captureSwitch || killSwitch) return;
+    std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    cout<<"\n[MainThread] Trying to pause capture... "<<std::ctime(&time);
     std::lock_guard<std::mutex> r_lock(r_mutex);
+    cout<<"\n[MainThread] Capture paused";
     captureSwitch = false;
+    r_cv.notify_all();
+}
+/**
+ * resumeCapture() resumes Audio and Video capturing threads
+ * @Note is callable only after thread initialization by mean of initThreads();
+ */
+void ScreenRecorder::resumeCapture() {
+    if (captureSwitch || killSwitch) return;
+    cout<<"\n[MainThread] Trying to resume capture...";
+    std::lock_guard<std::mutex> r_lock(r_mutex);
+    captureSwitch = true;
+    cout<<"\n[MainThread] Capture resumed";
+    r_cv.notify_all();
 }
 /**
  * endCapture() ends Audio and Video capturing threads
  * @Note is callable only after thread initialization by mean of initThreads();
  */
 void ScreenRecorder::endCapture() {
-    int ret;
-    cout<<"\n[MainThread] Capture ended";
+    if (killSwitch) return;
+    cout<<"\n[MainThread] Trying to end capture...";
     std::lock_guard<std::mutex> r_lock(r_mutex);
     killSwitch = true;
+    cout<<"\n[MainThread] Capture ended";
+    r_cv.notify_all();
 
 }
 
@@ -802,7 +858,6 @@ void ScreenRecorder::initThreads() {
 
     if(settings._recvideo) videoThread = thread([&](){captureVideo();});
     if(settings._recaudio) audioThread = thread([&](){captureAudio();});
-    // producerThread = thread([&](){produce();});
 
 }
 
@@ -812,7 +867,7 @@ void ScreenRecorder::initThreads() {
  * @note Has to be called before initOutput() and initThreads()
  */
 void ScreenRecorder::initOptions() {
-    settings.filename = "";
+    settings.filename = "output.mp4";
     settings._recaudio=false;
     settings._inscreenres={0,0};
     settings._outscreenres={0,0};
@@ -892,6 +947,8 @@ void ScreenRecorder::infoDisplays() {
 #endif
 
 }
+#endif
+
 
 
 

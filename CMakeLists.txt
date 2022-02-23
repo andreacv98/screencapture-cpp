@@ -63,6 +63,11 @@ add_executable(
         src/VideoDemuxer.cpp
         src/AudioDemuxer.cpp
         src/AudioDemuxer.h
+        src/Decoder.h
+        src/Decoder.cpp
+        src/Encoder.h
+        src/Encoder.cpp
+        src/Muxer.h src/Muxer.cpp
         src/utils.h
 )
 
