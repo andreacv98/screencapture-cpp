@@ -13,9 +13,10 @@
  */
 AVFormatContext *AudioDemuxer::open() {
     //if one of them != nullptr then input already initialized
+    std::cout<<"test"<<std::endl;
     if(inFormatContext != nullptr || inCodecContext!= nullptr || streamIndex != -1)
         return inFormatContext;
-
+    std::cout<<"test"<<std::endl;
     inFormatContext = avformat_alloc_context();
     value = avformat_open_input(&inFormatContext, url, inFormat, &options);
     if (value != 0) {

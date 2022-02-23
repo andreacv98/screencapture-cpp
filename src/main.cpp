@@ -46,7 +46,7 @@ int main() {
        settings._outscreenres = {1920,1080};
        settings._fps = 15;
 
-       Controller c("1:none", "none:o", settings);
+       Controller c("alsa_input.pci-0000_00_05.0.analog-stereo", ":0.0+0,0", settings);
 
 
 
