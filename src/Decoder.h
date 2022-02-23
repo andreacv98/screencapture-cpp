@@ -8,6 +8,7 @@ class Decoder {
 public:
 
     Decoder():inCodecContext(nullptr){};
+    ~Decoder();
 
     /**
      * Send a packet to the decoder

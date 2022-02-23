@@ -514,9 +514,9 @@ void Controller::captureVideo(){
 
     // Allocate and return swsContext.
     // a pointer to an allocated context, or NULL in case of error
-    swsCtx_ = sws_getContext(inVCodecContext->width,
-                             inVCodecContext->height,
-                             inVCodecContext->pix_fmt,
+    swsCtx_ = sws_getContext(decoderVideo.getCodecContext()->width,
+                             decoderVideo.getCodecContext()->height,
+                             decoderVideo.getCodecContext()->pix_fmt,
                              outVCodecContext->width,
                              outVCodecContext->height,
                              outVCodecContext->pix_fmt,
@@ -554,19 +554,9 @@ void Controller::captureVideo(){
         if(av_read_frame(inVFormatContext, inPacket) >= 0 && inPacket->stream_index == inVideoStreamIndex) {
             //decode video routine
 
-            av_packet_rescale_ts(inPacket,  inVFormatContext->streams[inVideoStreamIndex]->time_base,inVCodecContext->time_base);
-            if((ret = avcodec_send_packet(inVCodecContext, inPacket)) < 0){
-                cout << "Cannot decode current video packet " <<  ret;
-                continue;
-            }
-            while (ret >= 0) {
-                ret = avcodec_receive_frame(inVCodecContext, rawFrame);
-                if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-                    break;
-                else if (ret < 0) {
-                    fprintf(stderr, "Error during decoding\n");
-                    exit(1);
-                }
+            av_packet_rescale_ts(inPacket,  inVFormatContext->streams[inVideoStreamIndex]->time_base,decoderVideo.getCodecContext()->time_base);
+            ret = decoderVideo.sendPacket(inPacket);
+            while (decoderVideo.getDecodedOutput(rawFrame) >= 0) {
                 //raw frame ready
                 if(outAVFormatContext->streams[outVideoStreamIndex]->start_time <= 0) {
                     outAVFormatContext->streams[outVideoStreamIndex]->start_time = rawFrame->pts;
@@ -585,7 +575,7 @@ void Controller::captureVideo(){
                 scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
                 //av_frame_get_buffer(scaledFrame, 0);
 
-                sws_scale(swsCtx_, rawFrame->data, rawFrame->linesize,0, inVCodecContext->height, scaledFrame->data, scaledFrame->linesize);
+                sws_scale(swsCtx_, rawFrame->data, rawFrame->linesize,0, decoderVideo.getCodecContext()->height, scaledFrame->data, scaledFrame->linesize);
 
                 if(avcodec_send_frame(outVCodecContext, scaledFrame)< 0){
                     cout << "Cannot encode current video packet " << AVERROR(EAGAIN);
@@ -668,9 +658,9 @@ void Controller::captureAudio() {
                                          av_get_default_channel_layout(outACodecContext->channels),
                                          outACodecContext->sample_fmt,
                                          outACodecContext->sample_rate,
-                                         av_get_default_channel_layout(inACodecContext->channels),
-                                         inACodecContext->sample_fmt,
-                                         inACodecContext->sample_rate,
+                                         av_get_default_channel_layout(decoderAudio.getCodecContext()->channels),
+                                         decoderAudio.getCodecContext()->sample_fmt,
+                                         decoderAudio.getCodecContext()->sample_rate,
                                          0, NULL);
     if(!resampleContext){
         cout << "\nCannot allocate the resample context";
@@ -705,19 +695,9 @@ void Controller::captureAudio() {
 
         if(av_read_frame(inAFormatContext, inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
             //decode video routing
-            av_packet_rescale_ts(outPacket,  inAFormatContext->streams[inAudioStreamIndex]->time_base, inACodecContext->time_base);
-            if((ret = avcodec_send_packet(inACodecContext, inPacket)) < 0){
-                cout << "Cannot decode current video packet " <<  ret;
-                continue;
-            }
-            while (ret >= 0) {
-                ret = avcodec_receive_frame(inACodecContext, rawFrame);
-                if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-                    break;
-                else if (ret < 0) {
-                    fprintf(stderr, "Error during decoding\n");
-                    exit(1);
-                }
+            av_packet_rescale_ts(outPacket,  inAFormatContext->streams[inAudioStreamIndex]->time_base, decoderAudio.getCodecContext()->time_base);
+            ret = decoderAudio.sendPacket(inPacket);
+            while (decoderAudio.getDecodedOutput(rawFrame) >= 0) {
                 if(outAVFormatContext->streams[outAudioStreamIndex]->start_time <= 0) {
                     outAVFormatContext->streams[outAudioStreamIndex]->start_time = rawFrame->pts;
                 }

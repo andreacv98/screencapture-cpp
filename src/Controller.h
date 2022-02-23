@@ -67,8 +67,8 @@ private:
 
 private:
 
-    // Decoder decoderAudio;
-    // Decoder decoderVideo;
+    Decoder decoderAudio;
+    Decoder decoderVideo;
     // Encoder encoderAudio;
     // Encoder encoderVideo;
 
@@ -91,23 +91,21 @@ private:
     AVInputFormat *inVInputFormat;
     AVFormatContext *inVFormatContext;
     AVDictionary *inVOptions;
-    //
-    AVCodecContext *inVCodecContext;
+    // AVCodecContext *inVCodecContext;
     AVCodec *inVCodec;
 
     AVFormatContext *outAVFormatContext;
     AVDictionary *outVOptions;
-    //
-    AVCodecContext *outVCodecContext;
+    // AVCodecContext *outVCodecContext;
     AVCodec *outVCodec;
 
     //audio
     AVDictionary *inAOptions;
     AVFormatContext *inAFormatContext;
     AVInputFormat *inAInputFormat;
-    AVCodecContext *inACodecContext;
+    // AVCodecContext *inACodecContext;
 
-    AVCodecContext *outACodecContext;
+    // AVCodecContext *outACodecContext;
     AVCodec *outACodec;
     AVCodec *inACodec;
 

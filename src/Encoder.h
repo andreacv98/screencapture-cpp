@@ -8,9 +8,10 @@
 #include "utils.h"
 
 class Encoder {
-    AVCodecContext *codecContext;
+    AVCodecContext *outCodecContext;
 public:
-    Encoder():codecContext(nullptr){};
+    Encoder():outCodecContext(nullptr){};
+    ~Encoder();
 
     /**
      * Send a frame to the encoder
