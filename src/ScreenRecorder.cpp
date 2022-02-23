@@ -102,7 +102,7 @@ int ScreenRecorder::openVideoSource() {
 
 #endif
     std::cout << "Video Input setup started" << std::endl;
-    // value = av_dict_set(&inVOptions, "framerate", "25", 0);
+    value = av_dict_set(&inVOptions, "framerate", "15", 0);
     if (value < 0) {
         cout << "\nerror in setting dictionary value";
         exit(1);
@@ -115,6 +115,26 @@ int ScreenRecorder::openVideoSource() {
         cout << "\nerror in setting dictionary value";
         exit(1);
     }
+
+    char off_x[30];
+    sprintf(off_x,"%d", settings._screenoffset.x);
+    char off_y[30];
+    sprintf(off_y,"%d", settings._screenoffset.y);
+
+
+    value = av_dict_set(&inVOptions, "offset_x", off_x, 0);
+    if (value < 0) {
+        cout << "\nerror in setting dictionary value off_x";
+        exit(1);
+    }
+
+    value = av_dict_set(&inVOptions, "offset_y", off_y, 0);
+    if (value < 0) {
+        cout << "\nerror in setting dictionary value off_y";
+        exit(1);
+    }
+
+
     value = av_dict_set(&inVOptions, "preset", "medium", 0);
     if (value < 0) {
         cout << "\nerror in setting preset values";
@@ -855,18 +875,24 @@ int ScreenRecorder::initConvertedSamples(uint8_t ***converted_input_samples, AVC
     return 0;
 }
 
-#ifdef __unix__
+
 void ScreenRecorder::infoDisplays() {
 
+    #ifdef __unix__
     for (int i = 0; i < ScreenCount (dpy); i++) {
         printf ("\n");
         printf ("screen #%d:\n", i);
         printf ("  dimensions:    %dx%d pixels\n\n",
                 XDisplayWidth (dpy, i),  XDisplayHeight (dpy, i));
     }
+    #endif
+
+#ifdef _WIN32
+
+#endif
 
 }
-#endif
+
 
 
 void ScreenRecorder::listDevices() {
