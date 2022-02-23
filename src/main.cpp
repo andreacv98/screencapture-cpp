@@ -116,7 +116,6 @@ int main() {
 
 
     /* sample capture routine*/
-    sleep(2);
     sc.startCapture();
 
     sleep(5);

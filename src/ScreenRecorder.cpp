@@ -947,9 +947,6 @@ void ScreenRecorder::infoDisplays() {
 #endif
 
 }
-#endif
-
-
 
 
 void ScreenRecorder::listDevices() {
