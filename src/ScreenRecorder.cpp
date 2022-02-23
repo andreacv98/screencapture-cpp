@@ -56,23 +56,23 @@ ScreenRecorder::~ScreenRecorder() {
     }
     avformat_free_context(inVFormatContext);
     if (!inVFormatContext) {
-        cout << "\navformat free successfully";
+        cout << "\ninV avformat free successfully";
     } else {
-        cout << "\nunable to free avformat context";
+        cout << "\nunable to free inV avformat context";
         exit(1);
     }
     avformat_free_context(inAFormatContext);
     if (!inAFormatContext) {
-        cout << "\navformat free successfully";
+        cout << "\ninA avformat free successfully";
     } else {
-        cout << "\nunable to free avformat context";
+        cout << "\nunable to free inA avformat context";
         exit(1);
     }
     avformat_free_context(outAVFormatContext);
     if (!outAVFormatContext) {
-        cout << "\navformat free successfully";
+        cout << "\noutAV avformat free successfully";
     } else {
-        cout << "\nunable to free avformat context";
+        cout << "\nunable to free outAV avformat context";
         exit(1);
     }
 }
