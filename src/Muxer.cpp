@@ -42,7 +42,7 @@ Muxer::~Muxer() {
     }
 }
 
-int Muxer::initOutputFile(AVCodecContext* inACodecContext) {
+int Muxer::initOutputFile(const AVCodecContext* inACodecContext) {
     char* filename = outputSettings.filename;
     bool audio_recorded = outputSettings._recaudio;
 
@@ -57,8 +57,8 @@ int Muxer::initOutputFile(AVCodecContext* inACodecContext) {
     avformat_alloc_output_context2(&outAVFormatContext, outAVOutputFormat, outAVOutputFormat->name, filename);
     if (!outAVFormatContext) throw std::runtime_error("Muxer: cannot allocate the output context");
 
-    if(outputSettings._recvideo)generateVideoOutputStream();
-    if(audio_recorded) generateAudioOutputStream(inACodecContext);
+    if(outputSettings._recvideo) generateVideoOutputStream();
+    if(outputSettings._recaudio) generateAudioOutputStream(inACodecContext);
 
     /* create empty video file */
     if (!(outAVFormatContext->flags & AVFMT_NOFILE)) {
@@ -76,7 +76,7 @@ int Muxer::initOutputFile(AVCodecContext* inACodecContext) {
     return 0;
 }
 
-void Muxer::generateAudioOutputStream(AVCodecContext* inACodecContext) {
+void Muxer::generateAudioOutputStream(const AVCodecContext* inACodecContext) {
     outACodecContext = nullptr;
     AVCodec* outACodec = nullptr;
     int i;
@@ -90,7 +90,6 @@ void Muxer::generateAudioOutputStream(AVCodecContext* inACodecContext) {
 
 
     /* set properties for the video stream encoding*/
-
     if ((outACodec)->supported_samplerates) {
         outACodecContext->sample_rate = (outACodec)->supported_samplerates[0];
         for (i = 0; (outACodec)->supported_samplerates[i]; i++) {
@@ -112,7 +111,6 @@ void Muxer::generateAudioOutputStream(AVCodecContext* inACodecContext) {
     }
 
     if (avcodec_open2(outACodecContext, outACodec, nullptr)< 0) throw std::runtime_error("Muxer: error in opening the avcodec");
-
 
     //find a free stream index
     outAudioStreamIndex = -1;
@@ -168,5 +166,13 @@ void Muxer::generateVideoOutputStream() {
     if(outVideoStreamIndex < 0) throw std::runtime_error("Muxer: cannot find a free stream for video on the output");
 
     avcodec_parameters_from_context(outAVFormatContext->streams[outVideoStreamIndex]->codecpar, outVCodecContext);
+}
+
+AVCodecContext *Muxer::getVCodecContext() const {
+    return outVCodecContext;
+}
+
+AVCodecContext *Muxer::getACodecContext() const {
+    return outACodecContext;
 }
 

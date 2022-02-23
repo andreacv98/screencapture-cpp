@@ -40,28 +40,30 @@ AVFormatContext *AudioDemuxer::open() {
         throw std::runtime_error("Cannot find the audio stream index. (-1)");
     }
 
-    AVCodecParameters *params = inFormatContext->streams[streamIndex]->codecpar;
-    inCodec = avcodec_find_decoder(params->codec_id);
     if (inCodec == nullptr) {
-        throw std::runtime_error("Cannot find the audio decoder");
-    }
-    std::cout << "Input audio codec:" << inCodec->name;
+        AVCodecParameters *params = inFormatContext->streams[streamIndex]->codecpar;
+        inCodec = avcodec_find_decoder(params->codec_id);
+        if (inCodec == nullptr) {
+            throw std::runtime_error("Cannot find the audio decoder");
+        }
+        std::cout << "Input audio codec:" << inCodec->name;
 
-    inCodecContext = avcodec_alloc_context3(inCodec);
+        inCodecContext = avcodec_alloc_context3(inCodec);
 
-    if(avcodec_parameters_to_context(inCodecContext, params)<0)
-        throw std::runtime_error("Cannot create codec context for audio input");
+        if(avcodec_parameters_to_context(inCodecContext, params)<0)
+            throw std::runtime_error("Cannot create codec context for audio input");
 
 
-    value = avcodec_open2(inCodecContext, inCodec, nullptr);
-    if (value < 0) {
-        throw std::runtime_error("Cannot open the input audio codec");
+        value = avcodec_open2(inCodecContext, inCodec, nullptr);
+        if (value < 0) {
+            throw std::runtime_error("Cannot open the input audio codec");
+        }
     }
 
     return inFormatContext;
 }
 
-AudioDemuxer::AudioDemuxer(char *url, char *src) : Demuxer(url, src) {
+AudioDemuxer::AudioDemuxer(char *src, char *url) : Demuxer(src, url) {
 
 }
 

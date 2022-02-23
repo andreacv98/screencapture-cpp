@@ -7,9 +7,66 @@
 
 using namespace std;
 
-Controller::Controller():captureSwitch(false), killSwitch(false), captureStarted(false), rawVideoFrame(nullptr), rawAudioFrame(nullptr) {
-    initBuffers();
-    initOptions();
+Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): settings(settings),
+                                                                                captureSwitch(false),
+                                                                                killSwitch(false),
+                                                                                captureStarted(false),
+                                                                                inVideo(VideoDemuxer(videoUrl, VIDEO_SOURCE, settings._fps, settings._inscreenres)),
+                                                                                inAudio(AudioDemuxer(audioUrl, AUDIO_SOURCE)),
+                                                                                output(Muxer(settings, settings.filename))
+                                                                                {
+    inVideoBuffer.np = 0;
+    inAudioBuffer.np = 0;
+
+    // INPUT
+    if (settings._recvideo){
+        try {
+            decoderVideo = Decoder();
+            inVFormatContext = inVideo.open();
+            decoderVideo.setCodecContext(inVideo.getInCodecContext());
+        } catch (const std::runtime_error& e) {
+            cerr << "Error opening video input: " << e.what() << endl;
+            throw;
+        }
+    }
+
+    if (settings._recaudio){
+        try {
+            decoderAudio = Decoder();
+            inAFormatContext = inAudio.open();
+            decoderAudio.setCodecContext(inAudio.getInCodecContext());
+        } catch (const std::runtime_error& e) {
+            cerr << "Error opening audio input: " << e.what() << endl;
+            throw;
+        }
+    }
+
+    // OUTPUT
+    if (settings._recvideo || settings._recaudio){
+        output.initOutputFile(decoderAudio.getCodecContext());
+    }
+
+    if (settings._recvideo){
+        try {
+            encoderVideo = Encoder();
+            encoderVideo.setCodecContext(output.getVCodecContext());
+        } catch (const std::runtime_error& e) {
+            cerr << "Error opening video output: " << e.what() << endl;
+            throw;
+        }
+    }
+
+    if (settings._recaudio){
+        try {
+            encoderAudio = Encoder();
+            encoderAudio.setCodecContext(output.getACodecContext());
+        } catch (const std::runtime_error& e) {
+            cerr << "Error opening audio output: " << e.what() << endl;
+            throw;
+        }
+    }
+
+
     avdevice_register_all();
     cout << "\nScreen Recorder initialized correctly\n";
 
@@ -27,6 +84,8 @@ Controller::Controller():captureSwitch(false), killSwitch(false), captureStarted
 #endif
 
 
+    initThreads();
+    cout << "\nScreen Recorder ready to start\n";
 }
 
 Controller::~Controller() {
@@ -77,382 +136,6 @@ Controller::~Controller() {
     }
 }
 
-void Controller::closeVideoInput(){
-    avformat_close_input(&inVFormatContext);
-    if (!inVFormatContext) {
-        cout << "\nvideo file closed sucessfully";
-    } else {
-        cout << "\nunable to close the video file";
-        exit(1);
-    }
-}
-
-void Controller::closeAudioInput(){
-    avformat_close_input(&inAFormatContext);
-    if (!inAFormatContext) {
-        cout << "\naudio file closed sucessfully";
-    } else {
-        cout << "\nunable to close the audio file";
-        exit(1);
-    }
-}
-
-
-int Controller::openVideoSource() {
-    int value = 0;
-    inVOptions = nullptr;
-    inVFormatContext = avformat_alloc_context();
-
-    /*std::cout << "DEMUXER" << std::endl;
-    const AVInputFormat *fmt = NULL;
-    void *i = 0;
-    while ((fmt = av_demuxer_iterate(&i)))
-        std::cout << fmt->name << std::endl;
-
-    /*Defining options for the device initialization*/
-
-#ifdef __APPLE__
-    value = av_dict_set(&inVOptions, "pixel_format", "0rgb", 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value";
-        exit(1);
-    }
-    value = av_dict_set(&inVOptions, "video_device_index", "1", 0);
-
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value";
-        exit(1);
-    }
-
-#endif
-    std::cout << "Video Input setup started" << std::endl;
-    value = av_dict_set(&inVOptions, "framerate", "15", 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value";
-        exit(1);
-    }
-    char s[30];
-    sprintf(s,"%dx%d", settings._inscreenres.width,settings._inscreenres.height);
-
-    value = av_dict_set(&inVOptions, "video_size", s, 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value";
-        exit(1);
-    }
-
-    char off_x[30];
-    sprintf(off_x,"%d", settings._screenoffset.x);
-    char off_y[30];
-    sprintf(off_y,"%d", settings._screenoffset.y);
-
-
-    value = av_dict_set(&inVOptions, "offset_x", off_x, 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value off_x";
-        exit(1);
-    }
-
-    value = av_dict_set(&inVOptions, "offset_y", off_y, 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value off_y";
-        exit(1);
-    }
-
-
-    value = av_dict_set(&inVOptions, "preset", "medium", 0);
-    if (value < 0) {
-        cout << "\nerror in setting preset values";
-        exit(1);
-    }
-
-    value = av_dict_set(&inVOptions, "probesize", "60M", 0);
-    if (value < 0) {
-        cout << "\nerror in setting preset values";
-        exit(1);
-    }
-
-    //get input format
-    inVInputFormat = av_find_input_format(VIDEO_SOURCE);
-    value = avformat_open_input(&inVFormatContext, VIDEO_URL, inVInputFormat, &inVOptions);
-    if (value != 0) {
-        cout << "\nCannot open selected device";
-        exit(1);
-    }
-
-
-    //get video stream infos from context
-    value = avformat_find_stream_info(inVFormatContext, nullptr);
-    if (value < 0) {
-        cout << "\nCannot find the stream information";
-        exit(1);
-    }
-
-    //find the first video stream with a given code
-    inVideoStreamIndex = -1;
-    for (int i = 0; i < inVFormatContext->nb_streams; i++){
-        if (inVFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-            inVideoStreamIndex = i;
-            break;
-        }
-    }
-
-    if (inVideoStreamIndex == -1) {
-        cout << "\nCannot find the video stream index. (-1)";
-        exit(1);
-    }
-
-    if (inVCodec != nullptr) return 0;
-
-    AVCodecParameters *params = inVFormatContext->streams[inVideoStreamIndex]->codecpar;
-    inVCodec = avcodec_find_decoder(params->codec_id);
-    if (inVCodec == nullptr) {
-        cout << "\nCannot find the decoder";
-        exit(1);
-    }
-
-    inVCodecContext = avcodec_alloc_context3(inVCodec);
-    avcodec_parameters_to_context(inVCodecContext, params);
-
-    value = avcodec_open2(inVCodecContext, inVCodec, nullptr);
-    if (value < 0) {
-        cout << "\nCannot open the av codec";
-        exit(1);
-    }
-
-    return 0;
-}
-int Controller::openAudioSource() {
-    int value = 0;
-    inAOptions = nullptr;
-    inAFormatContext = avformat_alloc_context();
-
-    std::cout << "Audio Input setup started" << std::endl;
-
-    inAInputFormat = av_find_input_format(AUDIO_SOURCE);
-    value = avformat_open_input(&inAFormatContext, AUDIO_URL, inAInputFormat, &inAOptions);
-    if (value != 0) {
-        cout << "\nCannot open selected device";
-        exit(1);
-    }
-
-    value = avformat_find_stream_info(inAFormatContext, nullptr);
-    if (value < 0) {
-        cout << "\nCannot find the audio stream information";
-        exit(1);
-    }
-
-    //find the first video stream with a given code
-    inAudioStreamIndex = -1;
-    for (int i = 0; i < inAFormatContext->nb_streams; i++){
-        if (inAFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-            inAudioStreamIndex = i;
-            break;
-        }
-    }
-
-    if (inAudioStreamIndex == -1) {
-        cout << "\nCannot find the audio stream index. (-1)";
-        exit(1);
-    }
-
-    if (inACodec != nullptr) return 0;
-
-    AVCodecParameters *params = inAFormatContext->streams[inAudioStreamIndex]->codecpar;
-    inACodec = avcodec_find_decoder(params->codec_id);
-    if (inACodec == nullptr) {
-        cout << "\nCannot find the audio decoder";
-        exit(1);
-    }
-    cout << "Input audio codec:" << inACodec->name;
-
-    inACodecContext = avcodec_alloc_context3(inACodec);
-
-    if(avcodec_parameters_to_context(inACodecContext, params)<0)
-        cout<<"Cannot create codec context for audio input";
-
-
-    value = avcodec_open2(inACodecContext, inACodec, nullptr);
-    if (value < 0) {
-        cout << "\nCannot open the input audio codec";
-        exit(1);
-    }
-
-
-    return 0;
-}
-
-int Controller::initOutputFile(){
-    char* filename = settings.filename;
-    bool audio_recorded = settings._recaudio;
-
-    outAVFormatContext = nullptr;
-    int value = 0;
-
-    /*get the filetype from filename extension*/
-    outAVOutputFormat = av_guess_format(nullptr,filename, nullptr);
-    if(!outAVOutputFormat) {
-        cout << "\nCannot get the video format. try with correct format";
-        exit(1);
-    }
-
-    /*allocate the format context*/
-    avformat_alloc_output_context2(&outAVFormatContext, outAVOutputFormat, outAVOutputFormat->name, filename);
-    if (!outAVFormatContext) {
-        cout << "\nCannot allocate the output context";
-        exit(1);
-    }
-
-    if(settings._recvideo)generateVideoOutputStream();
-    if(audio_recorded) generateAudioOutputStream();
-
-    /* create empty video file */
-    if (!(outAVFormatContext->flags & AVFMT_NOFILE)) {
-        value = avio_open2(&outAVFormatContext->pb, filename, AVIO_FLAG_WRITE, nullptr, nullptr);
-        if (value < 0) {
-            cout << "\nerror in creating the video file";
-            exit(1);
-        }
-    }
-
-    if (!outAVFormatContext->nb_streams) {
-        cout << "\noutput file dose not contain any stream";
-        exit(1);
-    }
-
-
-    /* imp: mp4 container or some advanced container file required header information*/
-    value = avformat_write_header(outAVFormatContext, nullptr);
-    if (value < 0) {
-        cout << "\nerror in writing the header context";
-        exit(1);
-    }
-
-
-    return 0;
-}
-void Controller::generateVideoOutputStream(){
-    int i;
-    AVStream *video_st = avformat_new_stream(outAVFormatContext, nullptr);
-
-    if (!video_st) {
-        cout << "\nCannot create video stream";
-        exit(1);
-    }
-    outVCodec = avcodec_find_encoder(AV_CODEC_ID_MPEG4);
-    if (!outVCodec) {
-        cout << "\nCannot find requested encoder";
-        exit(1);
-    }
-    outVCodecContext = avcodec_alloc_context3(outVCodec);
-    if (!outVCodecContext) {
-        cout << "\nCannot create related VideoCodecContext";
-        exit(1);
-    }
-
-    /* set properties for the video stream encoding */
-    outVCodecContext->codec_id = AV_CODEC_ID_MPEG4;// AV_CODEC_ID_MPEG4; // AV_CODEC_ID_H264 // AV_CODEC_ID_MPEG1VIDEO
-    outVCodecContext->codec_type = AVMEDIA_TYPE_VIDEO;
-    outVCodecContext->pix_fmt = AV_PIX_FMT_YUV420P;
-    outVCodecContext->bit_rate = 400000; // 2500000
-    outVCodecContext->width = settings._outscreenres.width;
-    outVCodecContext->height = settings._outscreenres.height;
-    outVCodecContext->gop_size = 3;
-    outVCodecContext->max_b_frames = 2;
-    outVCodecContext->time_base.num = 1;
-    outVCodecContext->time_base.den = settings._fps; // 15fps
-    outVCodecContext->compression_level = 1;
-    /* reduce preset to slow if H264 to avoid resources leak */
-    if(outVCodecContext->codec_id == AV_CODEC_ID_H264)
-        av_opt_set(outVCodecContext->priv_data, "preset", "slow", 0);
-
-    /*setting global headers because some formats require them*/
-    if (outAVFormatContext->oformat->flags & AVFMT_GLOBALHEADER) {
-        outVCodecContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
-    }
-
-    if (avcodec_open2(outVCodecContext, outVCodec, nullptr)< 0) {
-        cout << "\nerror in opening the avcodec";
-        exit(1);
-    }
-
-    //find a free stream index
-    outVideoStreamIndex = -1;
-    for(i=0; i < outAVFormatContext->nb_streams; i++)
-        if(outAVFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_UNKNOWN)
-            outVideoStreamIndex = i;
-
-    if(outVideoStreamIndex < 0) {
-        cout << "\nCannot find a free stream for video on the output";
-        exit(1);
-    }
-
-    avcodec_parameters_from_context(outAVFormatContext->streams[outVideoStreamIndex]->codecpar, outVCodecContext);
-}
-void Controller::generateAudioOutputStream(){
-    outACodecContext = nullptr;
-    outACodec = nullptr;
-    int i;
-
-    AVStream *audio_st = avformat_new_stream(outAVFormatContext, nullptr);
-    if (!audio_st) {
-        cout << "\nCannot create audio stream";
-        exit(1);
-    }
-    outACodec = avcodec_find_encoder(AV_CODEC_ID_AAC);
-    if (!outACodec) {
-        cout << "\nCannot find requested encoder";
-        exit(1);
-    }
-    outACodecContext = avcodec_alloc_context3(outACodec);
-    if (!outACodecContext) {
-        cout << "\nCannot create related VideoCodecContext";
-        exit(1);
-    }
-
-
-    /* set properties for the video stream encoding*/
-
-    if ((outACodec)->supported_samplerates) {
-        outACodecContext->sample_rate = (outACodec)->supported_samplerates[0];
-        for (i = 0; (outACodec)->supported_samplerates[i]; i++) {
-            if ((outACodec)->supported_samplerates[i] == inACodecContext->sample_rate)
-                outACodecContext->sample_rate = inACodecContext->sample_rate;
-        }
-    }
-    outACodecContext->codec_id = AV_CODEC_ID_AAC;
-    outACodecContext->sample_fmt  = (outACodec)->sample_fmts ? (outACodec)->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
-    outACodecContext->channels  = inACodecContext->channels;
-    outACodecContext->channel_layout = av_get_default_channel_layout(outACodecContext->channels);
-    outACodecContext->bit_rate = 96000;
-    outACodecContext->time_base = { 1, inACodecContext->sample_rate };
-
-    outACodecContext->strict_std_compliance = FF_COMPLIANCE_EXPERIMENTAL;
-
-    if ((outAVFormatContext)->oformat->flags & AVFMT_GLOBALHEADER) {
-        outACodecContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
-    }
-
-    if (avcodec_open2(outACodecContext, outACodec, nullptr)< 0) {
-        cout << "\nerror in opening the avcodec with error: ";
-        exit(1);
-    }
-
-
-    //find a free stream index
-    outAudioStreamIndex = -1;
-    for(i=0; i < outAVFormatContext->nb_streams; i++)
-        if(outAVFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_UNKNOWN)
-            outAudioStreamIndex = i;
-
-    if(outAudioStreamIndex < 0) {
-        cout << "\nCannot find a free stream for audio on the output";
-        exit(1);
-    }
-
-    avcodec_parameters_from_context(outAVFormatContext->streams[outAudioStreamIndex]->codecpar, outACodecContext);
-
-}
-
 /**
  * captureVideo() is the "VideoThread" execution flow.
  * This execution flow get packets from video input device
@@ -494,7 +177,7 @@ void Controller::captureVideo(){
     }
 
     int video_outbuf_size;
-    int nbytes = av_image_get_buffer_size(outVCodecContext->pix_fmt,outVCodecContext->width,outVCodecContext->height,32);
+    int nbytes = av_image_get_buffer_size(output.getVCodecContext()->pix_fmt,output.getVCodecContext()->width,output.getVCodecContext()->height,32);
     uint8_t *video_outbuf = (uint8_t*)av_malloc(nbytes*sizeof (uint8_t));
     if( video_outbuf == nullptr )
     {
@@ -503,7 +186,7 @@ void Controller::captureVideo(){
     }
 
     // Setup the data pointers and linesizes based on the specified image parameters and the provided array.
-    ret = av_image_fill_arrays( scaledFrame->data, scaledFrame->linesize, video_outbuf , AV_PIX_FMT_YUV420P, outVCodecContext->width,outVCodecContext->height,1 ); // returns : the size in bytes required for src
+    ret = av_image_fill_arrays( scaledFrame->data, scaledFrame->linesize, video_outbuf , AV_PIX_FMT_YUV420P, output.getVCodecContext()->width,output.getVCodecContext()->height,1 ); // returns : the size in bytes required for src
     if(ret < 0)
     {
         cout<<"\nerror in filling image array";
@@ -517,9 +200,9 @@ void Controller::captureVideo(){
     swsCtx_ = sws_getContext(decoderVideo.getCodecContext()->width,
                              decoderVideo.getCodecContext()->height,
                              decoderVideo.getCodecContext()->pix_fmt,
-                             outVCodecContext->width,
-                             outVCodecContext->height,
-                             outVCodecContext->pix_fmt,
+                             output.getVCodecContext()->width,
+                             output.getVCodecContext()->height,
+                             output.getVCodecContext()->pix_fmt,
                              SWS_BICUBIC, NULL, NULL, NULL);
 
 
@@ -533,7 +216,7 @@ void Controller::captureVideo(){
     while(true) {
         r_lock.lock();
         paused = !captureSwitch && captureStarted;
-        if (paused) closeVideoInput();
+        if (paused) inVideo.closeInput();
 
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
         if(killSwitch) {
@@ -547,7 +230,7 @@ void Controller::captureVideo(){
             return;
         }
 
-        if (paused) openVideoSource();
+        if (paused) inVideo.open();
         r_lock.unlock();
 
 
@@ -558,8 +241,8 @@ void Controller::captureVideo(){
             ret = decoderVideo.sendPacket(inPacket);
             while (decoderVideo.getDecodedOutput(rawFrame) >= 0) {
                 //raw frame ready
-                if(outAVFormatContext->streams[outVideoStreamIndex]->start_time <= 0) {
-                    outAVFormatContext->streams[outVideoStreamIndex]->start_time = rawFrame->pts;
+                if(outAVFormatContext->streams[output.outVideoStreamIndex]->start_time <= 0) {
+                    outAVFormatContext->streams[output.outVideoStreamIndex]->start_time = rawFrame->pts;
                 }
 
                 av_init_packet(outPacket);
@@ -567,9 +250,9 @@ void Controller::captureVideo(){
                 outPacket->size = 0;
 
                 /*initializing scaleFrame */
-                scaledFrame->width = outVCodecContext->width;
-                scaledFrame->height = outVCodecContext->height;
-                scaledFrame->format = outVCodecContext->pix_fmt;
+                scaledFrame->width = output.getVCodecContext()->width;
+                scaledFrame->height = output.getVCodecContext()->height;
+                scaledFrame->format = output.getVCodecContext()->pix_fmt;
                 scaledFrame->pts = rawFrame->pts;
                 scaledFrame->pkt_dts=rawFrame->pkt_dts;
                 scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
@@ -577,25 +260,15 @@ void Controller::captureVideo(){
 
                 sws_scale(swsCtx_, rawFrame->data, rawFrame->linesize,0, decoderVideo.getCodecContext()->height, scaledFrame->data, scaledFrame->linesize);
 
-                if(avcodec_send_frame(outVCodecContext, scaledFrame)< 0){
-                    cout << "Cannot encode current video packet " << AVERROR(EAGAIN);
-                    exit(1);
-                }
-                while(ret>=0){
-                    ret = avcodec_receive_packet(outVCodecContext, outPacket);
-                    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-                        break;
-                    else if (ret < 0) {
-                        fprintf(stderr, "Error during encoding\n");
-                        exit(1);
-                    }
+                encoderVideo.sendFrame(scaledFrame);
+                while(encoderVideo.getPacket(outPacket)>=0){
                     //outPacket ready
                     if(outPacket->pts != AV_NOPTS_VALUE)
-                        outPacket->pts = av_rescale_q(outPacket->pts, outVCodecContext->time_base,  outAVFormatContext->streams[outVideoStreamIndex]->time_base);
+                        outPacket->pts = av_rescale_q(outPacket->pts, encoderVideo.getCodecContext()->time_base,  outAVFormatContext->streams[output.outVideoStreamIndex]->time_base);
                     if(outPacket->dts != AV_NOPTS_VALUE)
-                        outPacket->dts = av_rescale_q(outPacket->dts, outVCodecContext->time_base, outAVFormatContext->streams[outVideoStreamIndex]->time_base);
+                        outPacket->dts = av_rescale_q(outPacket->dts, encoderVideo.getCodecContext()->time_base, outAVFormatContext->streams[output.outVideoStreamIndex]->time_base);
 
-                    outPacket->stream_index = outVideoStreamIndex;
+                    outPacket->stream_index = output.outVideoStreamIndex;
                     w_lock.lock();
                     if(av_interleaved_write_frame(outAVFormatContext , outPacket) != 0)
                     {
@@ -655,9 +328,9 @@ void Controller::captureAudio() {
     //init the resampler
     SwrContext* resampleContext = nullptr;
     resampleContext = swr_alloc_set_opts(resampleContext,
-                                         av_get_default_channel_layout(outACodecContext->channels),
-                                         outACodecContext->sample_fmt,
-                                         outACodecContext->sample_rate,
+                                         av_get_default_channel_layout(encoderAudio.getCodecContext()->channels),
+                                         encoderAudio.getCodecContext()->sample_fmt,
+                                         encoderAudio.getCodecContext()->sample_rate,
                                          av_get_default_channel_layout(decoderAudio.getCodecContext()->channels),
                                          decoderAudio.getCodecContext()->sample_fmt,
                                          decoderAudio.getCodecContext()->sample_rate,
@@ -681,7 +354,7 @@ void Controller::captureAudio() {
 
         r_lock.lock();
         paused = !captureSwitch && captureStarted;
-        if (paused) closeAudioInput();
+        if (paused) inAudio.closeInput();
 
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
 
@@ -690,7 +363,7 @@ void Controller::captureAudio() {
             return;
         }
 
-        if (paused) openAudioSource();
+        if (paused) inAudio.open();
         r_lock.unlock();
 
         if(av_read_frame(inAFormatContext, inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
@@ -698,10 +371,10 @@ void Controller::captureAudio() {
             av_packet_rescale_ts(outPacket,  inAFormatContext->streams[inAudioStreamIndex]->time_base, decoderAudio.getCodecContext()->time_base);
             ret = decoderAudio.sendPacket(inPacket);
             while (decoderAudio.getDecodedOutput(rawFrame) >= 0) {
-                if(outAVFormatContext->streams[outAudioStreamIndex]->start_time <= 0) {
-                    outAVFormatContext->streams[outAudioStreamIndex]->start_time = rawFrame->pts;
+                if(outAVFormatContext->streams[output.outAudioStreamIndex]->start_time <= 0) {
+                    outAVFormatContext->streams[output.outAudioStreamIndex]->start_time = rawFrame->pts;
                 }
-                initConvertedSamples(&resampledData, outACodecContext, rawFrame->nb_samples);
+                initConvertedSamples(&resampledData, encoderAudio.getCodecContext(), rawFrame->nb_samples);
 
                 swr_convert(resampleContext,
                             resampledData, rawFrame->nb_samples,
@@ -714,7 +387,7 @@ void Controller::captureAudio() {
                 outPacket->data = nullptr;    // packet data will be allocated by the encoder
                 outPacket->size = 0;
 
-                const int frame_size = FFMAX(av_audio_fifo_size(fifo), outACodecContext->frame_size);
+                const int frame_size = FFMAX(av_audio_fifo_size(fifo), encoderAudio.getCodecContext()->frame_size);
 
                 scaledFrame = av_frame_alloc();
                 if(!scaledFrame) {
@@ -722,35 +395,25 @@ void Controller::captureAudio() {
                     exit(1);
                 }
 
-                scaledFrame->nb_samples     = outACodecContext->frame_size;
-                scaledFrame->channel_layout = outACodecContext->channel_layout;
-                scaledFrame->format         = outACodecContext->sample_fmt;
-                scaledFrame->sample_rate    = outACodecContext->sample_rate;
+                scaledFrame->nb_samples     = encoderAudio.getCodecContext()->frame_size;
+                scaledFrame->channel_layout = encoderAudio.getCodecContext()->channel_layout;
+                scaledFrame->format         = encoderAudio.getCodecContext()->sample_fmt;
+                scaledFrame->sample_rate    = encoderAudio.getCodecContext()->sample_rate;
                 // scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
                 // scaledFrame->pts = rawFrame->pts;
                 av_frame_get_buffer(scaledFrame,0);
 
-                while (av_audio_fifo_size(fifo) >= outACodecContext->frame_size){
-                    ret = av_audio_fifo_read(fifo, (void **)(scaledFrame->data), outACodecContext->frame_size);
+                while (av_audio_fifo_size(fifo) >= encoderAudio.getCodecContext()->frame_size){
+                    ret = av_audio_fifo_read(fifo, (void **)(scaledFrame->data), encoderAudio.getCodecContext()->frame_size);
                     scaledFrame->pts = pts;
                     pts += scaledFrame->nb_samples;
-                    if(avcodec_send_frame(outACodecContext, scaledFrame) < 0){
-                        cout << "Cannot encode current audio packet ";
-                        exit(1);
-                    }
-                    while(ret>=0){
-                        ret = avcodec_receive_packet(outACodecContext, outPacket);
-                        if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
-                            break;
-                        else if (ret < 0) {
-                            fprintf(stderr, "Error during encoding\n");
-                            exit(1);
-                        }
+                    encoderAudio.sendFrame(scaledFrame);
+                    while(encoderAudio.getPacket(outPacket)>=0){
                         //outPacket ready
-                        av_packet_rescale_ts(outPacket, outACodecContext->time_base,  outAVFormatContext->streams[outAudioStreamIndex]->time_base);
+                        av_packet_rescale_ts(outPacket, encoderAudio.getCodecContext()->time_base,  outAVFormatContext->streams[output.outAudioStreamIndex]->time_base);
 
 
-                        outPacket->stream_index = outAudioStreamIndex;
+                        outPacket->stream_index = output.outAudioStreamIndex;
 
                         w_lock.lock();
                         if(av_interleaved_write_frame(outAVFormatContext , outPacket) != 0)
@@ -847,24 +510,18 @@ void Controller::initThreads() {
  * @note Has to be called before initOutput() and initThreads()
  */
 void Controller::initOptions() {
-    settings.filename = "output.mp4";
+    settings.filename = strdup("");
     settings._recaudio=false;
     settings._inscreenres={0,0};
     settings._outscreenres={0,0};
-
     settings._screenoffset={0,0};
-}
-
-void Controller::initBuffers() {
-    inVideoBuffer.np = 0;
-    inAudioBuffer.np = 0;
 }
 
 int Controller::init_fifo()
 {
     /* Create the FIFO buffer based on the specified output sample format. */
-    if (!(fifo = av_audio_fifo_alloc(outACodecContext->sample_fmt,
-                                     outACodecContext->channels, 1))) {
+    if (!(fifo = av_audio_fifo_alloc(encoderAudio.getCodecContext()->sample_fmt,
+                                     encoderAudio.getCodecContext()->channels, 1))) {
         fprintf(stderr, "Could not allocate FIFO\n");
         return AVERROR(ENOMEM);
     }
@@ -887,7 +544,7 @@ int Controller::add_samples_to_fifo(uint8_t **converted_input_samples, const int
     return 0;
 }
 
-int Controller::initConvertedSamples(uint8_t ***converted_input_samples, AVCodecContext *output_codec_context, int frame_size){
+int Controller::initConvertedSamples(uint8_t ***converted_input_samples, const AVCodecContext *output_codec_context, int frame_size){
     int error;
     /* Allocate as many pointers as there are audio channels.
      * Each pointer will later point to the audio samples of the corresponding

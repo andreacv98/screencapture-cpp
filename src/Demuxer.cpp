@@ -5,7 +5,7 @@
 #include <iostream>
 #include "Demuxer.h"
 
-Demuxer::Demuxer(char *url, char *src) : value(0), streamIndex(0), options(nullptr)  {
+Demuxer::Demuxer(char *src, char *url) : value(0), streamIndex(0), options(nullptr)  {
     inFormatContext = avformat_alloc_context();
     inFormat = av_find_input_format(src);
 }
@@ -34,4 +34,17 @@ Demuxer::~Demuxer() {
 
 int Demuxer::readPacket(AVPacket* read_packet, long long int pts_offset) {
     //TODO
+}
+
+/**
+ * The method close the format context.
+ *
+ * @return
+ * @throw runtime_error
+ */
+void Demuxer::closeInput() {
+    avformat_close_input(&inFormatContext);
+    if (inFormatContext) {
+        throw std::runtime_error("Unable to close the file");
+    }
 }

@@ -2,20 +2,20 @@
 #include <stdexcept>
 #include <iostream>
 
-int Encoder::sendFrame(AVFrame *frame) {
-    int ret = avcodec_send_frame(outCodecContext, frame);
-    if (ret == AVERROR(EAGAIN)) return ret;
-    if (ret == AVERROR_EOF) throw std::logic_error("Encoder: has already been flushed");
-    if (ret < 0) throw std::runtime_error("Encoder: failed to send frame to encoder");
-    return ret;
-}
-
 Encoder::~Encoder() {
     avcodec_free_context(&outCodecContext);
     if (outCodecContext) {
         std::cerr << "Encoder: unable to free codec context" << std::endl;
         exit(1);
     }
+}
+
+int Encoder::sendFrame(AVFrame *frame) {
+    int ret = avcodec_send_frame(outCodecContext, frame);
+    if (ret == AVERROR(EAGAIN)) return ret;
+    if (ret == AVERROR_EOF) throw std::logic_error("Encoder: has already been flushed");
+    if (ret < 0) throw std::runtime_error("Encoder: failed to send frame to encoder");
+    return ret;
 }
 
 int Encoder::getPacket(AVPacket *packet) {

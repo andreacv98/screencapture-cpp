@@ -23,7 +23,6 @@
 #include <mutex>
 #include <condition_variable>
 #include <thread>
-//#include <semaphore.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -62,19 +61,6 @@
 class Controller {
 
 private:
-    //AudioDemuxer inAudio;
-    //VideoDemuxer inVideo;
-
-private:
-
-    Decoder decoderAudio;
-    Decoder decoderVideo;
-    // Encoder encoderAudio;
-    // Encoder encoderVideo;
-
-    // Muxer output;
-
-    // ---------------------------------------------------------------------
     //synchro stuff
     std::mutex r_mutex;
     std::condition_variable r_cv;
@@ -87,39 +73,54 @@ private:
     SRPacketBuffer inVideoBuffer;
     SRPacketBuffer inAudioBuffer;
 
+    AudioDemuxer inAudio;
+    VideoDemuxer inVideo;
+
+    Muxer output;
+
+    SRSettings settings;
+
+    Decoder decoderAudio;
+    Decoder decoderVideo;
+    Encoder encoderAudio;
+    Encoder encoderVideo;
+
     //video
-    AVInputFormat *inVInputFormat;
+    // AVInputFormat *inVInputFormat;
     AVFormatContext *inVFormatContext;
     AVDictionary *inVOptions;
     // AVCodecContext *inVCodecContext;
-    AVCodec *inVCodec;
+    // AVCodec *inVCodec;
+
 
     AVFormatContext *outAVFormatContext;
-    AVDictionary *outVOptions;
+    // AVDictionary *outVOptions;
     // AVCodecContext *outVCodecContext;
-    AVCodec *outVCodec;
+    // AVCodec *outVCodec;
+
 
     //audio
-    AVDictionary *inAOptions;
+    // AVDictionary *inAOptions;
     AVFormatContext *inAFormatContext;
-    AVInputFormat *inAInputFormat;
+    // AVInputFormat *inAInputFormat;
     // AVCodecContext *inACodecContext;
 
+
     // AVCodecContext *outACodecContext;
-    AVCodec *outACodec;
-    AVCodec *inACodec;
+    // AVCodec *outACodec;
+    // AVCodec *inACodec;
 
 
-    AVFrame *rawVideoFrame;
-    AVFrame *rawAudioFrame;
+    // AVFrame *rawVideoFrame;
+    // AVFrame *rawAudioFrame;
 
     //output
-    AVOutputFormat *outAVOutputFormat;
+    // AVOutputFormat *outAVOutputFormat;
 
     int inVideoStreamIndex;
     int inAudioStreamIndex;
-    int outVideoStreamIndex;
-    int outAudioStreamIndex;
+    // int outVideoStreamIndex;
+    // int outAudioStreamIndex;
 
     bool captureSwitch;
     bool captureStarted;
@@ -127,35 +128,12 @@ private:
 
     AVAudioFifo *fifo;
 
-    void generateVideoOutputStream();
-    void generateAudioOutputStream();
     void captureVideo();
-    void closeVideoInput();
-    void closeAudioInput();
     void captureAudio();
     void initOptions();
-    void initBuffers();
     static int initConvertedSamples(uint8_t ***converted_input_samples,
-                                    AVCodecContext *output_codec_context,
+                                    const AVCodecContext *output_codec_context,
                                     int frame_size);
-
-public:
-    Controller();
-    ~Controller();
-    int openVideoSource();
-    int openAudioSource();
-
-
-    SRSettings settings;
-#ifdef __unix__
-    Display *dpy;       //display from X11
-#endif
-    int initOutputFile();
-
-    void startCapture();
-    void pauseCapture();
-    void resumeCapture();
-    void endCapture();
 
     void initThreads();
 
@@ -163,6 +141,18 @@ public:
 
     int add_samples_to_fifo(uint8_t **converted_input_samples, const int frame_size);
 
+public:
+    Controller(char * audioUrl, char * videoUrl, SRSettings settings);
+    ~Controller();
+
+#ifdef __unix__
+    Display *dpy;       //display from X11
+#endif
+
+    void startCapture();
+    void pauseCapture();
+    void resumeCapture();
+    void endCapture();
     void infoDisplays();
     void listDevices();
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include "ScreenRecorder.h"
+#include "Controller.h"
 
 #ifdef __APPLE__
 #include <unistd.h>
@@ -19,8 +20,6 @@ void sleep(unsigned milliseconds)
 #endif
 
 int main() {
-    ScreenRecorder sc;
-
     int screen_number;
     bool audio;
     int audio_number;
@@ -30,6 +29,42 @@ int main() {
     int x_toadd;
     int y_start;
     int y_toadd;
+
+    bool test = true;
+
+    if (test){
+       SRSettings settings;
+       settings._recvideo = true;
+       settings._recaudio = true;
+       x_start = 0;
+       y_start = 0;
+       x_toadd = 0;
+       y_toadd = 0;
+       settings._screenoffset = {x_start, y_start};
+       settings._inscreenres= {x_toadd, y_toadd};
+       settings.filename = "test.mp4";
+       settings._outscreenres = {1920,1080};
+       settings._fps = 15;
+
+       Controller c("1:none", "none:o", settings);
+
+
+
+       /* sample capture routine*/
+       c.startCapture();
+
+       sleep(5);
+       c.pauseCapture();
+
+       sleep(5);
+       c.resumeCapture();
+
+       sleep(5);
+       c.endCapture();
+       return 0;
+    }
+
+    ScreenRecorder sc;
 
 
     std::cout << "\n\nStarted!\n\n" << std::endl;

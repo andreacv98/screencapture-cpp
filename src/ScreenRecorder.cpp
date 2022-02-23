@@ -56,23 +56,23 @@ ScreenRecorder::~ScreenRecorder() {
     }
     avformat_free_context(inVFormatContext);
     if (!inVFormatContext) {
-        cout << "\navformat free successfully";
+        cout << "\ninV avformat free successfully";
     } else {
-        cout << "\nunable to free avformat context";
+        cout << "\nunable to free inV avformat context";
         exit(1);
     }
     avformat_free_context(inAFormatContext);
     if (!inAFormatContext) {
-        cout << "\navformat free successfully";
+        cout << "\ninA avformat free successfully";
     } else {
-        cout << "\nunable to free avformat context";
+        cout << "\nunable to free inA avformat context";
         exit(1);
     }
     avformat_free_context(outAVFormatContext);
     if (!outAVFormatContext) {
-        cout << "\navformat free successfully";
+        cout << "\noutAV avformat free successfully";
     } else {
-        cout << "\nunable to free avformat context";
+        cout << "\nunable to free outAV avformat context";
         exit(1);
     }
 }
@@ -140,13 +140,13 @@ int ScreenRecorder::openVideoSource() {
         exit(1);
     }
 
-
+#ifdef _WIN32
     char off_x[30];
     sprintf(off_x,"%d", settings._screenoffset.x);
     char off_y[30];
     sprintf(off_y,"%d", settings._screenoffset.y);
 
-#ifdef _WIN32
+
     value = av_dict_set(&inVOptions, "offset_x", off_x, 0);
     if (value < 0) {
         cout << "\nerror in setting dictionary value off_x";

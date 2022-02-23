@@ -9,27 +9,35 @@
 
 class Muxer {
 
+private:
     AVFormatContext *outAVFormatContext;
+
     AVCodecContext *outVCodecContext;
     AVCodecContext *outACodecContext;
-    AVOutputFormat *outAVOutputFormat;
 
-    int outVideoStreamIndex;
-    int outAudioStreamIndex;
+    AVOutputFormat *outAVOutputFormat;
 
     SRSettings outputSettings;
     std::string outputFilename;
 
+    void generateVideoOutputStream();
+    void generateAudioOutputStream(const AVCodecContext* inACodecContext);
+
 public:
+    int outVideoStreamIndex;
+    int outAudioStreamIndex;
+
     Muxer(SRSettings outputSettings, std::string outputFilename);
     ~Muxer();
 
     /**
      * Add a video stream to the muxer
      */
-    void generateVideoOutputStream();
-    void generateAudioOutputStream(AVCodecContext* inACodecContext);
-    int initOutputFile(AVCodecContext* inACodecContext);
+
+    int initOutputFile(const AVCodecContext* inACodecContext);
+
+    AVCodecContext* getACodecContext() const;
+    AVCodecContext* getVCodecContext() const;
 };
 
 #endif //VIDEO_APP_MUXER_H
