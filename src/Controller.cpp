@@ -93,46 +93,6 @@ Controller::~Controller() {
     if(settings._recaudio && audioThread.joinable()) audioThread.join();
     //producerThread.join();
 
-    if( av_write_trailer(outAVFormatContext) < 0)
-    {
-        cout<<"\nerror in writing av trailer";
-        exit(1);
-    }
-    avformat_close_input(&inVFormatContext);
-    if (!inVFormatContext) {
-        cout << "\nfile closed sucessfully";
-    } else {
-        cout << "\nunable to close the file";
-        exit(1);
-    }
-    avformat_close_input(&inAFormatContext);
-    if (!inAFormatContext) {
-        cout << "\nfile closed sucessfully";
-    } else {
-        cout << "\nunable to close the file";
-        exit(1);
-    }
-    avformat_free_context(inVFormatContext);
-    if (!inVFormatContext) {
-        cout << "\navformat free successfully";
-    } else {
-        cout << "\nunable to free avformat context";
-        exit(1);
-    }
-    avformat_free_context(inAFormatContext);
-    if (!inAFormatContext) {
-        cout << "\navformat free successfully";
-    } else {
-        cout << "\nunable to free avformat context";
-        exit(1);
-    }
-    avformat_free_context(outAVFormatContext);
-    if (!outAVFormatContext) {
-        cout << "\navformat free successfully";
-    } else {
-        cout << "\nunable to free avformat context";
-        exit(1);
-    }
 }
 
 /**
@@ -229,9 +189,8 @@ void Controller::captureVideo(){
             return;
         }
 
-        if (paused) inVideo.open();
+        if (paused) inVFormatContext = inVideo.open();
         r_lock.unlock();
-
 
         if(av_read_frame(inVFormatContext, inPacket) >= 0 && inPacket->stream_index == inVideoStreamIndex) {
             //decode video routine
@@ -362,7 +321,7 @@ void Controller::captureAudio() {
             return;
         }
 
-        if (paused) inAudio.open();
+        if (paused) inAFormatContext = inAudio.open();
         r_lock.unlock();
 
         if(av_read_frame(inAFormatContext, inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {

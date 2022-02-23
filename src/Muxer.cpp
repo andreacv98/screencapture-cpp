@@ -18,9 +18,11 @@ Muxer::~Muxer() {
         if( av_write_trailer(outAVFormatContext) < 0) {
             std::cerr << "Muxer: error in writing av trailer" << std::endl;
             exit(1);
+        } else {
+            std::cout << "\n[Muxer] av trailer closed";
         }
 
-        if(outputSettings._recvideo){
+        /*if(outputSettings._recvideo){
             avcodec_free_context(&outVCodecContext);
             if (outVCodecContext) {
                 std::cerr << "Muxer: unable to free video avformat context" << std::endl;
@@ -33,11 +35,13 @@ Muxer::~Muxer() {
                 std::cerr << "Muxer: unable to free audio avformat context" << std::endl;
                 exit(1);
             }
-        }
+        }*/
         avformat_close_input(&outAVFormatContext);
         if (outAVFormatContext){
             std::cerr << "Muxer: unable to free audio avformat context" << std::endl;
             exit(1);
+        } else {
+            std::cout << "\n[Muxer] av audio avformat closed";
         }
     }
 }

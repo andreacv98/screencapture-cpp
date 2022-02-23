@@ -54,13 +54,13 @@ int main() {
        c.startCapture();
 
        sleep(5);
-       c.pauseCapture();
+       /*c.pauseCapture();
 
        sleep(5);
        c.resumeCapture();
 
        sleep(5);
-       c.endCapture();
+       */c.endCapture();
        return 0;
     }
 

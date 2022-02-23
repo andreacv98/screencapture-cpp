@@ -23,18 +23,20 @@ AVCodecContext *Demuxer::getInCodecContext() const {
 }
 
 Demuxer::~Demuxer() {
+    avformat_close_input(&inFormatContext);
     if (inFormatContext) {
-        avformat_close_input(&inFormatContext);
-        if (inFormatContext) {
-            std::cerr << "\n Unable to close device";
-            exit(1);
-        }
+        std::cerr << "\n Unable to close device";
+        exit(1);
+    } else {
+        std::cout << "\n ["<< src << "]Device closed";
     }
-    if (inCodecContext) {
-        avcodec_free_context(&inCodecContext);
-        if (inCodecContext) {
-            std::cerr << "\nUnable to close device";
+    if(inFormatContext) {
+        avformat_free_context(inFormatContext);
+        if (inFormatContext) {
+            std::cerr << "\n Unable to free avformat context";
             exit(1);
+        } else {
+            std::cout << "\n ["<< src << "]AvformatContext closed";
         }
     }
 }

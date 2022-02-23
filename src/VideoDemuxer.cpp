@@ -16,7 +16,7 @@ VideoDemuxer::VideoDemuxer(char *src, char *url, uint16_t fps, SRResolution reso
  * @throw invalid_argument
  */
 void VideoDemuxer::setOptions() {
-    std::cout << "Video Input setup started" << std::endl;
+    std::cout << "\nVideo Input Options setup started" << std::endl;
 
 #ifdef __APPLE__
     value = av_dict_set(&inVOptions, "pixel_format", "0rgb", 0);
@@ -71,8 +71,8 @@ void VideoDemuxer::setOptions() {
  */
 AVFormatContext *VideoDemuxer::open() {
     //if one of them != nullptr then input already initialized
-    if(inFormatContext != nullptr || inCodecContext!= nullptr || streamIndex != -1)
-        return inFormatContext;
+    //if(inFormatContext != nullptr || inCodecContext!= nullptr || streamIndex != -1)
+    //    return inFormatContext;
 
 
 
