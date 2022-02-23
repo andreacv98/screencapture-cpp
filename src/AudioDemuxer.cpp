@@ -64,3 +64,7 @@ AVFormatContext *AudioDemuxer::open() {
 AudioDemuxer::AudioDemuxer(char *url, char *src) : Demuxer(url, src) {
 
 }
+
+void AudioDemuxer::setOptions() {
+
+}
