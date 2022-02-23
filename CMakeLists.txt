@@ -69,7 +69,7 @@ add_executable(
         src/Encoder.cpp
         src/Muxer.h src/Muxer.cpp
         src/utils.h
-)
+        src/Controller.cpp src/Controller.h)
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME}

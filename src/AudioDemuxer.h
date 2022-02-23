@@ -15,6 +15,7 @@ private:
     int fps;
     int width;
     int height;
+    void setOptions() override;
 
 public:
 
