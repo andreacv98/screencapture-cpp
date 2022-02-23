@@ -3,14 +3,14 @@
 
 int Decoder::sendPacket(const AVPacket *packet) {
     int ret;
-    if((ret = avcodec_send_packet(codecContext, packet)) < 0){
+    if((ret = avcodec_send_packet(inCodecContext, packet)) < 0){
         throw std::runtime_error("Decoder: failed to send frame to decoder");
     }
     return ret;
 }
 
 int Decoder::getDecodedOutput(AVFrame* rawFrame) {
-    int ret = avcodec_receive_frame(this->codecContext, rawFrame);
+    int ret = avcodec_receive_frame(this->inCodecContext, rawFrame);
     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
         return ret;
     else if (ret < 0) {
@@ -20,10 +20,10 @@ int Decoder::getDecodedOutput(AVFrame* rawFrame) {
 }
 
 const AVCodecContext *Decoder::getCodecContext() const {
-    return codecContext;
+    return inCodecContext;
 }
 
 void Decoder::setCodecContext(AVCodecContext *context){
-    this->codecContext = context;
+    this->inCodecContext = context;
 }
 

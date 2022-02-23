@@ -6,6 +6,8 @@
 #define VIDEO_APP_UTILS_H
 
 //FFMPEG LIBRARIES
+#include <queue>
+
 extern "C"
 {
 #include "libavcodec/avcodec.h"
@@ -32,5 +34,30 @@ extern "C"
 #include "libswresample/swresample.h"
 
 }
+
+typedef struct S{
+    int width;
+    int height;
+}SRResolution;
+
+typedef struct T{
+    int x;
+    int y;
+}SROffset;
+
+typedef struct A{
+    bool _recaudio;
+    bool _recvideo;
+    SRResolution  _inscreenres;
+    SRResolution  _outscreenres;
+    SROffset _screenoffset;
+    uint16_t  _fps;
+    char* filename;
+}SRSettings;
+
+typedef struct B{
+    int np;
+    std::queue<AVPacket*> buf;
+}SRPacketBuffer;
 
 #endif //VIDEO_APP_UTILS_H

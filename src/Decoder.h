@@ -4,10 +4,10 @@
 #include "utils.h"
 
 class Decoder {
-    AVCodecContext *codecContext;
+    AVCodecContext *inCodecContext;
 public:
 
-    Decoder():codecContext(nullptr){};
+    Decoder():inCodecContext(nullptr){};
 
     /**
      * Send a packet to the decoder

@@ -24,6 +24,7 @@
 #include "utils.h"
 #include "Decoder.h"
 #include "Encoder.h"
+#include "Muxer.h"
 
 #ifdef __APPLE__
 #define VIDEO_SOURCE ("avfoundation")
@@ -48,39 +49,16 @@
 
 #define CAPTURE_BUFFER 10
 
-typedef struct S{
-    int width;
-    int height;
-}SRResolution;
-
-typedef struct T{
-    int x;
-    int y;
-}SROffset;
-
-typedef struct A{
-    bool _recaudio;
-    bool _recvideo;
-    SRResolution  _inscreenres;
-    SRResolution  _outscreenres;
-    SROffset _screenoffset;
-    uint16_t  _fps;
-    char* filename;
-}SRSettings;
-
-typedef struct B{
-    int np;
-    std::queue<AVPacket*> buf;
-}SRPacketBuffer;
-
 class ScreenRecorder {
 
 private:
 
-    Decoder decoderAudio;
-    Decoder decoderVideo;
-    Encoder encoderAudio;
-    Encoder encoderVideo;
+    // Decoder decoderAudio;
+    // Decoder decoderVideo;
+    // Encoder encoderAudio;
+    // Encoder encoderVideo;
+
+    // Muxer output;
 
     // ---------------------------------------------------------------------
     //synchro stuff
@@ -91,7 +69,6 @@ private:
     //threads
     std::thread videoThread;
     std::thread audioThread;
-    std::thread producerThread;
 
     SRPacketBuffer inVideoBuffer;
     SRPacketBuffer inAudioBuffer;
