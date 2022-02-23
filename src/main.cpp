@@ -38,9 +38,8 @@ int main() {
     sc.settings._recvideo = true;
 
 #ifdef __unix__
-    std::cout << "---Select screen # to record---" << std::endl;
-    //sc.infoDisplays();
-    std::cin >>screen_number;
+    std::cout << "---Dispays info---" << std::endl;
+    sc.infoDisplays();
 #endif
 
 
@@ -48,11 +47,20 @@ int main() {
     std::cin >>x_start;
     std::cout << "---Enter n pixel to start area capture y (y origin area) ---" << std::endl;
     std::cin >>y_start;
+
+#ifdef __unix__
+    std::cout << "---Enter n pixel to asix x to record (x pixels) max: ---" << XDisplayWidth(sc.dpy,0) - x_start <<std::endl;
+    std::cin >>x_toadd;
+    std::cout << "---Enter n pixel to asix y to record (y pixels) max: ---" << XDisplayHeight(sc.dpy,0) - y_start <<std::endl;
+    std::cin >>y_toadd;
+#endif
+
+#ifdef _WIN32
     std::cout << "---Enter n pixel to asix x to record (x pixels) ---" << std::endl;
     std::cin >>x_toadd;
     std::cout << "---Enter n pixel to asix y to record (y pixels) ---" << std::endl;
     std::cin >>y_toadd;
-
+#endif
 
 #ifdef _WIN32
     sc.settings._screenoffset = {x_start, y_start};
@@ -61,8 +69,8 @@ int main() {
 
 #ifdef __unix__
     sc.settings._screenoffset = {x_start, y_start};
-    sc.settings._inscreenres= {1280, 720};
-    sc.settings._inscreenres = {XDisplayWidth(sc.dpy,screen_number),  XDisplayHeight(sc.dpy,screen_number)};
+    sc.settings._inscreenres= {x_toadd, y_toadd};
+    //sc.settings._inscreenres = {XDisplayWidth(sc.dpy,screen_number),  XDisplayHeight(sc.dpy,screen_number)};
 
 #endif
 

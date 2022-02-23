@@ -36,7 +36,7 @@
 
 #ifdef __unix__
 #define VIDEO_SOURCE ("x11grab")
-#define VIDEO_URL (":0.0+0,0")
+#define VIDEO_URL (":0.0")
 #define AUDIO_SOURCE ("pulse")
 #define AUDIO_URL ("alsa_input.pci-0000_00_05.0.analog-stereo")
 #endif

@@ -140,12 +140,13 @@ int ScreenRecorder::openVideoSource() {
         exit(1);
     }
 
+
     char off_x[30];
     sprintf(off_x,"%d", settings._screenoffset.x);
     char off_y[30];
     sprintf(off_y,"%d", settings._screenoffset.y);
 
-
+#ifdef _WIN32
     value = av_dict_set(&inVOptions, "offset_x", off_x, 0);
     if (value < 0) {
         cout << "\nerror in setting dictionary value off_x";
@@ -157,6 +158,13 @@ int ScreenRecorder::openVideoSource() {
         cout << "\nerror in setting dictionary value off_y";
         exit(1);
     }
+#endif
+
+#ifdef __unix__
+    char video_url [50];
+    sprintf(video_url,"%s+%d,%d", VIDEO_URL, settings._screenoffset.x, settings._screenoffset.y);
+    printf("VideoUrl:%s", video_url);
+#endif
 
 
     value = av_dict_set(&inVOptions, "preset", "medium", 0);
@@ -173,7 +181,13 @@ int ScreenRecorder::openVideoSource() {
 
     //get input format
     inVInputFormat = av_find_input_format(VIDEO_SOURCE);
+#ifdef __unix__
+    value = avformat_open_input(&inVFormatContext, video_url, inVInputFormat, &inVOptions);
+#endif
+
+#ifdef _WIN32
     value = avformat_open_input(&inVFormatContext, VIDEO_URL, inVInputFormat, &inVOptions);
+#endif
     if (value != 0) {
         cout << "\nCannot open selected device";
         exit(1);
