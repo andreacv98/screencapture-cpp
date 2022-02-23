@@ -140,13 +140,13 @@ int ScreenRecorder::openVideoSource() {
         exit(1);
     }
 
-
+#ifdef _WIN32
     char off_x[30];
     sprintf(off_x,"%d", settings._screenoffset.x);
     char off_y[30];
     sprintf(off_y,"%d", settings._screenoffset.y);
 
-#ifdef _WIN32
+
     value = av_dict_set(&inVOptions, "offset_x", off_x, 0);
     if (value < 0) {
         cout << "\nerror in setting dictionary value off_x";
