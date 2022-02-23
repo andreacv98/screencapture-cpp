@@ -40,8 +40,6 @@ void VideoDemuxer::setOptions() {
     value = av_dict_set(&options, "framerate", framerate, 0);
     if (value < 0) {
         throw std::invalid_argument("Error in setting framerate");
-        cout << "\nerror in setting dictionary value";
-        exit(1);
     }
 
     value = av_dict_set(&options, "video_size", s, 0);
