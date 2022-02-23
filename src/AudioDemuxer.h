@@ -19,7 +19,7 @@ private:
 
 public:
 
-    AudioDemuxer(char *url, char *src);
+    AudioDemuxer(char *src, char *url);
     AVFormatContext* open() override;
 
 };

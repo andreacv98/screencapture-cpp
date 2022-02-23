@@ -10,14 +10,13 @@
 class VideoDemuxer: public Demuxer {
 
 private:
-    int fps;
-    int width;
-    int height;
+    uint16_t fps;
+    SRResolution resolution;
     void setOptions() override;
 
 public:
 
-    VideoDemuxer(char *url, char *src, int fps, int width, int height);
+    VideoDemuxer(char *url, char *src, uint16_t fps, SRResolution resolution);
     AVFormatContext* open() override;
 
 };

@@ -5,7 +5,8 @@
 #include <iostream>
 #include "VideoDemuxer.h"
 
-VideoDemuxer::VideoDemuxer(char *url, char *src, int fps, int width, int height) : Demuxer(url, src), fps(fps), width(width),height(height) {
+VideoDemuxer::VideoDemuxer(char *src, char *url, uint16_t fps, SRResolution resolution) : Demuxer(src, url),fps(fps),
+                                                                                     resolution(resolution) {
     setOptions();
 }
 
@@ -32,7 +33,7 @@ void VideoDemuxer::setOptions() {
 #endif
 
     char s[30];
-    sprintf(s,"%dx%d", width, height);
+    sprintf(s,"%dx%d", resolution.width, resolution.height);
 
     char framerate[30];
     sprintf(s, "%d", fps);
@@ -96,19 +97,23 @@ AVFormatContext *VideoDemuxer::open() {
         throw std::runtime_error("Cannot find the video stream index. (-1)");
     }
 
-    AVCodecParameters *params = inFormatContext->streams[streamIndex]->codecpar;
-    inCodec = avcodec_find_decoder(params->codec_id);
     if (inCodec == nullptr) {
-        throw std::runtime_error("Cannot find the decoder");
+        AVCodecParameters *params = inFormatContext->streams[streamIndex]->codecpar;
+        inCodec = avcodec_find_decoder(params->codec_id);
+        if (inCodec == nullptr) {
+            throw std::runtime_error("Cannot find the decoder");
+        }
+
+        inCodecContext = avcodec_alloc_context3(inCodec);
+        avcodec_parameters_to_context(inCodecContext, params);
+
+        value = avcodec_open2(inCodecContext, inCodec, nullptr);
+        if (value < 0) {
+            throw std::runtime_error("Cannot open the av codec");
+        }
     }
 
-    inCodecContext = avcodec_alloc_context3(inCodec);
-    avcodec_parameters_to_context(inCodecContext, params);
 
-    value = avcodec_open2(inCodecContext, inCodec, nullptr);
-    if (value < 0) {
-        throw std::runtime_error("Cannot open the av codec");
-    }
 
     return inFormatContext;
 }
