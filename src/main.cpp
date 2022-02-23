@@ -45,13 +45,13 @@ int main() {
 #endif
 
 
-    std::cout << "---Enter n pixel to start area capture x (x offset) ---" << std::endl;
+    std::cout << "---Enter n pixel to start area capture x (x origin area) ---" << std::endl;
     std::cin >>x_start;
-    std::cout << "---Enter n pixel to start area capture y (y offset) ---" << std::endl;
+    std::cout << "---Enter n pixel to start area capture y (y origin area) ---" << std::endl;
     std::cin >>y_start;
-    std::cout << "---Enter n pixel to add to start area capture x (x added) ---" << std::endl;
+    std::cout << "---Enter n pixel to asix x to record (x pixels) ---" << std::endl;
     std::cin >>x_toadd;
-    std::cout << "---Enter n pixel to add to start area capture y (y added) ---" << std::endl;
+    std::cout << "---Enter n pixel to asix y to record (y pixels) ---" << std::endl;
     std::cin >>y_toadd;
 
 
@@ -63,16 +63,10 @@ int main() {
 #ifdef __unix__
     sc.settings._screenoffset = {x_start, y_start};
     sc.settings._inscreenres= {1280, 720};
+    sc.settings._inscreenres = {XDisplayWidth(sc.dpy,screen_number),  XDisplayHeight(sc.dpy,screen_number)};
+
 #endif
 
-/*
-#ifdef __unix__
-    sc.settings._inscreenres = {XDisplayWidth(sc.dpy,screen_number),  XDisplayHeight(sc.dpy,screen_number)};
-#endif
-#ifdef _WIN32
-    sc.settings._inscreenres = {2560,1440};
-#endif
-    */
 
     std::cout << "---Do you want audio record? 1 for yes, 0 for not ---" << std::endl;
     std::cin >>audio;
