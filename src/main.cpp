@@ -48,19 +48,39 @@ int main() {
 
        Controller c("alsa_input.pci-0000_00_05.0.analog-stereo", ":0.0+0,0", settings);
 
-
+        bool capturing = true;
+        int command = 0;
 
        /* sample capture routine*/
-       c.startCapture();
-
+       while(capturing){
+           std::cout << "--- 0 -> start | 1 -> pause | 2 -> resume | 3 -> end ---" << std::endl;
+           std::cin>>command;
+           switch (command) {
+               case 0:
+                   c.startCapture();
+                   break;
+               case 1:
+                   c.pauseCapture();
+                   break;
+               case 2:
+                   c.resumeCapture();
+                   break;
+               case 3:
+                   c.endCapture();
+                   capturing = false;
+               default:
+                   break;
+           }
+       }
+       /*c.startCapture();
        sleep(5);
-       /*c.pauseCapture();
+       c.pauseCapture();
 
        sleep(5);
        c.resumeCapture();
 
        sleep(5);
-       */c.endCapture();
+       c.endCapture();
        return 0;
     }
 

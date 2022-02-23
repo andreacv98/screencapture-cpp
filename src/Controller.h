@@ -135,7 +135,7 @@ private:
                                     const AVCodecContext *output_codec_context,
                                     int frame_size);
 
-    void initThreads();
+
 
     int init_fifo();
 
@@ -153,6 +153,7 @@ public:
     void pauseCapture();
     void resumeCapture();
     void endCapture();
+    void initThreads();
     void infoDisplays();
     void listDevices();
 
