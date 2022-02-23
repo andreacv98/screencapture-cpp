@@ -5,8 +5,13 @@
 #include <iostream>
 #include "Demuxer.h"
 
-Demuxer::Demuxer(char *src, char *url) : value(0), streamIndex(0), options(nullptr)  {
-    inFormatContext = avformat_alloc_context();
+Demuxer::Demuxer(char *src, char *url) : value(0),
+                                        streamIndex(-1),
+                                        options(nullptr),
+                                        inFormatContext(nullptr),
+                                        inCodecContext(nullptr),
+                                        inCodec(nullptr)
+{
     inFormat = av_find_input_format(src);
 }
 

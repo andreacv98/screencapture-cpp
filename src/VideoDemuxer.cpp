@@ -73,6 +73,7 @@ AVFormatContext *VideoDemuxer::open() {
     if(inFormatContext != nullptr || inCodecContext!= nullptr || streamIndex != -1)
         return inFormatContext;
 
+    inFormatContext = avformat_alloc_context();
     value = avformat_open_input(&inFormatContext, url, inFormat, &options);
     if (value != 0) {
         throw std::runtime_error("Cannot open selected device");
