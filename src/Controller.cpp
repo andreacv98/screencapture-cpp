@@ -440,6 +440,7 @@ void Controller::captureAudio() {
  * @Note is callable only after thread initialization by mean of initThreads();
  */
 void Controller::startCapture() {
+    if (captureStarted) return;
     cout<<"\n[MainThread] Capture started";
     cout<<"\n[MainThread] Capturing audio: " << (settings._recaudio ? "yes" : "no") ;
     std::lock_guard<std::mutex> r_lock(r_mutex);
@@ -456,9 +457,8 @@ void Controller::startCapture() {
 void Controller::pauseCapture() {
     if (!captureSwitch || killSwitch) return;
     std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    cout<<"\n[MainThread] Trying to pause capture... "<<std::ctime(&time);
     std::lock_guard<std::mutex> r_lock(r_mutex);
-    cout<<"\n[MainThread] Capture paused";
+    cout<<"\n[MainThread] Capture paused\n";
     captureSwitch = false;
     r_cv.notify_all();
 }
@@ -468,10 +468,9 @@ void Controller::pauseCapture() {
  */
 void Controller::resumeCapture() {
     if (captureSwitch || killSwitch) return;
-    cout<<"\n[MainThread] Trying to resume capture...";
     std::lock_guard<std::mutex> r_lock(r_mutex);
     captureSwitch = true;
-    cout<<"\n[MainThread] Capture resumed";
+    cout<<"\n[MainThread] Capture resumed\n";
     r_cv.notify_all();
 }
 /**
@@ -480,10 +479,9 @@ void Controller::resumeCapture() {
  */
 void Controller::endCapture() {
     if (killSwitch) return;
-    cout<<"\n[MainThread] Trying to end capture...";
     std::lock_guard<std::mutex> r_lock(r_mutex);
     killSwitch = true;
-    cout<<"\n[MainThread] Capture ended";
+    cout<<"\n[MainThread] Capture ended\n";
     r_cv.notify_all();
 
 }
