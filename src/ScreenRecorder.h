@@ -22,10 +22,10 @@
 #include <X11/Xlib.h>
 #endif
 
-#include "utils.h"
-#include "Decoder.h"
-#include "Encoder.h"
-#include "Muxer.h"
+#include "libs/utils.h"
+#include "libs/Decoder.h"
+#include "libs/Encoder.h"
+#include "libs/Muxer.h"
 
 #ifdef __APPLE__
 #define VIDEO_SOURCE ("avfoundation")

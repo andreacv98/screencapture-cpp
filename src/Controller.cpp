@@ -91,7 +91,6 @@ Controller::~Controller() {
 
     if(settings._recvideo && videoThread.joinable()) videoThread.join();
     if(settings._recaudio && audioThread.joinable()) audioThread.join();
-    //producerThread.join();
 
 }
 
@@ -199,8 +198,8 @@ void Controller::captureVideo(){
             ret = decoderVideo.sendPacket(inPacket);
             while (decoderVideo.getDecodedOutput(rawFrame) >= 0) {
                 //raw frame ready
-                if(outAVFormatContext->streams[output.outVideoStreamIndex]->start_time <= 0) {
-                    outAVFormatContext->streams[output.outVideoStreamIndex]->start_time = rawFrame->pts;
+                if(output.getOutAVFormatContext()->streams[output.outVideoStreamIndex]->start_time <= 0) {
+                    output.getOutAVFormatContext()->streams[output.outVideoStreamIndex]->start_time = rawFrame->pts;
                 }
 
                 av_init_packet(outPacket);
@@ -222,13 +221,13 @@ void Controller::captureVideo(){
                 while(encoderVideo.getPacket(outPacket)>=0){
                     //outPacket ready
                     if(outPacket->pts != AV_NOPTS_VALUE)
-                        outPacket->pts = av_rescale_q(outPacket->pts, encoderVideo.getCodecContext()->time_base,  outAVFormatContext->streams[output.outVideoStreamIndex]->time_base);
+                        outPacket->pts = av_rescale_q(outPacket->pts, encoderVideo.getCodecContext()->time_base,  output.getOutAVFormatContext()->streams[output.outVideoStreamIndex]->time_base);
                     if(outPacket->dts != AV_NOPTS_VALUE)
-                        outPacket->dts = av_rescale_q(outPacket->dts, encoderVideo.getCodecContext()->time_base, outAVFormatContext->streams[output.outVideoStreamIndex]->time_base);
+                        outPacket->dts = av_rescale_q(outPacket->dts, encoderVideo.getCodecContext()->time_base, output.getOutAVFormatContext()->streams[output.outVideoStreamIndex]->time_base);
 
                     outPacket->stream_index = output.outVideoStreamIndex;
                     w_lock.lock();
-                    if(av_interleaved_write_frame(outAVFormatContext , outPacket) != 0)
+                    if(av_interleaved_write_frame(output.getOutAVFormatContext() , outPacket) != 0)
                     {
                         cout<<"\nerror in writing video frame";
                     }
@@ -329,8 +328,8 @@ void Controller::captureAudio() {
             av_packet_rescale_ts(outPacket,  inAFormatContext->streams[inAudioStreamIndex]->time_base, decoderAudio.getCodecContext()->time_base);
             ret = decoderAudio.sendPacket(inPacket);
             while (decoderAudio.getDecodedOutput(rawFrame) >= 0) {
-                if(outAVFormatContext->streams[output.outAudioStreamIndex]->start_time <= 0) {
-                    outAVFormatContext->streams[output.outAudioStreamIndex]->start_time = rawFrame->pts;
+                if(output.getOutAVFormatContext()->streams[output.outAudioStreamIndex]->start_time <= 0) {
+                    output.getOutAVFormatContext()->streams[output.outAudioStreamIndex]->start_time = rawFrame->pts;
                 }
                 initConvertedSamples(&resampledData, encoderAudio.getCodecContext(), rawFrame->nb_samples);
 
@@ -368,13 +367,13 @@ void Controller::captureAudio() {
                     encoderAudio.sendFrame(scaledFrame);
                     while(encoderAudio.getPacket(outPacket)>=0){
                         //outPacket ready
-                        av_packet_rescale_ts(outPacket, encoderAudio.getCodecContext()->time_base,  outAVFormatContext->streams[output.outAudioStreamIndex]->time_base);
+                        av_packet_rescale_ts(outPacket, encoderAudio.getCodecContext()->time_base,  output.getOutAVFormatContext()->streams[output.outAudioStreamIndex]->time_base);
 
 
                         outPacket->stream_index = output.outAudioStreamIndex;
 
                         w_lock.lock();
-                        if(av_interleaved_write_frame(outAVFormatContext , outPacket) != 0)
+                        if(av_interleaved_write_frame(output.getOutAVFormatContext() , outPacket) != 0)
                         {
                             cout<<"\nerror in writing audio frame";
                         }

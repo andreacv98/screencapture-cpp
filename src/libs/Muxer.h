@@ -38,6 +38,8 @@ public:
 
     AVCodecContext* getACodecContext() const;
     AVCodecContext* getVCodecContext() const;
+
+    AVFormatContext* getOutAVFormatContext() const;
 };
 
 #endif //VIDEO_APP_MUXER_H

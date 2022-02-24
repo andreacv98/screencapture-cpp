@@ -180,3 +180,7 @@ AVCodecContext *Muxer::getACodecContext() const {
     return outACodecContext;
 }
 
+AVFormatContext *Muxer::getOutAVFormatContext() const {
+    return outAVFormatContext;
+}
+

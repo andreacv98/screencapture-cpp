@@ -53,7 +53,7 @@ int main() {
 
        /* sample capture routine*/
        while(capturing){
-           std::cout << "--- 0 -> start | 1 -> pause | 2 -> resume | 3 -> end ---" << std::endl;
+           std::cout << "\n--- 0 -> start | 1 -> pause | 2 -> resume | 3 -> end ---\n";
            std::cin>>command;
            switch (command) {
                case 0:

@@ -58,17 +58,17 @@ add_executable(
         src/main.cpp
         src/ScreenRecorder.cpp
         src/ScreenRecorder.h
-        src/Demuxer.cpp
-        src/Demuxer.h
-        src/VideoDemuxer.cpp
-        src/AudioDemuxer.cpp
-        src/AudioDemuxer.h
-        src/Decoder.h
-        src/Decoder.cpp
-        src/Encoder.h
-        src/Encoder.cpp
-        src/Muxer.h src/Muxer.cpp
-        src/utils.h
+        src/libs/Demuxer.cpp
+        src/libs/Demuxer.h
+        src/libs/VideoDemuxer.cpp
+        src/libs/AudioDemuxer.cpp
+        src/libs/AudioDemuxer.h
+        src/libs/Decoder.h
+        src/libs/Decoder.cpp
+        src/libs/Encoder.h
+        src/libs/Encoder.cpp
+        src/libs/Muxer.h src/libs/Muxer.cpp
+        src/libs/utils.h
         src/Controller.cpp src/Controller.h)
 
 if(WIN32)
