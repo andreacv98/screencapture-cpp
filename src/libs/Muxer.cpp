@@ -36,6 +36,7 @@ Muxer::~Muxer() {
                 exit(1);
             }
         }*/
+
         avformat_close_input(&outAVFormatContext);
         if (outAVFormatContext){
             std::cerr << "Muxer: unable to free audio avformat context" << std::endl;

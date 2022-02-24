@@ -1,0 +1,47 @@
+\hypertarget{classEncoder}{}\doxysection{Encoder Class Reference}
+\label{classEncoder}\index{Encoder@{Encoder}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classEncoder_ae60fb14c7a83e39accae8b9c1babbe24}{send\+Frame}} (AVFrame $\ast$frame)
+\item 
+int \mbox{\hyperlink{classEncoder_af1aa4487bb756d7542bb497215973355}{get\+Packet}} (AVPacket $\ast$packet)
+\item 
+\mbox{\Hypertarget{classEncoder_abc7ba73f3bcb2527564d0f38dca78e06}\label{classEncoder_abc7ba73f3bcb2527564d0f38dca78e06}} 
+void {\bfseries set\+Codec\+Context} (AVCodec\+Context $\ast$context)
+\item 
+\mbox{\Hypertarget{classEncoder_ab4d80af39064c9e5da0fa41a0bedf7b0}\label{classEncoder_ab4d80af39064c9e5da0fa41a0bedf7b0}} 
+const AVCodec\+Context $\ast$ {\bfseries get\+Codec\+Context} () const
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classEncoder_af1aa4487bb756d7542bb497215973355}\label{classEncoder_af1aa4487bb756d7542bb497215973355}} 
+\index{Encoder@{Encoder}!getPacket@{getPacket}}
+\index{getPacket@{getPacket}!Encoder@{Encoder}}
+\doxysubsubsection{\texorpdfstring{getPacket()}{getPacket()}}
+{\footnotesize\ttfamily int Encoder\+::get\+Packet (\begin{DoxyParamCaption}\item[{AVPacket $\ast$}]{packet }\end{DoxyParamCaption})}
+
+Read encoded data from the encoder \begin{DoxyReturn}{Returns}
+0 if success 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classEncoder_ae60fb14c7a83e39accae8b9c1babbe24}\label{classEncoder_ae60fb14c7a83e39accae8b9c1babbe24}} 
+\index{Encoder@{Encoder}!sendFrame@{sendFrame}}
+\index{sendFrame@{sendFrame}!Encoder@{Encoder}}
+\doxysubsubsection{\texorpdfstring{sendFrame()}{sendFrame()}}
+{\footnotesize\ttfamily int Encoder\+::send\+Frame (\begin{DoxyParamCaption}\item[{AVFrame $\ast$}]{frame }\end{DoxyParamCaption})}
+
+Send a frame to the encoder 
+\begin{DoxyParams}{Parameters}
+{\em frame} & the frame to send to the encoder \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if the decoder correctly received the frame 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/pushz/dev/video-\/app/src/libs/Encoder.\+h\item 
+/home/pushz/dev/video-\/app/src/libs/Encoder.\+cpp\end{DoxyCompactItemize}

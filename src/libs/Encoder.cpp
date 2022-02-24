@@ -7,6 +7,8 @@ Encoder::~Encoder() {
     if (outCodecContext) {
         std::cerr << "Encoder: unable to free codec context" << std::endl;
         exit(1);
+    }else {
+        std::cout << "\n[Encoder] codec context freed";
     }
 }
 

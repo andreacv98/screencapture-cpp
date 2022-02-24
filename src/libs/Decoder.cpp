@@ -7,6 +7,8 @@ Decoder::~Decoder() {
     if (inCodecContext) {
         std::cerr << "Decoder: unable to free codec context" << std::endl;
         exit(1);
+    } else {
+        std::cout << "\n[Decoder] codec context freed";
     }
 }
 

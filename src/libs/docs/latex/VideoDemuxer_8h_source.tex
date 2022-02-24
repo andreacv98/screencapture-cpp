@@ -1,0 +1,32 @@
+\hypertarget{VideoDemuxer_8h_source}{}\doxysection{/home/pushz/dev/video-\/app/src/libs/\+Video\+Demuxer.h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{comment}{//}}
+\DoxyCodeLine{2 \textcolor{comment}{// Created by Andrea on 22/02/2022.}}
+\DoxyCodeLine{3 \textcolor{comment}{//}}
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#ifndef VIDEO\_APP\_VIDEODEMUXER\_H}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#define VIDEO\_APP\_VIDEODEMUXER\_H}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include "{}Demuxer.h"{}}}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{keyword}{class }\mbox{\hyperlink{classVideoDemuxer}{VideoDemuxer}}: \textcolor{keyword}{public} \mbox{\hyperlink{classDemuxer}{Demuxer}} \{}
+\DoxyCodeLine{11 }
+\DoxyCodeLine{12 \textcolor{keyword}{private}:}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14 }
+\DoxyCodeLine{15     uint16\_t fps;}
+\DoxyCodeLine{16     \mbox{\hyperlink{structS}{SRResolution}} resolution;}
+\DoxyCodeLine{17     \textcolor{keywordtype}{void} setOptions() \textcolor{keyword}{override};}
+\DoxyCodeLine{18 }
+\DoxyCodeLine{19 \textcolor{keyword}{public}:}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21     \mbox{\hyperlink{classVideoDemuxer}{VideoDemuxer}}(\textcolor{keywordtype}{char} *src, \textcolor{keywordtype}{char} *url, uint16\_t fps, \mbox{\hyperlink{structS}{SRResolution}} resolution);}
+\DoxyCodeLine{22     AVFormatContext* \mbox{\hyperlink{classVideoDemuxer_abd2a7bce0a3a040ebea185b83a9cd0e4}{open}}() \textcolor{keyword}{override};}
+\DoxyCodeLine{23 }
+\DoxyCodeLine{24 \};}
+\DoxyCodeLine{25 }
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27 \textcolor{preprocessor}{\#endif }\textcolor{comment}{//VIDEO\_APP\_VIDEODEMUXER\_H}}
+
+\end{DoxyCode}

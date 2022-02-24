@@ -1,0 +1,47 @@
+\hypertarget{classDecoder}{}\doxysection{Decoder Class Reference}
+\label{classDecoder}\index{Decoder@{Decoder}}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{classDecoder_af12fb4e99d341ffb7e572887e90ab490}{send\+Packet}} (const AVPacket $\ast$packet)
+\item 
+int \mbox{\hyperlink{classDecoder_a4092bd983046d9ae586e2a5f8422482f}{get\+Decoded\+Output}} (AVFrame $\ast$raw\+Frame)
+\item 
+\mbox{\Hypertarget{classDecoder_a369194d51bc9e6ac70ba08a532f0f4aa}\label{classDecoder_a369194d51bc9e6ac70ba08a532f0f4aa}} 
+const AVCodec\+Context $\ast$ {\bfseries get\+Codec\+Context} () const
+\item 
+\mbox{\Hypertarget{classDecoder_a6c66bf7ff292ad075b640dbaa0a1c234}\label{classDecoder_a6c66bf7ff292ad075b640dbaa0a1c234}} 
+void {\bfseries set\+Codec\+Context} (AVCodec\+Context $\ast$context)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classDecoder_a4092bd983046d9ae586e2a5f8422482f}\label{classDecoder_a4092bd983046d9ae586e2a5f8422482f}} 
+\index{Decoder@{Decoder}!getDecodedOutput@{getDecodedOutput}}
+\index{getDecodedOutput@{getDecodedOutput}!Decoder@{Decoder}}
+\doxysubsubsection{\texorpdfstring{getDecodedOutput()}{getDecodedOutput()}}
+{\footnotesize\ttfamily int Decoder\+::get\+Decoded\+Output (\begin{DoxyParamCaption}\item[{AVFrame $\ast$}]{raw\+Frame }\end{DoxyParamCaption})}
+
+Return decoded output data from a decoder \begin{DoxyReturn}{Returns}
+0 if success 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classDecoder_af12fb4e99d341ffb7e572887e90ab490}\label{classDecoder_af12fb4e99d341ffb7e572887e90ab490}} 
+\index{Decoder@{Decoder}!sendPacket@{sendPacket}}
+\index{sendPacket@{sendPacket}!Decoder@{Decoder}}
+\doxysubsubsection{\texorpdfstring{sendPacket()}{sendPacket()}}
+{\footnotesize\ttfamily int Decoder\+::send\+Packet (\begin{DoxyParamCaption}\item[{const AVPacket $\ast$}]{packet }\end{DoxyParamCaption})}
+
+Send a packet to the decoder 
+\begin{DoxyParams}{Parameters}
+{\em packet} & the packet to send \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 if the decoder correctly received the packet 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/pushz/dev/video-\/app/src/libs/Decoder.\+h\item 
+/home/pushz/dev/video-\/app/src/libs/Decoder.\+cpp\end{DoxyCompactItemize}

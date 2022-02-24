@@ -552,12 +552,6 @@ void ScreenRecorder::captureVideo(){
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
         if(killSwitch) {
             cout << "\n[VideoThread] thread stopped!";
-            /*  ret = av_write_trailer(outAVFormatContext);
-              if( ret < 0)
-              {
-                  cout<<"\nerror in writing av trailer";
-                  exit(1);
-              }*/
             return;
         }
 
