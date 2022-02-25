@@ -28,7 +28,6 @@ public:
     ~Demuxer();
     virtual AVFormatContext* open() = 0;
     AVCodecContext *getInCodecContext() const;
-    int readPacket(AVPacket* read_packet, long long int pts_offset);
     void closeInput();
 
 private:

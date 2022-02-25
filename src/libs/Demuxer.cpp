@@ -41,11 +41,6 @@ Demuxer::~Demuxer() {
     }
 }
 
-
-int Demuxer::readPacket(AVPacket* read_packet, long long int pts_offset) {
-    //TODO
-}
-
 /**
  * The method close the format context.
  *
