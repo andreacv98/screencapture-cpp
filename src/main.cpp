@@ -12,7 +12,6 @@
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
 void sleep(unsigned milliseconds)
  {
     std::this_thread::sleep_for(std::chrono::seconds(milliseconds));
@@ -29,24 +28,29 @@ int main() {
     int x_toadd;
     int y_start;
     int y_toadd;
+    char video_url [50];
 
     bool test = true;
 
+
+    SRSettings settings;
+
     if (test){
-       SRSettings settings;
        settings._recvideo = true;
        settings._recaudio = true;
        x_start = 0;
        y_start = 0;
        x_toadd = 1920;
-       y_toadd = 800;
+       y_toadd = 1080;
        settings._screenoffset = {x_start, y_start};
        settings._inscreenres= {x_toadd, y_toadd};
        settings.filename = "test.mp4";
        settings._outscreenres = {1920,1080};
        settings._fps = 15;
 
-       Controller c("alsa_input.pci-0000_00_05.0.analog-stereo", ":0.0+0,0", settings);
+       //Controller c("alsa_input.pci-0000_00_05.0.analog-stereo", ":0.0+0,0", settings);
+        Controller c("audio=Microfono (Logitech G533 Gaming Headset)", "desktop", settings);
+
 
         bool capturing = true;
         int command = 0;
@@ -72,30 +76,18 @@ int main() {
                    break;
            }
        }
-       /*c.startCapture();
-       sleep(5);
-       c.pauseCapture();
-
-       sleep(5);
-       c.resumeCapture();
-
-       sleep(5);
-       c.endCapture();*/
        return 0;
     }
-
-    ScreenRecorder sc;
-
 
     std::cout << "\n\nStarted!\n\n" << std::endl;
 
     /*settings*/
-    sc.settings._recvideo = true;
+    settings._recvideo = true;
 
-#ifdef __unix__
+    #ifdef __unix__
     std::cout << "---Dispays info---" << std::endl;
     sc.infoDisplays();
-#endif
+    #endif
 
 
     std::cout << "---Enter n pixel to start area capture x (x origin area) ---" << std::endl;
@@ -117,35 +109,26 @@ int main() {
     std::cin >>y_toadd;
 #endif
 
-#ifdef _WIN32
-    sc.settings._screenoffset = {x_start, y_start};
-    sc.settings._inscreenres= {x_toadd, y_toadd};
-#endif
-
-#ifdef __unix__
-    sc.settings._screenoffset = {x_start, y_start};
-    sc.settings._inscreenres= {x_toadd, y_toadd};
-    //sc.settings._inscreenres = {XDisplayWidth(sc.dpy,screen_number),  XDisplayHeight(sc.dpy,screen_number)};
-
-#endif
+    settings._screenoffset = {x_start, y_start};
+    settings._inscreenres= {x_toadd, y_toadd};
 
 
     std::cout << "---Do you want audio record? 1 for yes, 0 for not ---" << std::endl;
     std::cin >>audio;
 
     if (audio){
-        sc.settings._recaudio = true;
+        settings._recaudio = true;
 
         /*
         std::cout << "---Select audio # to record---" << std::endl;
         std::cin >>audio_number;
          */
-    }else sc.settings._recaudio = false;
+    }else settings._recaudio = false;
 
     std::cout << "---Insert name for output file and extensions (max 100chr) eg. 'output.mp4'---" << std::endl;
     std::cin >>output_name;
 
-    sc.settings.filename = output_name;
+    settings.filename = output_name;
 
     std::cout << "---Choose output resolution #" << std::endl;
     std::cout << "resolution #0: \t1280x720 pixels"
@@ -155,40 +138,55 @@ int main() {
 
     switch (resolution_out) {
         case 0:
-            sc.settings._outscreenres = {1280,720};
+            settings._outscreenres = {1280,720};
             break;
         case 1:
-            sc.settings._outscreenres = {1920,1080};
+            settings._outscreenres = {1920,1080};
             break;
         case 2:
-            sc.settings._outscreenres = {2560,1440};
+            settings._outscreenres = {2560,1440};
             break;
         default:
             break;
     }
 
-    sc.settings._fps = 15;
+    settings._fps = 15;
 
-    /*open input devices*/
-    sc.openVideoSource();
-    sc.openAudioSource();
 
-    /*init data structures and threads based on settings*/
-    sc.initOutputFile();
-    sc.initThreads();
+#ifdef _WIN32
+    Controller c("audio=Microfono (Logitech G533 Gaming Headset)", "desktop", settings);
+#endif
 
+#ifdef __unix__
+    sprintf(video_url,":0.0+%d,%d", settings._screenoffset.x, settings._screenoffset.y);
+    //printf("VideoUrl:%s", video_url);
+    Controller c("alsa_input.pci-0000_00_05.0.analog-stereo", video_url, settings);
+#endif
+
+    bool capturing = true;
+    int command = 0;
 
     /* sample capture routine*/
-    sc.startCapture();
-
-    sleep(5);
-    sc.pauseCapture();
-
-    sleep(5);
-    sc.resumeCapture();
-
-    sleep(5);
-    sc.endCapture();
+    while(capturing){
+        std::cout << "\n--- 0 -> start | 1 -> pause | 2 -> resume | 3 -> end ---\n";
+        std::cin>>command;
+        switch (command) {
+            case 0:
+                c.startCapture();
+                break;
+            case 1:
+                c.pauseCapture();
+                break;
+            case 2:
+                c.resumeCapture();
+                break;
+            case 3:
+                c.endCapture();
+                capturing = false;
+            default:
+                break;
+        }
+    }
 
     return 0;
 }
