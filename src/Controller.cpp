@@ -326,22 +326,33 @@ void Controller::captureAudio() {
 
 /**
  * startCapture() enables Audio and Video capturing threads
+ *
+ * @return
+ * @throws runtime_error
+ *
  * @Note is callable only after thread initialization by mean of initThreads();
  */
 void Controller::startCapture() {
     if (captureStarted) return;
 
-    set();
+        try {
+            set();
+        } catch (const std::runtime_error &e) {
+            cerr << "Error opening video input: " << e.what() << endl;
+            throw;
+        }
 
     initThreads();
-    cout<<"\n[MainThread] Capture started";
-    cout<<"\n[MainThread] Capturing audio: " << (settings._recaudio ? "yes" : "no") ;
+    cout << "\n[MainThread] Capture started";
+    cout << "\n[MainThread] Capturing audio: " << (settings._recaudio ? "yes" : "no");
     std::lock_guard<std::mutex> r_lock(r_mutex);
     if (settings._recaudio)
         init_fifo();
     captureSwitch = true;
     captureStarted = true;
     r_cv.notify_all();
+
+
 }
 /**
  * pauseCapture() pauses Audio and Video capturing threads
@@ -462,6 +473,12 @@ void Controller::infoDisplays() {
 
 }
 
+/**
+ * The method set and open input and output
+ *
+ * @return
+ * @throw runtime_error
+ */
 void Controller::set() {
     // INPUT
     if (settings._recvideo){
