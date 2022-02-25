@@ -5,8 +5,8 @@
 #include <iostream>
 #include "VideoDemuxer.h"
 
-VideoDemuxer::VideoDemuxer(char *src, char *url, uint16_t fps, SRResolution resolution) : Demuxer(src, url),fps(fps),
-                                                                                     resolution(resolution) {
+VideoDemuxer::VideoDemuxer(const char *src, char *url, uint16_t fps, SRResolution resolution) : Demuxer(src, url), fps(fps),
+                                                                                                resolution(resolution) {
 }
 
 /**
@@ -50,6 +50,26 @@ void VideoDemuxer::setOptions() {
         throw std::invalid_argument("Error in setting video size");
     }
 
+#ifdef _WIN32
+    char off_x[30];
+    sprintf(off_x,"%d", settings._screenoffset.x);
+    char off_y[30];
+    sprintf(off_y,"%d", settings._screenoffset.y);
+
+
+    value = av_dict_set(&inVOptions, "offset_x", off_x, 0);
+    if (value < 0) {
+        cout << "\nerror in setting dictionary value off_x";
+        exit(1);
+    }
+
+    value = av_dict_set(&inVOptions, "offset_y", off_y, 0);
+    if (value < 0) {
+        cout << "\nerror in setting dictionary value off_y";
+        exit(1);
+    }
+#endif
+
     value = av_dict_set(&options, "preset", "medium", 0);
     if (value < 0) {
         throw std::invalid_argument("Error in setting preset value");
@@ -71,9 +91,9 @@ void VideoDemuxer::setOptions() {
  */
 AVFormatContext *VideoDemuxer::open() {
 
-    inFormat = av_find_input_format(src);
     inFormatContext = avformat_alloc_context();
     setOptions();
+    inFormat = av_find_input_format(src);
     value = avformat_open_input(&inFormatContext, url, inFormat, &options);
     if (value != 0) {
         throw std::runtime_error("Cannot open selected device");

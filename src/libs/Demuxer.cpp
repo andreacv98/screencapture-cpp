@@ -5,8 +5,8 @@
 #include <iostream>
 #include "Demuxer.h"
 
-Demuxer::Demuxer(char *src, char *url) :
-                                        src(src),
+Demuxer::Demuxer(const char *src, char *url) :
+                                        src(const_cast<char *>(src)),
                                         url(url),
                                         value(0),
                                         streamIndex(-1),

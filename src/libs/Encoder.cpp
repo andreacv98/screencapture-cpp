@@ -3,13 +3,13 @@
 #include <iostream>
 
 Encoder::~Encoder() {
-    avcodec_free_context(&outCodecContext);
+    /*avcodec_free_context(&outCodecContext);
     if (outCodecContext) {
         std::cerr << "Encoder: unable to free codec context" << std::endl;
         exit(1);
     }else {
         std::cout << "\n[Encoder] codec context freed";
-    }
+    }*/
 }
 
 int Encoder::sendFrame(AVFrame *frame) {

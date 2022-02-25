@@ -24,7 +24,7 @@ protected:
 
 public:
 
-    Demuxer(char * src, char * url);
+    Demuxer(const char * src, char * url);
     ~Demuxer();
     virtual AVFormatContext* open() = 0;
     AVCodecContext *getInCodecContext() const;

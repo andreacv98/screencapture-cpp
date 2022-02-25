@@ -12,6 +12,7 @@
 #endif
 
 #ifdef _WIN32
+#include <windows.h>
 void sleep(unsigned milliseconds)
  {
     std::this_thread::sleep_for(std::chrono::seconds(milliseconds));
