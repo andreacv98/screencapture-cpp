@@ -1,8 +1,8 @@
 #include <iostream>
 #include <thread>
 #include "ScreenRecorder.h"
-#include "Controller.h"
-#include "DisplayInfo.h"
+#include "libs/Controller.h"
+#include "libs/DisplayInfo.h"
 
 #ifdef __APPLE__
 #include <unistd.h>
@@ -170,26 +170,32 @@ int main() {
     int command = 0;
 
     /* sample capture routine*/
-    while(capturing){
-        std::cout << "\n--- 0 -> start | 1 -> pause | 2 -> resume | 3 -> end ---\n";
-        std::cin>>command;
-        switch (command) {
-            case 0:
-                c.startCapture();
-                break;
-            case 1:
-                c.pauseCapture();
-                break;
-            case 2:
-                c.resumeCapture();
-                break;
-            case 3:
-                c.endCapture();
-                capturing = false;
-            default:
-                break;
+    try{
+        while(capturing){
+            std::cout << "\n--- 0 -> start | 1 -> pause | 2 -> resume | 3 -> end ---\n";
+            std::cin>>command;
+            switch (command) {
+                case 0:
+                    c.startCapture();
+                    break;
+                case 1:
+                    c.pauseCapture();
+                    break;
+                case 2:
+                    c.resumeCapture();
+                    break;
+                case 3:
+                    c.endCapture();
+                    capturing = false;
+                default:
+                    break;
+            }
         }
+    }catch (const std::runtime_error& e){
+        std::cerr << "Runtime Error: " << e.what() << std::endl;
+        exit(1);
     }
+
 
     return 0;
 }

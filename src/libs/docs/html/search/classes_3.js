@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['encoder_0',['Encoder',['../classEncoder.html',1,'']]]
+  ['decoder_0',['Decoder',['../classDecoder.html',1,'']]],
+  ['demuxer_1',['Demuxer',['../classDemuxer.html',1,'']]],
+  ['displayinfo_2',['DisplayInfo',['../classDisplayInfo.html',1,'']]]
 ];

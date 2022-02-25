@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['closeinput_0',['closeInput',['../classDemuxer.html#a1e344d76a4d8f3770d5673c04a9792cb',1,'Demuxer']]]
+  ['getdecodedoutput_0',['getDecodedOutput',['../classDecoder.html#a4092bd983046d9ae586e2a5f8422482f',1,'Decoder']]],
+  ['getpacket_1',['getPacket',['../classEncoder.html#af1aa4487bb756d7542bb497215973355',1,'Encoder']]]
 ];

@@ -1,0 +1,129 @@
+\hypertarget{Controller_8h_source}{}\doxysection{Controller.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef VIDEO\_APP\_CONTROLLER\_H}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define VIDEO\_APP\_CONTROLLER\_H}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 }
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include <mutex>}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#include <condition\_variable>}}
+\DoxyCodeLine{7 \textcolor{preprocessor}{\#include <thread>}}
+\DoxyCodeLine{8 \textcolor{preprocessor}{\#include "{}AudioDemuxer.h"{}}}
+\DoxyCodeLine{9 \textcolor{preprocessor}{\#include "{}VideoDemuxer.h"{}}}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{11 \textcolor{preprocessor}{\#include <iostream>}}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#include <cstdio>}}
+\DoxyCodeLine{13 \textcolor{preprocessor}{\#include <cstdlib>}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#include <fstream>}}
+\DoxyCodeLine{15 \textcolor{preprocessor}{\#include <cstring>}}
+\DoxyCodeLine{16 \textcolor{preprocessor}{\#include <math.h>}}
+\DoxyCodeLine{17 \textcolor{preprocessor}{\#include <string.h>}}
+\DoxyCodeLine{18 \textcolor{preprocessor}{\#include <queue>}}
+\DoxyCodeLine{19 \textcolor{preprocessor}{\#include <mutex>}}
+\DoxyCodeLine{20 \textcolor{preprocessor}{\#include <condition\_variable>}}
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#include <thread>}}
+\DoxyCodeLine{22 }
+\DoxyCodeLine{23 \textcolor{preprocessor}{\#ifdef WIN32}}
+\DoxyCodeLine{24 \textcolor{preprocessor}{\#include <windows.h>}}
+\DoxyCodeLine{25 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{26 }
+\DoxyCodeLine{27 \textcolor{preprocessor}{\#ifdef \_\_unix\_\_}}
+\DoxyCodeLine{28 \textcolor{preprocessor}{\#include <X11/Xlib.h>}}
+\DoxyCodeLine{29 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{30 }
+\DoxyCodeLine{31 \textcolor{preprocessor}{\#include "{}utils.h"{}}}
+\DoxyCodeLine{32 \textcolor{preprocessor}{\#include "{}Decoder.h"{}}}
+\DoxyCodeLine{33 \textcolor{preprocessor}{\#include "{}Encoder.h"{}}}
+\DoxyCodeLine{34 \textcolor{preprocessor}{\#include "{}Muxer.h"{}}}
+\DoxyCodeLine{35 }
+\DoxyCodeLine{36 \textcolor{preprocessor}{\#ifdef \_\_APPLE\_\_}}
+\DoxyCodeLine{37 \textcolor{preprocessor}{\#define VIDEO\_SOURCE ("{}avfoundation"{}})}
+\DoxyCodeLine{38 \textcolor{preprocessor}{\#define VIDEO\_URL ("{}1:none"{}})}
+\DoxyCodeLine{39 \textcolor{preprocessor}{\#define AUDIO\_SOURCE ("{}avfoundation"{}})}
+\DoxyCodeLine{40 \textcolor{preprocessor}{\#define AUDIO\_URL ("{}none:0"{}})}
+\DoxyCodeLine{41 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{42 }
+\DoxyCodeLine{43 \textcolor{preprocessor}{\#ifdef \_\_unix\_\_}}
+\DoxyCodeLine{44 \textcolor{preprocessor}{\#define VIDEO\_SOURCE ("{}x11grab"{}})}
+\DoxyCodeLine{45 \textcolor{preprocessor}{\#define VIDEO\_URL ("{}:0.0+0,0"{}})}
+\DoxyCodeLine{46 \textcolor{preprocessor}{\#define AUDIO\_SOURCE ("{}pulse"{}})}
+\DoxyCodeLine{47 \textcolor{preprocessor}{\#define AUDIO\_URL ("{}alsa\_input.pci-\/0000\_00\_05.0.analog-\/stereo"{}})}
+\DoxyCodeLine{48 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{49 }
+\DoxyCodeLine{50 \textcolor{preprocessor}{\#ifdef \_WIN32}}
+\DoxyCodeLine{51 \textcolor{preprocessor}{\#define VIDEO\_SOURCE ("{}gdigrab"{}})}
+\DoxyCodeLine{52 \textcolor{preprocessor}{\#define VIDEO\_URL ("{}desktop"{}})}
+\DoxyCodeLine{53 \textcolor{preprocessor}{\#define AUDIO\_SOURCE ("{}dshow"{}})}
+\DoxyCodeLine{54 \textcolor{preprocessor}{\#define AUDIO\_URL ("{}audio=Microfono (Logitech G533 Gaming Headset)"{}})}
+\DoxyCodeLine{55 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{56 }
+\DoxyCodeLine{57 \textcolor{keyword}{class }\mbox{\hyperlink{classController}{Controller}} \{}
+\DoxyCodeLine{58 }
+\DoxyCodeLine{59 \textcolor{keyword}{private}:}
+\DoxyCodeLine{60     \textcolor{comment}{//synchro stuff}}
+\DoxyCodeLine{61     std::mutex r\_mutex;}
+\DoxyCodeLine{62     std::condition\_variable r\_cv;}
+\DoxyCodeLine{63     std::mutex w\_lock;}
+\DoxyCodeLine{64 }
+\DoxyCodeLine{65     \textcolor{comment}{//threads}}
+\DoxyCodeLine{66     std::thread videoThread;}
+\DoxyCodeLine{67     std::thread audioThread;}
+\DoxyCodeLine{68 }
+\DoxyCodeLine{69     \mbox{\hyperlink{structB}{SRPacketBuffer}} inVideoBuffer;}
+\DoxyCodeLine{70     \mbox{\hyperlink{structB}{SRPacketBuffer}} inAudioBuffer;}
+\DoxyCodeLine{71 }
+\DoxyCodeLine{72     std::unique\_ptr<AudioDemuxer> inAudio;}
+\DoxyCodeLine{73     std::unique\_ptr<VideoDemuxer> inVideo;}
+\DoxyCodeLine{74 }
+\DoxyCodeLine{75     std::unique\_ptr<Muxer> output;}
+\DoxyCodeLine{76 }
+\DoxyCodeLine{77     \mbox{\hyperlink{structA}{SRSettings}} settings;}
+\DoxyCodeLine{78 }
+\DoxyCodeLine{79     std::unique\_ptr<Decoder> decoderAudio;}
+\DoxyCodeLine{80     std::unique\_ptr<Decoder> decoderVideo;}
+\DoxyCodeLine{81     std::unique\_ptr<Encoder> encoderAudio;}
+\DoxyCodeLine{82     std::unique\_ptr<Encoder> encoderVideo;}
+\DoxyCodeLine{83 }
+\DoxyCodeLine{84     \textcolor{keywordtype}{int} inVideoStreamIndex;}
+\DoxyCodeLine{85     \textcolor{keywordtype}{int} inAudioStreamIndex;}
+\DoxyCodeLine{86 }
+\DoxyCodeLine{87     \textcolor{keywordtype}{bool} captureSwitch;}
+\DoxyCodeLine{88     \textcolor{keywordtype}{bool} captureStarted;}
+\DoxyCodeLine{89     \textcolor{keywordtype}{bool} killSwitch;}
+\DoxyCodeLine{90 }
+\DoxyCodeLine{91     AVAudioFifo *fifo;}
+\DoxyCodeLine{92 }
+\DoxyCodeLine{93     \textcolor{keywordtype}{void} captureVideo();}
+\DoxyCodeLine{94     \textcolor{keywordtype}{void} captureAudio();}
+\DoxyCodeLine{95     \textcolor{keyword}{static} \textcolor{keywordtype}{int} initConvertedSamples(uint8\_t ***converted\_input\_samples,}
+\DoxyCodeLine{96                                     \textcolor{keyword}{const} AVCodecContext *output\_codec\_context,}
+\DoxyCodeLine{97                                     \textcolor{keywordtype}{int} frame\_size);}
+\DoxyCodeLine{98 }
+\DoxyCodeLine{99     \textcolor{keywordtype}{int} init\_fifo();}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{101     \textcolor{keywordtype}{int} add\_samples\_to\_fifo(uint8\_t **converted\_input\_samples, \textcolor{keyword}{const} \textcolor{keywordtype}{int} frame\_size);}
+\DoxyCodeLine{102 }
+\DoxyCodeLine{103 \textcolor{keyword}{public}:}
+\DoxyCodeLine{104     \mbox{\hyperlink{classController}{Controller}}(\textcolor{keywordtype}{char} * audioUrl, \textcolor{keywordtype}{char} * videoUrl, \mbox{\hyperlink{structA}{SRSettings}} settings);}
+\DoxyCodeLine{105     \mbox{\hyperlink{classController}{\string~Controller}}();}
+\DoxyCodeLine{106 }
+\DoxyCodeLine{107 \textcolor{preprocessor}{\#ifdef \_\_unix\_\_}}
+\DoxyCodeLine{108     Display *dpy;       \textcolor{comment}{//display from X11}}
+\DoxyCodeLine{109 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{110 }
+\DoxyCodeLine{111     \textcolor{keywordtype}{void} startCapture();}
+\DoxyCodeLine{112     \textcolor{keywordtype}{void} pauseCapture();}
+\DoxyCodeLine{113     \textcolor{keywordtype}{void} resumeCapture();}
+\DoxyCodeLine{114     \textcolor{keywordtype}{void} endCapture();}
+\DoxyCodeLine{115     \textcolor{keywordtype}{void} initThreads();}
+\DoxyCodeLine{116     \textcolor{keywordtype}{void} infoDisplays();}
+\DoxyCodeLine{117 }
+\DoxyCodeLine{118 \textcolor{keyword}{private}:}
+\DoxyCodeLine{119     \textcolor{keywordtype}{void} set();}
+\DoxyCodeLine{120 }
+\DoxyCodeLine{121 \};}
+\DoxyCodeLine{122 }
+\DoxyCodeLine{123 }
+\DoxyCodeLine{124 \textcolor{preprocessor}{\#endif }\textcolor{comment}{//VIDEO\_APP\_CONTROLLER\_H}}
+
+\end{DoxyCode}

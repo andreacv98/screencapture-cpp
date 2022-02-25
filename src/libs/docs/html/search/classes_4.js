@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['muxer_0',['Muxer',['../classMuxer.html',1,'']]]
+  ['encoder_0',['Encoder',['../classEncoder.html',1,'']]]
 ];

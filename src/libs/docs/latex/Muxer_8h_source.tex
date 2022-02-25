@@ -1,46 +1,40 @@
-\hypertarget{Muxer_8h_source}{}\doxysection{/home/pushz/dev/video-\/app/src/libs/\+Muxer.h}
+\hypertarget{Muxer_8h_source}{}\doxysection{Muxer.\+h}
 
 \begin{DoxyCode}{0}
-\DoxyCodeLine{1 \textcolor{comment}{//}}
-\DoxyCodeLine{2 \textcolor{comment}{// Created by pushz on 23/02/22.}}
-\DoxyCodeLine{3 \textcolor{comment}{//}}
-\DoxyCodeLine{4 }
-\DoxyCodeLine{5 \textcolor{preprocessor}{\#ifndef VIDEO\_APP\_MUXER\_H}}
-\DoxyCodeLine{6 \textcolor{preprocessor}{\#define VIDEO\_APP\_MUXER\_H}}
-\DoxyCodeLine{7 \textcolor{preprocessor}{\#include "{}utils.h"{}}}
-\DoxyCodeLine{8 \textcolor{preprocessor}{\#include <string>}}
-\DoxyCodeLine{9 }
-\DoxyCodeLine{10 \textcolor{keyword}{class }\mbox{\hyperlink{classMuxer}{Muxer}} \{}
-\DoxyCodeLine{11 }
-\DoxyCodeLine{12 \textcolor{keyword}{private}:}
-\DoxyCodeLine{13     AVFormatContext *outAVFormatContext;}
-\DoxyCodeLine{14 }
-\DoxyCodeLine{15     AVCodecContext *outVCodecContext;}
-\DoxyCodeLine{16     AVCodecContext *outACodecContext;}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef VIDEO\_APP\_MUXER\_H}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define VIDEO\_APP\_MUXER\_H}}
+\DoxyCodeLine{3 \textcolor{preprocessor}{\#include "{}utils.h"{}}}
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include <string>}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{keyword}{class }\mbox{\hyperlink{classMuxer}{Muxer}} \{}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{keyword}{private}:}
+\DoxyCodeLine{9     AVFormatContext *outAVFormatContext;}
+\DoxyCodeLine{10 }
+\DoxyCodeLine{11     AVCodecContext *outVCodecContext;}
+\DoxyCodeLine{12     AVCodecContext *outACodecContext;}
+\DoxyCodeLine{13 }
+\DoxyCodeLine{14     AVOutputFormat *outAVOutputFormat;}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16     \mbox{\hyperlink{structA}{SRSettings}} outputSettings;}
 \DoxyCodeLine{17 }
-\DoxyCodeLine{18     AVOutputFormat *outAVOutputFormat;}
-\DoxyCodeLine{19 }
-\DoxyCodeLine{20     \mbox{\hyperlink{structA}{SRSettings}} outputSettings;}
-\DoxyCodeLine{21     std::string outputFilename;}
-\DoxyCodeLine{22 }
-\DoxyCodeLine{23     \textcolor{keywordtype}{void} generateVideoOutputStream();}
-\DoxyCodeLine{24     \textcolor{keywordtype}{void} generateAudioOutputStream(\textcolor{keyword}{const} AVCodecContext* inACodecContext);}
-\DoxyCodeLine{25 }
-\DoxyCodeLine{26 \textcolor{keyword}{public}:}
-\DoxyCodeLine{27     \textcolor{keywordtype}{int} outVideoStreamIndex;}
-\DoxyCodeLine{28     \textcolor{keywordtype}{int} outAudioStreamIndex;}
-\DoxyCodeLine{29 }
-\DoxyCodeLine{30     \mbox{\hyperlink{classMuxer}{Muxer}}(\mbox{\hyperlink{structA}{SRSettings}} outputSettings, std::string outputFilename);}
-\DoxyCodeLine{31     \mbox{\hyperlink{classMuxer}{\string~Muxer}}();}
-\DoxyCodeLine{32 }
-\DoxyCodeLine{37     \textcolor{keywordtype}{int} \mbox{\hyperlink{classMuxer_ad6cb55752a74408c700153ab1d2f58a6}{initOutputFile}}(\textcolor{keyword}{const} AVCodecContext* inACodecContext);}
+\DoxyCodeLine{18     \textcolor{keywordtype}{void} generateVideoOutputStream();}
+\DoxyCodeLine{19     \textcolor{keywordtype}{void} generateAudioOutputStream();}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21 \textcolor{keyword}{public}:}
+\DoxyCodeLine{22     \textcolor{keywordtype}{int} outVideoStreamIndex;}
+\DoxyCodeLine{23     \textcolor{keywordtype}{int} outAudioStreamIndex;}
+\DoxyCodeLine{24 }
+\DoxyCodeLine{29     \mbox{\hyperlink{classMuxer_afab0ee2dd1c7ba551d1c62b1d6760080}{Muxer}}(\mbox{\hyperlink{structA}{SRSettings}} outputSettings);}
+\DoxyCodeLine{30     \mbox{\hyperlink{classMuxer}{\string~Muxer}}();}
+\DoxyCodeLine{31 }
+\DoxyCodeLine{37     \textcolor{keywordtype}{int} \mbox{\hyperlink{classMuxer_ade2c34b002d9335298ba82b4ab4eabfd}{initOutputFile}}();}
 \DoxyCodeLine{38 }
 \DoxyCodeLine{39     AVCodecContext* getACodecContext() \textcolor{keyword}{const};}
 \DoxyCodeLine{40     AVCodecContext* getVCodecContext() \textcolor{keyword}{const};}
-\DoxyCodeLine{41 }
-\DoxyCodeLine{42     AVFormatContext* getOutAVFormatContext() \textcolor{keyword}{const};}
-\DoxyCodeLine{43 \};}
-\DoxyCodeLine{44 }
-\DoxyCodeLine{45 \textcolor{preprocessor}{\#endif }\textcolor{comment}{//VIDEO\_APP\_MUXER\_H}}
+\DoxyCodeLine{41     AVFormatContext* getOutAVFormatContext() \textcolor{keyword}{const};}
+\DoxyCodeLine{42 \};}
+\DoxyCodeLine{43 }
+\DoxyCodeLine{44 \textcolor{preprocessor}{\#endif }\textcolor{comment}{//VIDEO\_APP\_MUXER\_H}}
 
 \end{DoxyCode}

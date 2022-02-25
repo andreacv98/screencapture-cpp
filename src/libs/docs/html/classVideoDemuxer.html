@@ -80,24 +80,26 @@ Inheritance diagram for VideoDemuxer:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5282cec7ba3f9630c9eaff1f349500b7"><td class="memItemLeft" align="right" valign="top"><a id="a5282cec7ba3f9630c9eaff1f349500b7" name="a5282cec7ba3f9630c9eaff1f349500b7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>VideoDemuxer</b> (char *src, char *url, uint16_t fps, <a class="el" href="structS.html">SRResolution</a> resolution)</td></tr>
-<tr class="separator:a5282cec7ba3f9630c9eaff1f349500b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7dfbd42007923cf0486db58bcba5b55"><td class="memItemLeft" align="right" valign="top"><a id="ab7dfbd42007923cf0486db58bcba5b55" name="ab7dfbd42007923cf0486db58bcba5b55"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>VideoDemuxer</b> (const char *src, char *url, uint16_t fps, <a class="el" href="structS.html">SRResolution</a> resolution, <a class="el" href="structT.html">SROffset</a> offset)</td></tr>
+<tr class="separator:ab7dfbd42007923cf0486db58bcba5b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd2a7bce0a3a040ebea185b83a9cd0e4"><td class="memItemLeft" align="right" valign="top">AVFormatContext *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classVideoDemuxer.html#abd2a7bce0a3a040ebea185b83a9cd0e4">open</a> () override</td></tr>
 <tr class="separator:abd2a7bce0a3a040ebea185b83a9cd0e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classDemuxer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classDemuxer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classDemuxer.html">Demuxer</a></td></tr>
-<tr class="memitem:add06f0c816fa185f4e47a6cddcf974d2 inherit pub_methods_classDemuxer"><td class="memItemLeft" align="right" valign="top"><a id="add06f0c816fa185f4e47a6cddcf974d2" name="add06f0c816fa185f4e47a6cddcf974d2"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Demuxer</b> (char *src, char *url)</td></tr>
-<tr class="separator:add06f0c816fa185f4e47a6cddcf974d2 inherit pub_methods_classDemuxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8a248aa4571f840db4aa603cf065af20 inherit pub_methods_classDemuxer"><td class="memItemLeft" align="right" valign="top">virtual AVFormatContext *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDemuxer.html#a8a248aa4571f840db4aa603cf065af20">open</a> ()=0</td></tr>
+<tr class="memitem:a613b8a5784d3563bf50d18de3024244a inherit pub_methods_classDemuxer"><td class="memItemLeft" align="right" valign="top"><a id="a613b8a5784d3563bf50d18de3024244a" name="a613b8a5784d3563bf50d18de3024244a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>Demuxer</b> (const char *src, char *url)</td></tr>
+<tr class="separator:a613b8a5784d3563bf50d18de3024244a inherit pub_methods_classDemuxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a248aa4571f840db4aa603cf065af20 inherit pub_methods_classDemuxer"><td class="memItemLeft" align="right" valign="top"><a id="a8a248aa4571f840db4aa603cf065af20" name="a8a248aa4571f840db4aa603cf065af20"></a>
+virtual AVFormatContext *&#160;</td><td class="memItemRight" valign="bottom"><b>open</b> ()=0</td></tr>
 <tr class="separator:a8a248aa4571f840db4aa603cf065af20 inherit pub_methods_classDemuxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af55588e8f9ff94d46b969286da987624 inherit pub_methods_classDemuxer"><td class="memItemLeft" align="right" valign="top"><a id="af55588e8f9ff94d46b969286da987624" name="af55588e8f9ff94d46b969286da987624"></a>
 AVCodecContext *&#160;</td><td class="memItemRight" valign="bottom"><b>getInCodecContext</b> () const</td></tr>
 <tr class="separator:af55588e8f9ff94d46b969286da987624 inherit pub_methods_classDemuxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a56d47c7c0201af47c6956e0013b9e1a1 inherit pub_methods_classDemuxer"><td class="memItemLeft" align="right" valign="top"><a id="a56d47c7c0201af47c6956e0013b9e1a1" name="a56d47c7c0201af47c6956e0013b9e1a1"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>readPacket</b> (AVPacket *read_packet, long long int pts_offset)</td></tr>
-<tr class="separator:a56d47c7c0201af47c6956e0013b9e1a1 inherit pub_methods_classDemuxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e344d76a4d8f3770d5673c04a9792cb inherit pub_methods_classDemuxer"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDemuxer.html#a1e344d76a4d8f3770d5673c04a9792cb">closeInput</a> ()</td></tr>
+<tr class="memitem:af3360317ce3500e567b2f43c04c7625e inherit pub_methods_classDemuxer"><td class="memItemLeft" align="right" valign="top"><a id="af3360317ce3500e567b2f43c04c7625e" name="af3360317ce3500e567b2f43c04c7625e"></a>
+AVFormatContext *&#160;</td><td class="memItemRight" valign="bottom"><b>getInFormatContext</b> () const</td></tr>
+<tr class="separator:af3360317ce3500e567b2f43c04c7625e inherit pub_methods_classDemuxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e344d76a4d8f3770d5673c04a9792cb inherit pub_methods_classDemuxer"><td class="memItemLeft" align="right" valign="top"><a id="a1e344d76a4d8f3770d5673c04a9792cb" name="a1e344d76a4d8f3770d5673c04a9792cb"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>closeInput</b> ()</td></tr>
 <tr class="separator:a1e344d76a4d8f3770d5673c04a9792cb inherit pub_methods_classDemuxer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
@@ -154,22 +156,13 @@ AVCodec *&#160;</td><td class="memItemRight" valign="bottom"><b>inCodec</b></td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >The method opens the device and defines the needed data structure.</p>
-<dl class="section return"><dt>Returns</dt><dd>the device context </dd></dl>
-<dl class="exception"><dt>Exceptions</dt><dd>
-  <table class="exception">
-    <tr><td class="paramname">runtime_error</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
 
 <p>Implements <a class="el" href="classDemuxer.html">Demuxer</a>.</p>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/pushz/dev/video-app/src/libs/<a class="el" href="VideoDemuxer_8h_source.html">VideoDemuxer.h</a></li>
-<li>/home/pushz/dev/video-app/src/libs/VideoDemuxer.cpp</li>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li><a class="el" href="VideoDemuxer_8h_source.html">VideoDemuxer.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

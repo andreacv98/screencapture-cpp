@@ -1,0 +1,38 @@
+\label{index_md__home_pushz_dev_video_app_src_libs_doc_home_page}%
+\Hypertarget{index_md__home_pushz_dev_video_app_src_libs_doc_home_page}%
+Screen\+Capture is a project which permits to record your screen and your voice through your microphone. It has been developed base don the FFMpeg libraries. \hypertarget{index_autotoc_md1}{}\doxysection{Guide to usage}\label{index_autotoc_md1}
+\hypertarget{index_autotoc_md2}{}\doxysubsection{Linux}\label{index_autotoc_md2}
+
+\begin{DoxyItemize}
+\item Pre-\/requirements instructions\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo apt update \&\& sudo apt install -\/y build-\/essential libpulse-\/dev libxau-\/dev libxdmcp-\/dev libxcb1-\/dev}
+
+\end{DoxyCode}
+
+\begin{DoxyItemize}
+\item Instructions to get the audio devices\+: \`{}\`{}\`{}bash pactl list short sources \`{}\`{}\`{} 
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{index_autotoc_md3}{}\doxysubsection{Windows}\label{index_autotoc_md3}
+
+\begin{DoxyItemize}
+\item Pre-\/requirements instructions\+:
+\begin{DoxyItemize}
+\item Min\+GW 10
+\item Pacman requirements\+: \`{}\`{}\`{}bash pacman -\/\mbox{\hyperlink{structS}{S}} mingw-\/w64-\/x86\+\_\+64-\/dlfcn mingw-\/w64-\/x86\+\_\+64-\/lame mingw-\/w64-\/x86\+\_\+64-\/libvorbis mingw-\/w64-\/x86\+\_\+64-\/liboggmingw-\/w64-\/x86\+\_\+64-\/libiconv \`{}\`{}\`{}
+\item Instructions to get the audio devices\+: \`{}\`{}\`{}bash cd ./libs/\+Windows/bin-\/video/ ffmpeg.\+exe -\/f dshow -\/list\+\_\+devices true -\/i dummy \`{}\`{}\`{} 
+\end{DoxyItemize}
+\end{DoxyItemize}\hypertarget{index_autotoc_md4}{}\doxysubsection{Mac\+OS}\label{index_autotoc_md4}
+
+\begin{DoxyItemize}
+\item Pre-\/requirements instructions\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{brew install ffmpeg}
+
+\end{DoxyCode}
+
+\end{DoxyItemize}\hypertarget{index_autotoc_md5}{}\doxysubsection{Usage -\/ sample application}\label{index_autotoc_md5}
+You can easily start the compilation and the usage just by running the CMake\+List file with a proper version of CMake and then follow the usual steps. The sample application lets you record the screen with the audio or a portion of it, just follow the instructions.\hypertarget{index_autotoc_md6}{}\doxysubsection{Usage -\/ library}\label{index_autotoc_md6}
+The library start with the {\ttfamily \mbox{\hyperlink{classController}{Controller}}} object which needs at the creation step the audio device chosen (just look the previous instructions) and the video\+Url which is different from each operating system (on Linux system, the library can give you the name of the display just by calling the {\ttfamily Display\+Info.\+show\+Infos()} method). Moreover, a SRSettings parameter is requested, which is a simple structure which needs to be filled with all the information about the recording. After all of this you can easily start the capture with {\ttfamily start\+Capture()} methods and the recording process should be fine from that moment, just be aware of the possible exception that could be thrown by the method. From that moment you can {\ttfamily pause\+Capture()}, {\ttfamily resume\+Capture()} and {\ttfamily stop\+Capture()}. You can retrieve the file from the folder where your executable was running.
+
+More details can be retrieved from \href{src/libs/docs/html/index.html}{\texttt{ Doxigen documentation}}. 

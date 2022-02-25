@@ -25,6 +25,11 @@ const AVCodec\+Context $\ast$ {\bfseries get\+Codec\+Context} () const
 Read encoded data from the encoder \begin{DoxyReturn}{Returns}
 0 if success 
 \end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em runtime\+\_\+error} & \\
+\hline
+\end{DoxyExceptions}
 \mbox{\Hypertarget{classEncoder_ae60fb14c7a83e39accae8b9c1babbe24}\label{classEncoder_ae60fb14c7a83e39accae8b9c1babbe24}} 
 \index{Encoder@{Encoder}!sendFrame@{sendFrame}}
 \index{sendFrame@{sendFrame}!Encoder@{Encoder}}
@@ -40,8 +45,12 @@ Send a frame to the encoder
 0 if the decoder correctly received the frame 
 \end{DoxyReturn}
 
+\begin{DoxyExceptions}{Exceptions}
+{\em runtime\+\_\+error} & \\
+\hline
+\end{DoxyExceptions}
 
-The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-/home/pushz/dev/video-\/app/src/libs/Encoder.\+h\item 
-/home/pushz/dev/video-\/app/src/libs/Encoder.\+cpp\end{DoxyCompactItemize}
+Encoder.\+h\end{DoxyCompactItemize}

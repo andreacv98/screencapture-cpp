@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['sendframe_0',['sendFrame',['../classEncoder.html#ae60fb14c7a83e39accae8b9c1babbe24',1,'Encoder']]],
-  ['sendpacket_1',['sendPacket',['../classDecoder.html#af12fb4e99d341ffb7e572887e90ab490',1,'Decoder']]]
+  ['muxer_0',['Muxer',['../classMuxer.html#afab0ee2dd1c7ba551d1c62b1d6760080',1,'Muxer']]]
 ];

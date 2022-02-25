@@ -25,6 +25,11 @@ void {\bfseries set\+Codec\+Context} (AVCodec\+Context $\ast$context)
 Return decoded output data from a decoder \begin{DoxyReturn}{Returns}
 0 if success 
 \end{DoxyReturn}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em runtime\+\_\+error} & \\
+\hline
+\end{DoxyExceptions}
 \mbox{\Hypertarget{classDecoder_af12fb4e99d341ffb7e572887e90ab490}\label{classDecoder_af12fb4e99d341ffb7e572887e90ab490}} 
 \index{Decoder@{Decoder}!sendPacket@{sendPacket}}
 \index{sendPacket@{sendPacket}!Decoder@{Decoder}}
@@ -40,8 +45,12 @@ Send a packet to the decoder
 0 if the decoder correctly received the packet 
 \end{DoxyReturn}
 
+\begin{DoxyExceptions}{Exceptions}
+{\em runtime\+\_\+error} & \\
+\hline
+\end{DoxyExceptions}
 
-The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-/home/pushz/dev/video-\/app/src/libs/Decoder.\+h\item 
-/home/pushz/dev/video-\/app/src/libs/Decoder.\+cpp\end{DoxyCompactItemize}
+Decoder.\+h\end{DoxyCompactItemize}

@@ -1,4 +1,7 @@
 var searchData=
 [
-  ['open_0',['open',['../classAudioDemuxer.html#a139cd7bd4562e6103df3b66cf916967a',1,'AudioDemuxer::open()'],['../classVideoDemuxer.html#abd2a7bce0a3a040ebea185b83a9cd0e4',1,'VideoDemuxer::open()']]]
+  ['s_0',['S',['../structS.html',1,'']]],
+  ['screencapture_20c_2b_2b_1',['ScreenCapture C++',['../index.html',1,'']]],
+  ['sendframe_2',['sendFrame',['../classEncoder.html#ae60fb14c7a83e39accae8b9c1babbe24',1,'Encoder']]],
+  ['sendpacket_3',['sendPacket',['../classDecoder.html#af12fb4e99d341ffb7e572887e90ab490',1,'Decoder']]]
 ];

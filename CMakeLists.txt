@@ -58,8 +58,8 @@ add_executable(
         src/main.cpp
         src/ScreenRecorder.cpp
         src/ScreenRecorder.h
-        src/DisplayInfo.cpp
-        src/DisplayInfo.h
+        src/libs/DisplayInfo.cpp
+        src/libs/DisplayInfo.h
         src/libs/Demuxer.cpp
         src/libs/Demuxer.h
         src/libs/VideoDemuxer.cpp
@@ -71,7 +71,7 @@ add_executable(
         src/libs/Encoder.cpp
         src/libs/Muxer.h src/libs/Muxer.cpp
         src/libs/utils.h
-        src/Controller.cpp src/Controller.h)
+        src/libs/Controller.cpp src/libs/Controller.h)
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME}

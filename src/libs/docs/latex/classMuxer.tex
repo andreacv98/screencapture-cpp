@@ -3,10 +3,9 @@
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{classMuxer_ab6f674796c4730482b74ec3ddb6f9432}\label{classMuxer_ab6f674796c4730482b74ec3ddb6f9432}} 
-{\bfseries Muxer} (\mbox{\hyperlink{structA}{SRSettings}} output\+Settings, std\+::string output\+Filename)
+\mbox{\hyperlink{classMuxer_afab0ee2dd1c7ba551d1c62b1d6760080}{Muxer}} (\mbox{\hyperlink{structA}{SRSettings}} output\+Settings)
 \item 
-int \mbox{\hyperlink{classMuxer_ad6cb55752a74408c700153ab1d2f58a6}{init\+Output\+File}} (const AVCodec\+Context $\ast$in\+ACodec\+Context)
+int \mbox{\hyperlink{classMuxer_ade2c34b002d9335298ba82b4ab4eabfd}{init\+Output\+File}} ()
 \item 
 \mbox{\Hypertarget{classMuxer_acf64668908bd781c7185a4003b30e09f}\label{classMuxer_acf64668908bd781c7185a4003b30e09f}} 
 AVCodec\+Context $\ast$ {\bfseries get\+ACodec\+Context} () const
@@ -28,16 +27,37 @@ int {\bfseries out\+Audio\+Stream\+Index}
 \end{DoxyCompactItemize}
 
 
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classMuxer_afab0ee2dd1c7ba551d1c62b1d6760080}\label{classMuxer_afab0ee2dd1c7ba551d1c62b1d6760080}} 
+\index{Muxer@{Muxer}!Muxer@{Muxer}}
+\index{Muxer@{Muxer}!Muxer@{Muxer}}
+\doxysubsubsection{\texorpdfstring{Muxer()}{Muxer()}}
+{\footnotesize\ttfamily Muxer\+::\+Muxer (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structA}{SRSettings}}}]{output\+Settings }\end{DoxyParamCaption})}
+
+Create a new muxer 
+\begin{DoxyParams}{Parameters}
+{\em output\+Settings} & \\
+\hline
+\end{DoxyParams}
+
+
 \doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classMuxer_ad6cb55752a74408c700153ab1d2f58a6}\label{classMuxer_ad6cb55752a74408c700153ab1d2f58a6}} 
+\mbox{\Hypertarget{classMuxer_ade2c34b002d9335298ba82b4ab4eabfd}\label{classMuxer_ade2c34b002d9335298ba82b4ab4eabfd}} 
 \index{Muxer@{Muxer}!initOutputFile@{initOutputFile}}
 \index{initOutputFile@{initOutputFile}!Muxer@{Muxer}}
 \doxysubsubsection{\texorpdfstring{initOutputFile()}{initOutputFile()}}
-{\footnotesize\ttfamily int Muxer\+::init\+Output\+File (\begin{DoxyParamCaption}\item[{const AVCodec\+Context $\ast$}]{in\+ACodec\+Context }\end{DoxyParamCaption})}
+{\footnotesize\ttfamily int Muxer\+::init\+Output\+File (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
-Add a video stream to the muxer 
+Open the output file and write the header \begin{DoxyReturn}{Returns}
+0 if the file is opened correctly 
+\end{DoxyReturn}
 
-The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\begin{DoxyExceptions}{Exceptions}
+{\em runtime\+\_\+error} & \\
+\hline
+\end{DoxyExceptions}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-/home/pushz/dev/video-\/app/src/libs/Muxer.\+h\item 
-/home/pushz/dev/video-\/app/src/libs/Muxer.\+cpp\end{DoxyCompactItemize}
+Muxer.\+h\end{DoxyCompactItemize}

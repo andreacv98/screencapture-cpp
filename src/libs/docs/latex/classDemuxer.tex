@@ -9,18 +9,20 @@ Inheritance diagram for Demuxer\+:\begin{figure}[H]
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{classDemuxer_add06f0c816fa185f4e47a6cddcf974d2}\label{classDemuxer_add06f0c816fa185f4e47a6cddcf974d2}} 
-{\bfseries Demuxer} (char $\ast$src, char $\ast$url)
+\mbox{\Hypertarget{classDemuxer_a613b8a5784d3563bf50d18de3024244a}\label{classDemuxer_a613b8a5784d3563bf50d18de3024244a}} 
+{\bfseries Demuxer} (const char $\ast$src, char $\ast$url)
 \item 
-virtual AVFormat\+Context $\ast$ \mbox{\hyperlink{classDemuxer_a8a248aa4571f840db4aa603cf065af20}{open}} ()=0
+\mbox{\Hypertarget{classDemuxer_a8a248aa4571f840db4aa603cf065af20}\label{classDemuxer_a8a248aa4571f840db4aa603cf065af20}} 
+virtual AVFormat\+Context $\ast$ {\bfseries open} ()=0
 \item 
 \mbox{\Hypertarget{classDemuxer_af55588e8f9ff94d46b969286da987624}\label{classDemuxer_af55588e8f9ff94d46b969286da987624}} 
 AVCodec\+Context $\ast$ {\bfseries get\+In\+Codec\+Context} () const
 \item 
-\mbox{\Hypertarget{classDemuxer_a56d47c7c0201af47c6956e0013b9e1a1}\label{classDemuxer_a56d47c7c0201af47c6956e0013b9e1a1}} 
-int {\bfseries read\+Packet} (AVPacket $\ast$read\+\_\+packet, long long int pts\+\_\+offset)
+\mbox{\Hypertarget{classDemuxer_af3360317ce3500e567b2f43c04c7625e}\label{classDemuxer_af3360317ce3500e567b2f43c04c7625e}} 
+AVFormat\+Context $\ast$ {\bfseries get\+In\+Format\+Context} () const
 \item 
-void \mbox{\hyperlink{classDemuxer_a1e344d76a4d8f3770d5673c04a9792cb}{close\+Input}} ()
+\mbox{\Hypertarget{classDemuxer_a1e344d76a4d8f3770d5673c04a9792cb}\label{classDemuxer_a1e344d76a4d8f3770d5673c04a9792cb}} 
+void {\bfseries close\+Input} ()
 \end{DoxyCompactItemize}
 \doxysubsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
@@ -54,36 +56,6 @@ AVCodec $\ast$ {\bfseries in\+Codec}
 \end{DoxyCompactItemize}
 
 
-\doxysubsection{Member Function Documentation}
-\mbox{\Hypertarget{classDemuxer_a1e344d76a4d8f3770d5673c04a9792cb}\label{classDemuxer_a1e344d76a4d8f3770d5673c04a9792cb}} 
-\index{Demuxer@{Demuxer}!closeInput@{closeInput}}
-\index{closeInput@{closeInput}!Demuxer@{Demuxer}}
-\doxysubsubsection{\texorpdfstring{closeInput()}{closeInput()}}
-{\footnotesize\ttfamily void Demuxer\+::close\+Input (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
-
-The method close the format context.
-
-\begin{DoxyReturn}{Returns}
-
-\end{DoxyReturn}
-
-\begin{DoxyExceptions}{Exceptions}
-{\em runtime\+\_\+error} & \\
-\hline
-\end{DoxyExceptions}
-\mbox{\Hypertarget{classDemuxer_a8a248aa4571f840db4aa603cf065af20}\label{classDemuxer_a8a248aa4571f840db4aa603cf065af20}} 
-\index{Demuxer@{Demuxer}!open@{open}}
-\index{open@{open}!Demuxer@{Demuxer}}
-\doxysubsubsection{\texorpdfstring{open()}{open()}}
-{\footnotesize\ttfamily virtual AVFormat\+Context $\ast$ Demuxer\+::open (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
-
-
-
-Implemented in \mbox{\hyperlink{classAudioDemuxer_a139cd7bd4562e6103df3b66cf916967a}{Audio\+Demuxer}}, and \mbox{\hyperlink{classVideoDemuxer_abd2a7bce0a3a040ebea185b83a9cd0e4}{Video\+Demuxer}}.
-
-
-
-The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-/home/pushz/dev/video-\/app/src/libs/Demuxer.\+h\item 
-/home/pushz/dev/video-\/app/src/libs/Demuxer.\+cpp\end{DoxyCompactItemize}
+Demuxer.\+h\end{DoxyCompactItemize}

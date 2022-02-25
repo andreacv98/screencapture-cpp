@@ -9,8 +9,8 @@ Inheritance diagram for Video\+Demuxer\+:\begin{figure}[H]
 \doxysubsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
-\mbox{\Hypertarget{classVideoDemuxer_a5282cec7ba3f9630c9eaff1f349500b7}\label{classVideoDemuxer_a5282cec7ba3f9630c9eaff1f349500b7}} 
-{\bfseries Video\+Demuxer} (char $\ast$src, char $\ast$url, uint16\+\_\+t fps, \mbox{\hyperlink{structS}{SRResolution}} resolution)
+\mbox{\Hypertarget{classVideoDemuxer_ab7dfbd42007923cf0486db58bcba5b55}\label{classVideoDemuxer_ab7dfbd42007923cf0486db58bcba5b55}} 
+{\bfseries Video\+Demuxer} (const char $\ast$src, char $\ast$url, uint16\+\_\+t fps, \mbox{\hyperlink{structS}{SRResolution}} resolution, \mbox{\hyperlink{structT}{SROffset}} offset)
 \item 
 AVFormat\+Context $\ast$ \mbox{\hyperlink{classVideoDemuxer_abd2a7bce0a3a040ebea185b83a9cd0e4}{open}} () override
 \end{DoxyCompactItemize}
@@ -24,23 +24,12 @@ AVFormat\+Context $\ast$ \mbox{\hyperlink{classVideoDemuxer_abd2a7bce0a3a040ebea
 \doxysubsubsection{\texorpdfstring{open()}{open()}}
 {\footnotesize\ttfamily AVFormat\+Context $\ast$ Video\+Demuxer\+::open (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
 
-The method opens the device and defines the needed data structure.
-
-\begin{DoxyReturn}{Returns}
-the device context 
-\end{DoxyReturn}
-
-\begin{DoxyExceptions}{Exceptions}
-{\em runtime\+\_\+error} & \\
-\hline
-\end{DoxyExceptions}
 
 
 Implements \mbox{\hyperlink{classDemuxer}{Demuxer}}.
 
 
 
-The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
 \item 
-/home/pushz/dev/video-\/app/src/libs/Video\+Demuxer.\+h\item 
-/home/pushz/dev/video-\/app/src/libs/Video\+Demuxer.\+cpp\end{DoxyCompactItemize}
+Video\+Demuxer.\+h\end{DoxyCompactItemize}

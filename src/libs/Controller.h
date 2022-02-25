@@ -5,8 +5,8 @@
 #include <mutex>
 #include <condition_variable>
 #include <thread>
-#include "libs/AudioDemuxer.h"
-#include "libs/VideoDemuxer.h"
+#include "AudioDemuxer.h"
+#include "VideoDemuxer.h"
 
 #include <iostream>
 #include <cstdio>
@@ -28,10 +28,10 @@
 #include <X11/Xlib.h>
 #endif
 
-#include "libs/utils.h"
-#include "libs/Decoder.h"
-#include "libs/Encoder.h"
-#include "libs/Muxer.h"
+#include "utils.h"
+#include "Decoder.h"
+#include "Encoder.h"
+#include "Muxer.h"
 
 #ifdef __APPLE__
 #define VIDEO_SOURCE ("avfoundation")

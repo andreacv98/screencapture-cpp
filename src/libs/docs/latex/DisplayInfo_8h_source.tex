@@ -1,0 +1,26 @@
+\hypertarget{DisplayInfo_8h_source}{}\doxysection{Display\+Info.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef VIDEO\_APP\_DISPLAYINFO\_H}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define VIDEO\_APP\_DISPLAYINFO\_H}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#ifdef \_\_unix\_\_}}
+\DoxyCodeLine{5 \textcolor{preprocessor}{\#include <X11/Xlib.h>}}
+\DoxyCodeLine{6 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{7 }
+\DoxyCodeLine{8 \textcolor{keyword}{class }\mbox{\hyperlink{classDisplayInfo}{DisplayInfo}}\{}
+\DoxyCodeLine{9 }
+\DoxyCodeLine{10 \textcolor{keyword}{public}:}
+\DoxyCodeLine{11     \mbox{\hyperlink{classDisplayInfo}{DisplayInfo}}();}
+\DoxyCodeLine{12 \textcolor{preprocessor}{\#ifdef \_\_unix\_\_}}
+\DoxyCodeLine{13     Display *dpy;       \textcolor{comment}{//display from X11}}
+\DoxyCodeLine{14 \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{15 }
+\DoxyCodeLine{16 \textcolor{keywordtype}{void} showInfos();}
+\DoxyCodeLine{17 }
+\DoxyCodeLine{18 \};}
+\DoxyCodeLine{19 }
+\DoxyCodeLine{20 }
+\DoxyCodeLine{21 \textcolor{preprocessor}{\#endif }\textcolor{comment}{//VIDEO\_APP\_DISPLAYINFO\_H}}
+
+\end{DoxyCode}

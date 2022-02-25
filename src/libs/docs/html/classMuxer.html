@@ -72,11 +72,10 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab6f674796c4730482b74ec3ddb6f9432"><td class="memItemLeft" align="right" valign="top"><a id="ab6f674796c4730482b74ec3ddb6f9432" name="ab6f674796c4730482b74ec3ddb6f9432"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Muxer</b> (<a class="el" href="structA.html">SRSettings</a> outputSettings, std::string outputFilename)</td></tr>
-<tr class="separator:ab6f674796c4730482b74ec3ddb6f9432"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6cb55752a74408c700153ab1d2f58a6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMuxer.html#ad6cb55752a74408c700153ab1d2f58a6">initOutputFile</a> (const AVCodecContext *inACodecContext)</td></tr>
-<tr class="separator:ad6cb55752a74408c700153ab1d2f58a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afab0ee2dd1c7ba551d1c62b1d6760080"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMuxer.html#afab0ee2dd1c7ba551d1c62b1d6760080">Muxer</a> (<a class="el" href="structA.html">SRSettings</a> outputSettings)</td></tr>
+<tr class="separator:afab0ee2dd1c7ba551d1c62b1d6760080"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade2c34b002d9335298ba82b4ab4eabfd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMuxer.html#ade2c34b002d9335298ba82b4ab4eabfd">initOutputFile</a> ()</td></tr>
+<tr class="separator:ade2c34b002d9335298ba82b4ab4eabfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf64668908bd781c7185a4003b30e09f"><td class="memItemLeft" align="right" valign="top"><a id="acf64668908bd781c7185a4003b30e09f" name="acf64668908bd781c7185a4003b30e09f"></a>
 AVCodecContext *&#160;</td><td class="memItemRight" valign="bottom"><b>getACodecContext</b> () const</td></tr>
 <tr class="separator:acf64668908bd781c7185a4003b30e09f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -96,9 +95,34 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>outVideoStreamIndex</b
 int&#160;</td><td class="memItemRight" valign="bottom"><b>outAudioStreamIndex</b></td></tr>
 <tr class="separator:ad767c18ff78b636e6dc242fd1ecb41a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="afab0ee2dd1c7ba551d1c62b1d6760080" name="afab0ee2dd1c7ba551d1c62b1d6760080"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afab0ee2dd1c7ba551d1c62b1d6760080">&#9670;&nbsp;</a></span>Muxer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Muxer::Muxer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structA.html">SRSettings</a>&#160;</td>
+          <td class="paramname"><em>outputSettings</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Create a new muxer </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">outputSettings</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad6cb55752a74408c700153ab1d2f58a6" name="ad6cb55752a74408c700153ab1d2f58a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6cb55752a74408c700153ab1d2f58a6">&#9670;&nbsp;</a></span>initOutputFile()</h2>
+<a id="ade2c34b002d9335298ba82b4ab4eabfd" name="ade2c34b002d9335298ba82b4ab4eabfd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade2c34b002d9335298ba82b4ab4eabfd">&#9670;&nbsp;</a></span>initOutputFile()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -106,19 +130,23 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>outAudioStreamIndex</b
         <tr>
           <td class="memname">int Muxer::initOutputFile </td>
           <td>(</td>
-          <td class="paramtype">const AVCodecContext *&#160;</td>
-          <td class="paramname"><em>inACodecContext</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Add a video stream to the muxer </p>
+<p >Open the output file and write the header </p><dl class="section return"><dt>Returns</dt><dd>0 if the file is opened correctly </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">runtime_error</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/pushz/dev/video-app/src/libs/<a class="el" href="Muxer_8h_source.html">Muxer.h</a></li>
-<li>/home/pushz/dev/video-app/src/libs/Muxer.cpp</li>
+<hr/>The documentation for this class was generated from the following file:<ul>
+<li><a class="el" href="Muxer_8h_source.html">Muxer.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

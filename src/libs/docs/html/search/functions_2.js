@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['initoutputfile_0',['initOutputFile',['../classMuxer.html#ad6cb55752a74408c700153ab1d2f58a6',1,'Muxer']]]
+  ['muxer_0',['Muxer',['../classMuxer.html#afab0ee2dd1c7ba551d1c62b1d6760080',1,'Muxer']]]
 ];
