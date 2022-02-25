@@ -10,6 +10,7 @@
 class Encoder {
     AVCodecContext *outCodecContext;
 public:
+
     Encoder():outCodecContext(nullptr){};
     ~Encoder();
 

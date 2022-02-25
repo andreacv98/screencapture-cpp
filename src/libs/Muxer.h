@@ -18,7 +18,6 @@ private:
     AVOutputFormat *outAVOutputFormat;
 
     SRSettings outputSettings;
-    std::string outputFilename;
 
     void generateVideoOutputStream();
     void generateAudioOutputStream(const AVCodecContext* inACodecContext);
@@ -27,18 +26,20 @@ public:
     int outVideoStreamIndex;
     int outAudioStreamIndex;
 
-    Muxer(SRSettings outputSettings, std::string outputFilename);
+    /**
+     * Create a new muxer
+     * @param outputSettings
+     */
+    Muxer(SRSettings outputSettings);
     ~Muxer();
 
     /**
-     * Add a video stream to the muxer
+     * Open the output file and write the header
      */
-
     int initOutputFile(const AVCodecContext* inACodecContext);
 
     AVCodecContext* getACodecContext() const;
     AVCodecContext* getVCodecContext() const;
-
     AVFormatContext* getOutAVFormatContext() const;
 };
 

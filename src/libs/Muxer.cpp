@@ -2,9 +2,8 @@
 #include <stdexcept>
 #include <iostream>
 
-Muxer::Muxer(SRSettings outputSettings, std::string outputFilename) {
+Muxer::Muxer(SRSettings outputSettings) {
     this->outputSettings = outputSettings;
-    this->outputFilename = outputFilename;
     outAVFormatContext = nullptr;
     outVCodecContext = nullptr;
     outACodecContext = nullptr;
