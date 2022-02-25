@@ -2,16 +2,6 @@
 #include <stdexcept>
 #include <iostream>
 
-Decoder::~Decoder() {
-    /*avcodec_free_context(&inCodecContext);
-    if (inCodecContext) {
-        std::cerr << "Decoder: unable to free codec context" << std::endl;
-        exit(1);
-    } else {
-        std::cout << "\n[Decoder] codec context freed";
-    }*/
-}
-
 int Decoder::sendPacket(const AVPacket *packet) {
     int ret;
     if((ret = avcodec_send_packet(inCodecContext, packet)) < 0){

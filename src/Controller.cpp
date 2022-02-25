@@ -24,53 +24,6 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
     inAudio = make_unique<AudioDemuxer>(AUDIO_SOURCE, audioUrl);
     output = make_unique<Muxer>(settings);
 
-    // INPUT
-    if (settings._recvideo){
-        try {
-            decoderVideo = make_unique<Decoder>();
-            inVideo->open();
-            decoderVideo->setCodecContext(inVideo->getInCodecContext());
-        } catch (const std::runtime_error& e) {
-            cerr << "Error opening video input: " << e.what() << endl;
-            throw;
-        }
-    }
-
-    if (settings._recaudio){
-        try {
-            decoderAudio = make_unique<Decoder>();
-            inAudio->open();
-            decoderAudio->setCodecContext(inAudio->getInCodecContext());
-        } catch (const std::runtime_error& e) {
-            cerr << "Error opening audio input: " << e.what() << endl;
-            throw;
-        }
-    }
-
-    // OUTPUT
-    if (settings._recvideo || settings._recaudio){
-        output->initOutputFile(decoderAudio->getCodecContext());
-    }
-
-    if (settings._recvideo){
-        try {
-            encoderVideo = make_unique<Encoder>();
-            encoderVideo->setCodecContext(output->getVCodecContext());
-        } catch (const std::runtime_error& e) {
-            cerr << "Error opening video output: " << e.what() << endl;
-            throw;
-        }
-    }
-
-    if (settings._recaudio){
-        try {
-            encoderAudio = make_unique<Encoder>();
-            encoderAudio->setCodecContext(output->getACodecContext());
-        } catch (const std::runtime_error& e) {
-            cerr << "Error opening audio output: " << e.what() << endl;
-            throw;
-        }
-    }
     cout << "\nScreen Recorder initialized correctly\n";
 
 #ifdef __unix__
@@ -395,12 +348,17 @@ void Controller::captureAudio() {
 
 }
 
+
+
 /**
  * startCapture() enables Audio and Video capturing threads
  * @Note is callable only after thread initialization by mean of initThreads();
  */
 void Controller::startCapture() {
     if (captureStarted) return;
+
+    set();
+
     initThreads();
     cout<<"\n[MainThread] Capture started";
     cout<<"\n[MainThread] Capturing audio: " << (settings._recaudio ? "yes" : "no") ;
@@ -566,4 +524,53 @@ void Controller::listDevices() {
     avformat_free_context(inProbeFormatContext);
     av_freep((void *) avInput);
 
+}
+
+void Controller::set() {
+    // INPUT
+    if (settings._recvideo){
+        try {
+            decoderVideo = make_unique<Decoder>();
+            inVideo->open();
+            decoderVideo->setCodecContext(inVideo->getInCodecContext());
+        } catch (const std::runtime_error& e) {
+            cerr << "Error opening video input: " << e.what() << endl;
+            throw;
+        }
+    }
+
+    if (settings._recaudio){
+        try {
+            decoderAudio = make_unique<Decoder>();
+            inAudio->open();
+            decoderAudio->setCodecContext(inAudio->getInCodecContext());
+        } catch (const std::runtime_error& e) {
+            cerr << "Error opening audio input: " << e.what() << endl;
+            throw;
+        }
+    }
+    // OUTPUT
+    if (settings._recvideo || settings._recaudio){
+        output->initOutputFile(decoderAudio->getCodecContext());
+    }
+
+    if (settings._recvideo){
+        try {
+            encoderVideo = make_unique<Encoder>();
+            encoderVideo->setCodecContext(output->getVCodecContext());
+        } catch (const std::runtime_error& e) {
+            cerr << "Error opening video output: " << e.what() << endl;
+            throw;
+        }
+    }
+
+    if (settings._recaudio){
+        try {
+            encoderAudio = make_unique<Encoder>();
+            encoderAudio->setCodecContext(output->getACodecContext());
+        } catch (const std::runtime_error& e) {
+            cerr << "Error opening audio output: " << e.what() << endl;
+            throw;
+        }
+    }
 }
