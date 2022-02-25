@@ -7,7 +7,7 @@
 
 using namespace std;
 
-Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings, SROffset offset): settings(settings),
+Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): settings(settings),
                                                                                captureSwitch(false),
                                                                                killSwitch(false),
                                                                                captureStarted(false),
@@ -20,7 +20,7 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings, SR
 
     avdevice_register_all();
 
-    inVideo = make_unique<VideoDemuxer>(VIDEO_SOURCE, videoUrl, settings._fps, settings._inscreenres, offset);
+    inVideo = make_unique<VideoDemuxer>(VIDEO_SOURCE, videoUrl, settings._fps, settings._inscreenres, settings._screenoffset);
     inAudio = make_unique<AudioDemuxer>(AUDIO_SOURCE, audioUrl);
     output = make_unique<Muxer>(settings);
 
