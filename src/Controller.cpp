@@ -86,8 +86,6 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
     printf ("number of screens:    %d\n", ScreenCount (dpy));
 #endif
 
-
-    initThreads();
     cout << "\nScreen Recorder ready to start\n";
 }
 
@@ -403,6 +401,7 @@ void Controller::captureAudio() {
  */
 void Controller::startCapture() {
     if (captureStarted) return;
+    initThreads();
     cout<<"\n[MainThread] Capture started";
     cout<<"\n[MainThread] Capturing audio: " << (settings._recaudio ? "yes" : "no") ;
     std::lock_guard<std::mutex> r_lock(r_mutex);
