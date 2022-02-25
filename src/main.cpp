@@ -177,6 +177,7 @@ int main() {
     sc.initOutputFile();
     sc.initThreads();
 
+    sleep(10);
 
     /* sample capture routine*/
     sc.startCapture();

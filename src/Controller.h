@@ -73,17 +73,17 @@ private:
     SRPacketBuffer inVideoBuffer;
     SRPacketBuffer inAudioBuffer;
 
-    AudioDemuxer inAudio;
-    VideoDemuxer inVideo;
+    std::unique_ptr<AudioDemuxer> inAudio;
+    std::unique_ptr<VideoDemuxer> inVideo;
 
-    Muxer output;
+    std::unique_ptr<Muxer> output;
 
     SRSettings settings;
 
-    Decoder decoderAudio;
-    Decoder decoderVideo;
-    Encoder encoderAudio;
-    Encoder encoderVideo;
+    std::unique_ptr<Decoder> decoderAudio;
+    std::unique_ptr<Decoder> decoderVideo;
+    std::unique_ptr<Encoder> encoderAudio;
+    std::unique_ptr<Encoder> encoderVideo;
 
     //video
     // AVInputFormat *inVInputFormat;

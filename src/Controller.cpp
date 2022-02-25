@@ -11,21 +11,25 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
                                                                                captureSwitch(false),
                                                                                killSwitch(false),
                                                                                captureStarted(false),
-                                                                               inVideo(VIDEO_SOURCE, videoUrl, settings._fps, settings._inscreenres),
-                                                                               inAudio(AUDIO_SOURCE, audioUrl),
-                                                                               output(Muxer(settings))
+                                                                               inVideo(nullptr),
+                                                                               inAudio(nullptr),
+                                                                               output(nullptr)
                                                                                {
     inVideoBuffer.np = 0;
     inAudioBuffer.np = 0;
 
     avdevice_register_all();
 
+    inVideo = make_unique<VideoDemuxer>(VIDEO_SOURCE, videoUrl, settings._fps, settings._inscreenres);
+    inAudio = make_unique<AudioDemuxer>(AUDIO_SOURCE, audioUrl);
+    output = make_unique<Muxer>(settings);
+
     // INPUT
     if (settings._recvideo){
         try {
-            decoderVideo = Decoder();
-            inVideo.open();
-            decoderVideo.setCodecContext(inVideo.getInCodecContext());
+            decoderVideo = make_unique<Decoder>();
+            inVideo->open();
+            decoderVideo->setCodecContext(inVideo->getInCodecContext());
         } catch (const std::runtime_error& e) {
             cerr << "Error opening video input: " << e.what() << endl;
             throw;
@@ -34,9 +38,9 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
 
     if (settings._recaudio){
         try {
-            decoderAudio = Decoder();
-            inAudio.open();
-            decoderAudio.setCodecContext(inAudio.getInCodecContext());
+            decoderAudio = make_unique<Decoder>();
+            inAudio->open();
+            decoderAudio->setCodecContext(inAudio->getInCodecContext());
         } catch (const std::runtime_error& e) {
             cerr << "Error opening audio input: " << e.what() << endl;
             throw;
@@ -45,13 +49,13 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
 
     // OUTPUT
     if (settings._recvideo || settings._recaudio){
-        output.initOutputFile(decoderAudio.getCodecContext());
+        output->initOutputFile(decoderAudio->getCodecContext());
     }
 
     if (settings._recvideo){
         try {
-            encoderVideo = Encoder();
-            encoderVideo.setCodecContext(output.getVCodecContext());
+            encoderVideo = make_unique<Encoder>();
+            encoderVideo->setCodecContext(output->getVCodecContext());
         } catch (const std::runtime_error& e) {
             cerr << "Error opening video output: " << e.what() << endl;
             throw;
@@ -60,8 +64,8 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
 
     if (settings._recaudio){
         try {
-            encoderAudio = Encoder();
-            encoderAudio.setCodecContext(output.getACodecContext());
+            encoderAudio = make_unique<Encoder>();
+            encoderAudio->setCodecContext(output->getACodecContext());
         } catch (const std::runtime_error& e) {
             cerr << "Error opening audio output: " << e.what() << endl;
             throw;
@@ -135,7 +139,7 @@ void Controller::captureVideo(){
     }
 
     int video_outbuf_size;
-    int nbytes = av_image_get_buffer_size(output.getVCodecContext()->pix_fmt,output.getVCodecContext()->width,output.getVCodecContext()->height,32);
+    int nbytes = av_image_get_buffer_size(output->getVCodecContext()->pix_fmt,output->getVCodecContext()->width,output->getVCodecContext()->height,32);
     uint8_t *video_outbuf = (uint8_t*)av_malloc(nbytes*sizeof (uint8_t));
     if( video_outbuf == nullptr )
     {
@@ -144,7 +148,7 @@ void Controller::captureVideo(){
     }
 
     // Setup the data pointers and linesizes based on the specified image parameters and the provided array.
-    ret = av_image_fill_arrays( scaledFrame->data, scaledFrame->linesize, video_outbuf , AV_PIX_FMT_YUV420P, output.getVCodecContext()->width,output.getVCodecContext()->height,1 ); // returns : the size in bytes required for src
+    ret = av_image_fill_arrays( scaledFrame->data, scaledFrame->linesize, video_outbuf , AV_PIX_FMT_YUV420P, output->getVCodecContext()->width,output->getVCodecContext()->height,1 ); // returns : the size in bytes required for src
     if(ret < 0)
     {
         cout<<"\nerror in filling image array";
@@ -155,12 +159,12 @@ void Controller::captureVideo(){
 
     // Allocate and return swsContext.
     // a pointer to an allocated context, or NULL in case of error
-    swsCtx_ = sws_getContext(decoderVideo.getCodecContext()->width,
-                             decoderVideo.getCodecContext()->height,
-                             decoderVideo.getCodecContext()->pix_fmt,
-                             output.getVCodecContext()->width,
-                             output.getVCodecContext()->height,
-                             output.getVCodecContext()->pix_fmt,
+    swsCtx_ = sws_getContext(decoderVideo->getCodecContext()->width,
+                             decoderVideo->getCodecContext()->height,
+                             decoderVideo->getCodecContext()->pix_fmt,
+                             output->getVCodecContext()->width,
+                             output->getVCodecContext()->height,
+                             output->getVCodecContext()->pix_fmt,
                              SWS_BICUBIC, NULL, NULL, NULL);
 
 
@@ -174,7 +178,7 @@ void Controller::captureVideo(){
     while(true) {
         r_lock.lock();
         paused = !captureSwitch && captureStarted;
-        if (paused) inVideo.closeInput();
+        if (paused) inVideo->closeInput();
 
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
         if(killSwitch) {
@@ -188,18 +192,18 @@ void Controller::captureVideo(){
             return;
         }
 
-        if (paused) inVideo.open();
+        if (paused) inVideo->open();
         r_lock.unlock();
 
-        if(av_read_frame(inVideo.getInFormatContext(), inPacket) >= 0 && inPacket->stream_index == inVideoStreamIndex) {
+        if(av_read_frame(inVideo->getInFormatContext(), inPacket) >= 0 && inPacket->stream_index == inVideoStreamIndex) {
             //decode video routine
 
-            av_packet_rescale_ts(inPacket,  inVideo.getInFormatContext()->streams[inVideoStreamIndex]->time_base,decoderVideo.getCodecContext()->time_base);
-            ret = decoderVideo.sendPacket(inPacket);
-            while (decoderVideo.getDecodedOutput(rawFrame) >= 0) {
+            av_packet_rescale_ts(inPacket,  inVideo->getInFormatContext()->streams[inVideoStreamIndex]->time_base,decoderVideo->getCodecContext()->time_base);
+            ret = decoderVideo->sendPacket(inPacket);
+            while (decoderVideo->getDecodedOutput(rawFrame) >= 0) {
                 //raw frame ready
-                if(output.getOutAVFormatContext()->streams[output.outVideoStreamIndex]->start_time <= 0) {
-                    output.getOutAVFormatContext()->streams[output.outVideoStreamIndex]->start_time = rawFrame->pts;
+                if(output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->start_time <= 0) {
+                    output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->start_time = rawFrame->pts;
                 }
 
                 av_init_packet(outPacket);
@@ -207,27 +211,27 @@ void Controller::captureVideo(){
                 outPacket->size = 0;
 
                 /*initializing scaleFrame */
-                scaledFrame->width = output.getVCodecContext()->width;
-                scaledFrame->height = output.getVCodecContext()->height;
-                scaledFrame->format = output.getVCodecContext()->pix_fmt;
+                scaledFrame->width = output->getVCodecContext()->width;
+                scaledFrame->height = output->getVCodecContext()->height;
+                scaledFrame->format = output->getVCodecContext()->pix_fmt;
                 scaledFrame->pts = rawFrame->pts;
                 scaledFrame->pkt_dts=rawFrame->pkt_dts;
                 scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
                 //av_frame_get_buffer(scaledFrame, 0);
 
-                sws_scale(swsCtx_, rawFrame->data, rawFrame->linesize,0, decoderVideo.getCodecContext()->height, scaledFrame->data, scaledFrame->linesize);
+                sws_scale(swsCtx_, rawFrame->data, rawFrame->linesize,0, decoderVideo->getCodecContext()->height, scaledFrame->data, scaledFrame->linesize);
 
-                encoderVideo.sendFrame(scaledFrame);
-                while(encoderVideo.getPacket(outPacket)>=0){
+                encoderVideo->sendFrame(scaledFrame);
+                while(encoderVideo->getPacket(outPacket)>=0){
                     //outPacket ready
                     if(outPacket->pts != AV_NOPTS_VALUE)
-                        outPacket->pts = av_rescale_q(outPacket->pts, encoderVideo.getCodecContext()->time_base,  output.getOutAVFormatContext()->streams[output.outVideoStreamIndex]->time_base);
+                        outPacket->pts = av_rescale_q(outPacket->pts, encoderVideo->getCodecContext()->time_base,  output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
                     if(outPacket->dts != AV_NOPTS_VALUE)
-                        outPacket->dts = av_rescale_q(outPacket->dts, encoderVideo.getCodecContext()->time_base, output.getOutAVFormatContext()->streams[output.outVideoStreamIndex]->time_base);
+                        outPacket->dts = av_rescale_q(outPacket->dts, encoderVideo->getCodecContext()->time_base, output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
 
-                    outPacket->stream_index = output.outVideoStreamIndex;
+                    outPacket->stream_index = output->outVideoStreamIndex;
                     w_lock.lock();
-                    if(av_interleaved_write_frame(output.getOutAVFormatContext() , outPacket) != 0)
+                    if(av_interleaved_write_frame(output->getOutAVFormatContext() , outPacket) != 0)
                     {
                         cout<<"\nerror in writing video frame";
                     }
@@ -285,12 +289,12 @@ void Controller::captureAudio() {
     //init the resampler
     SwrContext* resampleContext = nullptr;
     resampleContext = swr_alloc_set_opts(resampleContext,
-                                         av_get_default_channel_layout(encoderAudio.getCodecContext()->channels),
-                                         encoderAudio.getCodecContext()->sample_fmt,
-                                         encoderAudio.getCodecContext()->sample_rate,
-                                         av_get_default_channel_layout(decoderAudio.getCodecContext()->channels),
-                                         decoderAudio.getCodecContext()->sample_fmt,
-                                         decoderAudio.getCodecContext()->sample_rate,
+                                         av_get_default_channel_layout(encoderAudio->getCodecContext()->channels),
+                                         encoderAudio->getCodecContext()->sample_fmt,
+                                         encoderAudio->getCodecContext()->sample_rate,
+                                         av_get_default_channel_layout(decoderAudio->getCodecContext()->channels),
+                                         decoderAudio->getCodecContext()->sample_fmt,
+                                         decoderAudio->getCodecContext()->sample_rate,
                                          0, NULL);
     if(!resampleContext){
         cout << "\nCannot allocate the resample context";
@@ -311,7 +315,7 @@ void Controller::captureAudio() {
 
         r_lock.lock();
         paused = !captureSwitch && captureStarted;
-        if (paused) inAudio.closeInput();
+        if (paused) inAudio->closeInput();
 
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
 
@@ -320,18 +324,18 @@ void Controller::captureAudio() {
             return;
         }
 
-        if (paused) inAudio.open();
+        if (paused) inAudio->open();
         r_lock.unlock();
 
-        if(av_read_frame(inAudio.getInFormatContext(), inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
+        if(av_read_frame(inAudio->getInFormatContext(), inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
             //decode video routing
-            av_packet_rescale_ts(outPacket,  inAudio.getInFormatContext()->streams[inAudioStreamIndex]->time_base, decoderAudio.getCodecContext()->time_base);
-            ret = decoderAudio.sendPacket(inPacket);
-            while (decoderAudio.getDecodedOutput(rawFrame) >= 0) {
-                if(output.getOutAVFormatContext()->streams[output.outAudioStreamIndex]->start_time <= 0) {
-                    output.getOutAVFormatContext()->streams[output.outAudioStreamIndex]->start_time = rawFrame->pts;
+            av_packet_rescale_ts(outPacket,  inAudio->getInFormatContext()->streams[inAudioStreamIndex]->time_base, decoderAudio->getCodecContext()->time_base);
+            ret = decoderAudio->sendPacket(inPacket);
+            while (decoderAudio->getDecodedOutput(rawFrame) >= 0) {
+                if(output->getOutAVFormatContext()->streams[output->outAudioStreamIndex]->start_time <= 0) {
+                    output->getOutAVFormatContext()->streams[output->outAudioStreamIndex]->start_time = rawFrame->pts;
                 }
-                initConvertedSamples(&resampledData, encoderAudio.getCodecContext(), rawFrame->nb_samples);
+                initConvertedSamples(&resampledData, encoderAudio->getCodecContext(), rawFrame->nb_samples);
 
                 swr_convert(resampleContext,
                             resampledData, rawFrame->nb_samples,
@@ -344,7 +348,7 @@ void Controller::captureAudio() {
                 outPacket->data = nullptr;    // packet data will be allocated by the encoder
                 outPacket->size = 0;
 
-                const int frame_size = FFMAX(av_audio_fifo_size(fifo), encoderAudio.getCodecContext()->frame_size);
+                const int frame_size = FFMAX(av_audio_fifo_size(fifo), encoderAudio->getCodecContext()->frame_size);
 
                 scaledFrame = av_frame_alloc();
                 if(!scaledFrame) {
@@ -352,28 +356,28 @@ void Controller::captureAudio() {
                     exit(1);
                 }
 
-                scaledFrame->nb_samples     = encoderAudio.getCodecContext()->frame_size;
-                scaledFrame->channel_layout = encoderAudio.getCodecContext()->channel_layout;
-                scaledFrame->format         = encoderAudio.getCodecContext()->sample_fmt;
-                scaledFrame->sample_rate    = encoderAudio.getCodecContext()->sample_rate;
+                scaledFrame->nb_samples     = encoderAudio->getCodecContext()->frame_size;
+                scaledFrame->channel_layout = encoderAudio->getCodecContext()->channel_layout;
+                scaledFrame->format         = encoderAudio->getCodecContext()->sample_fmt;
+                scaledFrame->sample_rate    = encoderAudio->getCodecContext()->sample_rate;
                 // scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
                 // scaledFrame->pts = rawFrame->pts;
                 av_frame_get_buffer(scaledFrame,0);
 
-                while (av_audio_fifo_size(fifo) >= encoderAudio.getCodecContext()->frame_size){
-                    ret = av_audio_fifo_read(fifo, (void **)(scaledFrame->data), encoderAudio.getCodecContext()->frame_size);
+                while (av_audio_fifo_size(fifo) >= encoderAudio->getCodecContext()->frame_size){
+                    ret = av_audio_fifo_read(fifo, (void **)(scaledFrame->data), encoderAudio->getCodecContext()->frame_size);
                     scaledFrame->pts = pts;
                     pts += scaledFrame->nb_samples;
-                    encoderAudio.sendFrame(scaledFrame);
-                    while(encoderAudio.getPacket(outPacket)>=0){
+                    encoderAudio->sendFrame(scaledFrame);
+                    while(encoderAudio->getPacket(outPacket)>=0){
                         //outPacket ready
-                        av_packet_rescale_ts(outPacket, encoderAudio.getCodecContext()->time_base,  output.getOutAVFormatContext()->streams[output.outAudioStreamIndex]->time_base);
+                        av_packet_rescale_ts(outPacket, encoderAudio->getCodecContext()->time_base,  output->getOutAVFormatContext()->streams[output->outAudioStreamIndex]->time_base);
 
 
-                        outPacket->stream_index = output.outAudioStreamIndex;
+                        outPacket->stream_index = output->outAudioStreamIndex;
 
                         w_lock.lock();
-                        if(av_interleaved_write_frame(output.getOutAVFormatContext() , outPacket) != 0)
+                        if(av_interleaved_write_frame(output->getOutAVFormatContext() , outPacket) != 0)
                         {
                             cout<<"\nerror in writing audio frame";
                         }
@@ -475,8 +479,8 @@ void Controller::initOptions() {
 int Controller::init_fifo()
 {
     /* Create the FIFO buffer based on the specified output sample format. */
-    if (!(fifo = av_audio_fifo_alloc(encoderAudio.getCodecContext()->sample_fmt,
-                                     encoderAudio.getCodecContext()->channels, 1))) {
+    if (!(fifo = av_audio_fifo_alloc(encoderAudio->getCodecContext()->sample_fmt,
+                                     encoderAudio->getCodecContext()->channels, 1))) {
         fprintf(stderr, "Could not allocate FIFO\n");
         return AVERROR(ENOMEM);
     }

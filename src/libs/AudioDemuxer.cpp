@@ -64,7 +64,7 @@ AVFormatContext *AudioDemuxer::open() {
     return inFormatContext;
 }
 
-AudioDemuxer::AudioDemuxer(char *src, char *url) : Demuxer(src, url) {
+AudioDemuxer::AudioDemuxer(const char *src, char *url) : Demuxer(src, url) {
 
 }
 

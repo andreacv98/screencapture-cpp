@@ -12,14 +12,11 @@ class AudioDemuxer: public Demuxer {
 
 
 private:
-    int fps;
-    int width;
-    int height;
     void setOptions() override;
 
 public:
 
-    AudioDemuxer(char *src, char *url);
+    AudioDemuxer(const char *src, char *url);
     AVFormatContext* open() override;
 
 };
