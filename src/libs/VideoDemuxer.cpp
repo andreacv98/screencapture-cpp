@@ -54,21 +54,21 @@ void VideoDemuxer::setOptions() {
 
 #ifdef _WIN32
     char off_x[30];
-    sprintf(off_x,"%d", settings._screenoffset.x);
+    sprintf(off_x,"%d", offset.x);
     char off_y[30];
-    sprintf(off_y,"%d", settings._screenoffset.y);
+    sprintf(off_y,"%d", offset.y);
 
 
-    value = av_dict_set(&inVOptions, "offset_x", off_x, 0);
+    value = av_dict_set(&options, "offset_x", off_x, 0);
     if (value < 0) {
-        cout << "\nerror in setting dictionary value off_x";
-        exit(1);
+        throw std::invalid_argument("Error in setting video offset x");
+
     }
 
-    value = av_dict_set(&inVOptions, "offset_y", off_y, 0);
+    value = av_dict_set(&options, "offset_y", off_y, 0);
     if (value < 0) {
-        cout << "\nerror in setting dictionary value off_y";
-        exit(1);
+        throw std::invalid_argument("Error in setting video offset y");
+
     }
 #endif
 
