@@ -28,6 +28,7 @@ public:
     ~Demuxer();
     virtual AVFormatContext* open() = 0;
     AVCodecContext *getInCodecContext() const;
+    AVFormatContext *getInFormatContext() const;
     void closeInput();
 
 private:

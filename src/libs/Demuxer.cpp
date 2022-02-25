@@ -53,3 +53,7 @@ void Demuxer::closeInput() {
         throw std::runtime_error("Unable to close the file");
     }
 }
+
+AVFormatContext *Demuxer::getInFormatContext() const {
+    return inFormatContext;
+}

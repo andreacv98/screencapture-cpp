@@ -87,8 +87,8 @@ private:
 
     //video
     // AVInputFormat *inVInputFormat;
-    AVFormatContext *inVFormatContext;
-    AVDictionary *inVOptions;
+    //AVFormatContext *inVFormatContext;
+    //AVDictionary *inVOptions;
     // AVCodecContext *inVCodecContext;
     // AVCodec *inVCodec;
 
@@ -101,7 +101,7 @@ private:
 
     //audio
     // AVDictionary *inAOptions;
-    AVFormatContext *inAFormatContext;
+    //AVFormatContext *inAFormatContext;
     // AVInputFormat *inAInputFormat;
     // AVCodecContext *inACodecContext;
 

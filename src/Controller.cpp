@@ -24,7 +24,7 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
     if (settings._recvideo){
         try {
             decoderVideo = Decoder();
-            inVFormatContext = inVideo.open();
+            inVideo.open();
             decoderVideo.setCodecContext(inVideo.getInCodecContext());
         } catch (const std::runtime_error& e) {
             cerr << "Error opening video input: " << e.what() << endl;
@@ -35,7 +35,7 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
     if (settings._recaudio){
         try {
             decoderAudio = Decoder();
-            inAFormatContext = inAudio.open();
+            inAudio.open();
             decoderAudio.setCodecContext(inAudio.getInCodecContext());
         } catch (const std::runtime_error& e) {
             cerr << "Error opening audio input: " << e.what() << endl;
@@ -188,13 +188,13 @@ void Controller::captureVideo(){
             return;
         }
 
-        if (paused) inVFormatContext = inVideo.open();
+        if (paused) inVideo.open();
         r_lock.unlock();
 
-        if(av_read_frame(inVFormatContext, inPacket) >= 0 && inPacket->stream_index == inVideoStreamIndex) {
+        if(av_read_frame(inVideo.getInFormatContext(), inPacket) >= 0 && inPacket->stream_index == inVideoStreamIndex) {
             //decode video routine
 
-            av_packet_rescale_ts(inPacket,  inVFormatContext->streams[inVideoStreamIndex]->time_base,decoderVideo.getCodecContext()->time_base);
+            av_packet_rescale_ts(inPacket,  inVideo.getInFormatContext()->streams[inVideoStreamIndex]->time_base,decoderVideo.getCodecContext()->time_base);
             ret = decoderVideo.sendPacket(inPacket);
             while (decoderVideo.getDecodedOutput(rawFrame) >= 0) {
                 //raw frame ready
@@ -320,12 +320,12 @@ void Controller::captureAudio() {
             return;
         }
 
-        if (paused) inAFormatContext = inAudio.open();
+        if (paused) inAudio.open();
         r_lock.unlock();
 
-        if(av_read_frame(inAFormatContext, inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
+        if(av_read_frame(inAudio.getInFormatContext(), inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
             //decode video routing
-            av_packet_rescale_ts(outPacket,  inAFormatContext->streams[inAudioStreamIndex]->time_base, decoderAudio.getCodecContext()->time_base);
+            av_packet_rescale_ts(outPacket,  inAudio.getInFormatContext()->streams[inAudioStreamIndex]->time_base, decoderAudio.getCodecContext()->time_base);
             ret = decoderAudio.sendPacket(inPacket);
             while (decoderAudio.getDecodedOutput(rawFrame) >= 0) {
                 if(output.getOutAVFormatContext()->streams[output.outAudioStreamIndex]->start_time <= 0) {
