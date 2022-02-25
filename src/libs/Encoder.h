@@ -1,7 +1,3 @@
-//
-// Created by pushz on 22/02/22.
-//
-
 #ifndef VIDEO_APP_ENCODER_H
 #define VIDEO_APP_ENCODER_H
 
@@ -17,12 +13,14 @@ public:
      * Send a frame to the encoder
      * @param frame the frame to send to the encoder
      * @return 0 if the decoder correctly received the frame
+     * @throw runtime_error
      */
     int sendFrame(AVFrame* frame);
 
     /**
      * Read encoded data from the encoder
      * @return 0 if success
+     * @throw runtime_error
      */
     int getPacket(AVPacket* packet);
 

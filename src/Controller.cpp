@@ -1,7 +1,3 @@
-//
-// Created by Andrea on 23/02/2022.
-//
-
 #include <iostream>
 #include "Controller.h"
 
@@ -22,22 +18,8 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
 
     inVideo = make_unique<VideoDemuxer>(VIDEO_SOURCE, videoUrl, settings._fps, settings._inscreenres, settings._screenoffset);
     inAudio = make_unique<AudioDemuxer>(AUDIO_SOURCE, audioUrl);
-    output = make_unique<Muxer>(settings);
 
     cout << "\nScreen Recorder initialized correctly\n";
-
-#ifdef __unix__
-    dpy = XOpenDisplay (NULL);          //open connection to the default X server
-    if (!dpy) {
-        fprintf (stderr, "unable to open display \"%s\".\n",
-                 XDisplayName (NULL));
-        exit (1);
-    }
-
-    printf ("\nname of display:    %s\n", DisplayString (dpy));
-    printf ("default screen number:    %d\n", DefaultScreen (dpy));
-    printf ("number of screens:    %d\n", ScreenCount (dpy));
-#endif
 
     cout << "\nScreen Recorder ready to start\n";
 }
@@ -134,12 +116,6 @@ void Controller::captureVideo(){
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
         if(killSwitch) {
             cout << "\n[VideoThread] thread stopped!";
-            /*  ret = av_write_trailer(outAVFormatContext);
-              if( ret < 0)
-              {
-                  cout<<"\nerror in writing av trailer";
-                  exit(1);
-              }*/
             return;
         }
 
@@ -311,8 +287,6 @@ void Controller::captureAudio() {
                 scaledFrame->channel_layout = encoderAudio->getCodecContext()->channel_layout;
                 scaledFrame->format         = encoderAudio->getCodecContext()->sample_fmt;
                 scaledFrame->sample_rate    = encoderAudio->getCodecContext()->sample_rate;
-                // scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
-                // scaledFrame->pts = rawFrame->pts;
                 av_frame_get_buffer(scaledFrame,0);
 
                 while (av_audio_fifo_size(fifo) >= encoderAudio->getCodecContext()->frame_size){
@@ -420,19 +394,6 @@ void Controller::initThreads() {
 
 }
 
-/**
- * initOptions() initializes the SROption data structure
- *
- * @note Has to be called before initOutput() and initThreads()
- */
-void Controller::initOptions() {
-    settings.filename = strdup("");
-    settings._recaudio=false;
-    settings._inscreenres={0,0};
-    settings._outscreenres={0,0};
-    settings._screenoffset={0,0};
-}
-
 int Controller::init_fifo()
 {
     /* Create the FIFO buffer based on the specified output sample format. */
@@ -501,31 +462,6 @@ void Controller::infoDisplays() {
 
 }
 
-
-void Controller::listDevices() {
-    int value = 0;
-    AVDictionary *opts = nullptr;
-    AVFormatContext  *inProbeFormatContext = avformat_alloc_context();
-    AVInputFormat  *avInput = nullptr;
-
-    value = av_dict_set(&opts, "list_devices", "true", 0);
-    if (value < 0) {
-        cout << "\nerror in setting dictionary value";
-        exit(1);
-    }
-
-    avInput = av_find_input_format(VIDEO_SOURCE);
-    value = avformat_open_input(&inProbeFormatContext,"", avInput, &opts);
-    if (value != 0) {
-        cout << "\nCannot open selected device";
-        exit(1);
-    }
-    avformat_close_input(&inProbeFormatContext);
-    avformat_free_context(inProbeFormatContext);
-    av_freep((void *) avInput);
-
-}
-
 void Controller::set() {
     // INPUT
     if (settings._recvideo){
@@ -550,9 +486,11 @@ void Controller::set() {
         }
     }
     // OUTPUT
-    if (settings._recvideo || settings._recaudio){
-        output->initOutputFile(decoderAudio->getCodecContext());
-    }
+    settings.audio_channels = decoderAudio->getCodecContext()->channels;
+    settings.audio_sample_rate = decoderAudio->getCodecContext()->sample_rate;
+    output = make_unique<Muxer>(settings);
+    std::cout << "channels: " << settings.audio_channels << " sample_rate: " << settings.audio_sample_rate;
+    output->initOutputFile();
 
     if (settings._recvideo){
         try {

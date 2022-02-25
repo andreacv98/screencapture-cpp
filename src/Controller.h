@@ -1,7 +1,3 @@
-//
-// Created by Andrea on 23/02/2022.
-//
-
 #ifndef VIDEO_APP_CONTROLLER_H
 #define VIDEO_APP_CONTROLLER_H
 
@@ -85,42 +81,8 @@ private:
     std::unique_ptr<Encoder> encoderAudio;
     std::unique_ptr<Encoder> encoderVideo;
 
-    //video
-    // AVInputFormat *inVInputFormat;
-    //AVFormatContext *inVFormatContext;
-    //AVDictionary *inVOptions;
-    // AVCodecContext *inVCodecContext;
-    // AVCodec *inVCodec;
-
-
-    // AVFormatContext *outAVFormatContext;
-    // AVDictionary *outVOptions;
-    // AVCodecContext *outVCodecContext;
-    // AVCodec *outVCodec;
-
-
-    //audio
-    // AVDictionary *inAOptions;
-    //AVFormatContext *inAFormatContext;
-    // AVInputFormat *inAInputFormat;
-    // AVCodecContext *inACodecContext;
-
-
-    // AVCodecContext *outACodecContext;
-    // AVCodec *outACodec;
-    // AVCodec *inACodec;
-
-
-    // AVFrame *rawVideoFrame;
-    // AVFrame *rawAudioFrame;
-
-    //output
-    // AVOutputFormat *outAVOutputFormat;
-
     int inVideoStreamIndex;
     int inAudioStreamIndex;
-    // int outVideoStreamIndex;
-    // int outAudioStreamIndex;
 
     bool captureSwitch;
     bool captureStarted;
@@ -130,12 +92,9 @@ private:
 
     void captureVideo();
     void captureAudio();
-    void initOptions();
     static int initConvertedSamples(uint8_t ***converted_input_samples,
                                     const AVCodecContext *output_codec_context,
                                     int frame_size);
-
-
 
     int init_fifo();
 
@@ -155,7 +114,6 @@ public:
     void endCapture();
     void initThreads();
     void infoDisplays();
-    void listDevices();
 
 private:
     void set();

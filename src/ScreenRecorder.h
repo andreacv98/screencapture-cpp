@@ -12,7 +12,6 @@
 #include <mutex>
 #include <condition_variable>
 #include <thread>
-//#include <semaphore.h>
 
 #ifdef WIN32
 #include <windows.h>

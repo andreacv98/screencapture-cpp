@@ -2,6 +2,7 @@
 #include <thread>
 #include "ScreenRecorder.h"
 #include "Controller.h"
+#include "DisplayInfo.h"
 
 #ifdef __APPLE__
 #include <unistd.h>
@@ -31,7 +32,7 @@ int main() {
     int y_toadd;
     char video_url [50];
 
-    bool test = true;
+    bool test = false;
 
 
     SRSettings settings;
@@ -86,8 +87,9 @@ int main() {
     settings._recvideo = true;
 
     #ifdef __unix__
+    DisplayInfo di;
+    di.showInfos();
     std::cout << "---Dispays info---" << std::endl;
-    sc.infoDisplays();
     #endif
 
 
@@ -97,9 +99,9 @@ int main() {
     std::cin >>y_start;
 
 #ifdef __unix__
-    std::cout << "---Enter n pixel to asix x to record (x pixels) max: ---" << XDisplayWidth(sc.dpy,0) - x_start <<std::endl;
+    std::cout << "---Enter n pixel to asix x to record (x pixels) max: ---" << XDisplayWidth(di.dpy,0) - x_start <<std::endl;
     std::cin >>x_toadd;
-    std::cout << "---Enter n pixel to asix y to record (y pixels) max: ---" << XDisplayHeight(sc.dpy,0) - y_start <<std::endl;
+    std::cout << "---Enter n pixel to asix y to record (y pixels) max: ---" << XDisplayHeight(di.dpy,0) - y_start <<std::endl;
     std::cin >>y_toadd;
 #endif
 

@@ -1,7 +1,3 @@
-//
-// Created by Andrea on 22/02/2022.
-//
-
 #ifndef VIDEO_APP_DEMUXER_H
 #define VIDEO_APP_DEMUXER_H
 

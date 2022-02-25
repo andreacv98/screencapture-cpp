@@ -1,7 +1,3 @@
-//
-// Created by pushz on 22/02/22.
-//
-
 #ifndef VIDEO_APP_UTILS_H
 #define VIDEO_APP_UTILS_H
 
@@ -53,6 +49,8 @@ typedef struct A{
     SROffset _screenoffset;
     uint16_t  _fps;
     char* filename;
+    int audio_sample_rate;
+    int audio_channels;
 }SRSettings;
 
 typedef struct B{

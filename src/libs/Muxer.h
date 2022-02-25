@@ -1,7 +1,3 @@
-//
-// Created by pushz on 23/02/22.
-//
-
 #ifndef VIDEO_APP_MUXER_H
 #define VIDEO_APP_MUXER_H
 #include "utils.h"
@@ -20,7 +16,7 @@ private:
     SRSettings outputSettings;
 
     void generateVideoOutputStream();
-    void generateAudioOutputStream(const AVCodecContext* inACodecContext);
+    void generateAudioOutputStream();
 
 public:
     int outVideoStreamIndex;
@@ -35,8 +31,10 @@ public:
 
     /**
      * Open the output file and write the header
+     * @return 0 if the file is opened correctly
+     * @throw runtime_error
      */
-    int initOutputFile(const AVCodecContext* inACodecContext);
+    int initOutputFile();
 
     AVCodecContext* getACodecContext() const;
     AVCodecContext* getVCodecContext() const;

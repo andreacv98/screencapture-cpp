@@ -21,21 +21,6 @@ Muxer::~Muxer() {
             std::cout << "\n[Muxer] av trailer closed";
         }
 
-        /*if(outputSettings._recvideo){
-            avcodec_free_context(&outVCodecContext);
-            if (outVCodecContext) {
-                std::cerr << "Muxer: unable to free video avformat context" << std::endl;
-                exit(1);
-            }
-        }
-        if(outputSettings._recaudio){
-            avcodec_free_context(&outACodecContext);
-            if (outACodecContext) {
-                std::cerr << "Muxer: unable to free audio avformat context" << std::endl;
-                exit(1);
-            }
-        }*/
-
         avformat_close_input(&outAVFormatContext);
         if (outAVFormatContext){
             std::cerr << "Muxer: unable to free audio avformat context" << std::endl;
@@ -46,27 +31,25 @@ Muxer::~Muxer() {
     }
 }
 
-int Muxer::initOutputFile(const AVCodecContext* inACodecContext) {
-    char* filename = outputSettings.filename;
-    bool audio_recorded = outputSettings._recaudio;
+int Muxer::initOutputFile() {
 
     outAVFormatContext = nullptr;
     int value = 0;
 
     /*get the filetype from filename extension*/
-    outAVOutputFormat = av_guess_format(nullptr,filename, nullptr);
+    outAVOutputFormat = av_guess_format(nullptr,outputSettings.filename, nullptr);
     if(!outAVOutputFormat) throw std::runtime_error("Muxer: cannot guess the video format");
 
     /*allocate the format context*/
-    avformat_alloc_output_context2(&outAVFormatContext, outAVOutputFormat, outAVOutputFormat->name, filename);
+    avformat_alloc_output_context2(&outAVFormatContext, outAVOutputFormat, outAVOutputFormat->name, outputSettings.filename);
     if (!outAVFormatContext) throw std::runtime_error("Muxer: cannot allocate the output context");
 
     if(outputSettings._recvideo) generateVideoOutputStream();
-    if(outputSettings._recaudio) generateAudioOutputStream(inACodecContext);
+    if(outputSettings._recaudio) generateAudioOutputStream();
 
     /* create empty video file */
     if (!(outAVFormatContext->flags & AVFMT_NOFILE)) {
-        value = avio_open2(&outAVFormatContext->pb, filename, AVIO_FLAG_WRITE, nullptr, nullptr);
+        value = avio_open2(&outAVFormatContext->pb, outputSettings.filename, AVIO_FLAG_WRITE, nullptr, nullptr);
         if (value < 0) throw std::runtime_error("Muxer: error in creating the output video file");
     }
 
@@ -80,7 +63,7 @@ int Muxer::initOutputFile(const AVCodecContext* inACodecContext) {
     return 0;
 }
 
-void Muxer::generateAudioOutputStream(const AVCodecContext* inACodecContext) {
+void Muxer::generateAudioOutputStream() {
     outACodecContext = nullptr;
     AVCodec* outACodec = nullptr;
     int i;
@@ -97,16 +80,16 @@ void Muxer::generateAudioOutputStream(const AVCodecContext* inACodecContext) {
     if ((outACodec)->supported_samplerates) {
         outACodecContext->sample_rate = (outACodec)->supported_samplerates[0];
         for (i = 0; (outACodec)->supported_samplerates[i]; i++) {
-            if ((outACodec)->supported_samplerates[i] == inACodecContext->sample_rate)
-                outACodecContext->sample_rate = inACodecContext->sample_rate;
+            if ((outACodec)->supported_samplerates[i] == outputSettings.audio_sample_rate)
+                outACodecContext->sample_rate = outputSettings.audio_sample_rate;
         }
     }
     outACodecContext->codec_id = AV_CODEC_ID_AAC;
     outACodecContext->sample_fmt  = (outACodec)->sample_fmts ? (outACodec)->sample_fmts[0] : AV_SAMPLE_FMT_FLTP;
-    outACodecContext->channels  = inACodecContext->channels;
+    outACodecContext->channels  = outputSettings.audio_channels;
     outACodecContext->channel_layout = av_get_default_channel_layout(outACodecContext->channels);
     outACodecContext->bit_rate = 96000;
-    outACodecContext->time_base = { 1, inACodecContext->sample_rate };
+    outACodecContext->time_base = { 1, outputSettings.audio_sample_rate };
 
     outACodecContext->strict_std_compliance = FF_COMPLIANCE_EXPERIMENTAL;
 

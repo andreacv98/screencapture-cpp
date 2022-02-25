@@ -58,6 +58,8 @@ add_executable(
         src/main.cpp
         src/ScreenRecorder.cpp
         src/ScreenRecorder.h
+        src/DisplayInfo.cpp
+        src/DisplayInfo.h
         src/libs/Demuxer.cpp
         src/libs/Demuxer.h
         src/libs/VideoDemuxer.cpp

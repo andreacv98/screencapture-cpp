@@ -1,6 +1,5 @@
 #include "Decoder.h"
 #include <stdexcept>
-#include <iostream>
 
 int Decoder::sendPacket(const AVPacket *packet) {
     int ret;
