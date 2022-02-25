@@ -39,6 +39,13 @@ Demuxer::~Demuxer() {
             std::cout << "\n ["<< src << "]AvformatContext closed";
         }
     }
+    if (inCodecContext) {
+        avcodec_free_context(&inCodecContext);
+        if (inCodecContext) {
+            std::cerr << "\n Unable to free codec context";
+            exit(1);
+        }
+    }
 }
 
 /**

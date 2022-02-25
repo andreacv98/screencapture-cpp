@@ -157,6 +157,9 @@ public:
     void infoDisplays();
     void listDevices();
 
+private:
+    void set()
+
 };
 
 
