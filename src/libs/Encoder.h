@@ -12,7 +12,6 @@ class Encoder {
 public:
 
     Encoder():outCodecContext(nullptr){};
-    ~Encoder();
 
     /**
      * Send a frame to the encoder

@@ -142,7 +142,7 @@ private:
     int add_samples_to_fifo(uint8_t **converted_input_samples, const int frame_size);
 
 public:
-    Controller(char * audioUrl, char * videoUrl, SRSettings settings, SROffset offset);
+    Controller(char * audioUrl, char * videoUrl, SRSettings settings);
     ~Controller();
 
 #ifdef __unix__
@@ -158,7 +158,7 @@ public:
     void listDevices();
 
 private:
-    void set()
+    void set();
 
 };
 
