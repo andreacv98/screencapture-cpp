@@ -5,8 +5,10 @@
 #include <iostream>
 #include "VideoDemuxer.h"
 
-VideoDemuxer::VideoDemuxer(const char *src, char *url, uint16_t fps, SRResolution resolution) : Demuxer(src, url), fps(fps),
-                                                                                                resolution(resolution) {
+VideoDemuxer::VideoDemuxer(const char *src, char *url, uint16_t fps, SRResolution resolution, SROffset offset) : Demuxer(src, url), fps(fps),
+                                                                                                resolution(resolution),
+                                                                                                offset(offset)
+                                                                                                {
 }
 
 /**
