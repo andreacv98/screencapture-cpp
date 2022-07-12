@@ -160,6 +160,7 @@ int main() {
 #endif
 
 #ifdef __unix__
+    char video_url [100];
     sprintf(video_url,":0.0+%d,%d", settings._screenoffset.x, settings._screenoffset.y);
     //printf("VideoUrl:%s", video_url);
     Controller c("alsa_input.pci-0000_00_05.0.analog-stereo", video_url, settings);
