@@ -24,7 +24,7 @@ AVFormatContext *AudioDemuxer::open() {
         throw std::runtime_error("Cannot find the stream information");
     }
 
-    //find the first video stream with a given code
+    //find the first audio stream with a given code
     streamIndex = -1;
     for (int i = 0; i < inFormatContext->nb_streams; i++){
         if (inFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {

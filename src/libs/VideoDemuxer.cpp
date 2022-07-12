@@ -90,6 +90,7 @@ void VideoDemuxer::setOptions() {
 AVFormatContext *VideoDemuxer::open() {
 
     inFormatContext = avformat_alloc_context();
+    //set options AVDictionary object
     setOptions();
     inFormat = av_find_input_format(src);
     value = avformat_open_input(&inFormatContext, url, inFormat, &options);

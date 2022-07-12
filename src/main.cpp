@@ -30,7 +30,6 @@ int main() {
     int x_toadd;
     int y_start;
     int y_toadd;
-    char video_url [50];
 
     bool test = false;
 
@@ -51,7 +50,7 @@ int main() {
        settings._fps = 15;
 
        //Controller c("alsa_input.pci-0000_00_05.0.analog-stereo", ":0.0+0,0", settings);
-        Controller c("audio=Microfono (Logitech G533 Gaming Headset)", "desktop", settings);
+        Controller c("audio=Microfono (Realtek(R) Audio)", "desktop", settings);
 
 
         bool capturing = true;
@@ -157,7 +156,7 @@ int main() {
 
 
 #ifdef _WIN32
-    Controller c("audio=Microfono (Logitech G533 Gaming Headset)", "desktop", settings);
+    Controller c("audio=Microfono (Realtek(R) Audio)", "desktop", settings);
 #endif
 
 #ifdef __unix__
@@ -191,7 +190,7 @@ int main() {
                     break;
             }
         }
-    }catch (const std::runtime_error& e){
+    } catch (const std::runtime_error& e){
         std::cerr << "Runtime Error: " << e.what() << std::endl;
         exit(1);
     }

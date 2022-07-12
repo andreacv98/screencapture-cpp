@@ -26,6 +26,7 @@ public:
     AVCodecContext *getInCodecContext() const;
     AVFormatContext *getInFormatContext() const;
     void closeInput();
+    int getStreamIndex();
 
 private:
 

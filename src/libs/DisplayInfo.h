@@ -13,6 +13,10 @@ public:
     Display *dpy;       //display from X11
 #endif
 
+#ifdef _WIN32
+    void *dpy;
+#endif
+
 void showInfos();
 
 };

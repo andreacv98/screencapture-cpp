@@ -119,10 +119,15 @@ void Controller::captureVideo(){
             return;
         }
 
+        // if it was in a paused state we need to reopen the input
         if (paused) inVideo->open();
         r_lock.unlock();
 
-        if(av_read_frame(inVideo->getInFormatContext(), inPacket) >= 0 && inPacket->stream_index == inVideoStreamIndex) {
+        int retFrameRead =av_read_frame(inVideo->getInFormatContext(), inPacket);
+
+        inVideoStreamIndex = inVideo->getStreamIndex();
+
+        if(retFrameRead >= 0 && inPacket->stream_index == inVideoStreamIndex) {
             //decode video routine
 
             av_packet_rescale_ts(inPacket,  inVideo->getInFormatContext()->streams[inVideoStreamIndex]->time_base,decoderVideo->getCodecContext()->time_base);
@@ -150,11 +155,14 @@ void Controller::captureVideo(){
 
                 encoderVideo->sendFrame(scaledFrame);
                 while(encoderVideo->getPacket(outPacket)>=0){
+                    cout<<"PRE outPacket PTS: "<< outPacket->pts<< endl;
                     //outPacket ready
                     if(outPacket->pts != AV_NOPTS_VALUE)
                         outPacket->pts = av_rescale_q(outPacket->pts, encoderVideo->getCodecContext()->time_base,  output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
                     if(outPacket->dts != AV_NOPTS_VALUE)
                         outPacket->dts = av_rescale_q(outPacket->dts, encoderVideo->getCodecContext()->time_base, output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
+
+                    cout<<"POST outPacket PTS: "<< outPacket->pts<< endl;
 
                     outPacket->stream_index = output->outVideoStreamIndex;
                     w_lock.lock();
@@ -253,6 +261,8 @@ void Controller::captureAudio() {
 
         if (paused) inAudio->open();
         r_lock.unlock();
+
+        inAudioStreamIndex = inAudio->getStreamIndex();
 
         if(av_read_frame(inAudio->getInFormatContext(), inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
             //decode video routing
@@ -497,16 +507,16 @@ void Controller::set() {
             decoderAudio = make_unique<Decoder>();
             inAudio->open();
             decoderAudio->setCodecContext(inAudio->getInCodecContext());
+            settings.audio_channels = decoderAudio->getCodecContext()->channels;
+            settings.audio_sample_rate = decoderAudio->getCodecContext()->sample_rate;
+            std::cout << "channels: " << settings.audio_channels << " sample_rate: " << settings.audio_sample_rate;
         } catch (const std::runtime_error& e) {
             cerr << "Error opening audio input: " << e.what() << endl;
             throw;
         }
     }
     // OUTPUT
-    settings.audio_channels = decoderAudio->getCodecContext()->channels;
-    settings.audio_sample_rate = decoderAudio->getCodecContext()->sample_rate;
     output = make_unique<Muxer>(settings);
-    std::cout << "channels: " << settings.audio_channels << " sample_rate: " << settings.audio_sample_rate;
     output->initOutputFile();
 
     if (settings._recvideo){

@@ -60,3 +60,7 @@ void Demuxer::closeInput() {
 AVFormatContext *Demuxer::getInFormatContext() const {
     return inFormatContext;
 }
+
+int Demuxer::getStreamIndex() {
+    return this->streamIndex;
+}
