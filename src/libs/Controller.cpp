@@ -155,14 +155,12 @@ void Controller::captureVideo(){
 
                 encoderVideo->sendFrame(scaledFrame);
                 while(encoderVideo->getPacket(outPacket)>=0){
-                    cout<<"PRE outPacket PTS: "<< outPacket->pts<< endl;
                     //outPacket ready
                     if(outPacket->pts != AV_NOPTS_VALUE)
                         outPacket->pts = av_rescale_q(outPacket->pts, encoderVideo->getCodecContext()->time_base,  output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
                     if(outPacket->dts != AV_NOPTS_VALUE)
                         outPacket->dts = av_rescale_q(outPacket->dts, encoderVideo->getCodecContext()->time_base, output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
 
-                    cout<<"POST outPacket PTS: "<< outPacket->pts<< endl;
 
                     outPacket->stream_index = output->outVideoStreamIndex;
                     w_lock.lock();
