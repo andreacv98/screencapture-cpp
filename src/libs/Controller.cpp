@@ -243,8 +243,12 @@ void Controller::captureAudio() {
     cout<<"\n\n[AudioThread] thread started!";
     std::unique_lock<std::mutex> r_lock(r_mutex, std::defer_lock);
     bool paused = false;
-    while(true) {
 
+    bool adjust_pts_offset = false;
+    int64_t pts_offset = 0;
+    int64_t last_pts = 0;
+
+    while(true) {
 
         r_lock.lock();
         paused = !captureSwitch && captureStarted;
@@ -257,8 +261,24 @@ void Controller::captureAudio() {
             return;
         }
 
-        if (paused) inAudio->open();
+        if (paused) {
+            inAudio->open();
+            adjust_pts_offset = true;
+        }
+
         r_lock.unlock();
+
+        if (adjust_pts_offset) {
+            pts_offset += inPacket->pts - last_pts;
+        }
+
+        last_pts = inPacket->pts;
+        if (adjust_pts_offset){
+            adjust_pts_offset = false;
+            continue;
+        } else {
+            inPacket->pts -= pts_offset;
+        }
 
         inAudioStreamIndex = inAudio->getStreamIndex();
 

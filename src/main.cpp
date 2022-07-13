@@ -31,7 +31,7 @@ int main() {
     int y_start;
     int y_toadd;
 
-    bool test = false;
+    bool test = true;
 
 
     SRSettings settings;
@@ -50,7 +50,7 @@ int main() {
        settings._fps = 15;
 
        //Controller c("alsa_input.pci-0000_00_05.0.analog-stereo", ":0.0+0,0", settings);
-        Controller c("audio=Microfono (Realtek(R) Audio)", "desktop", settings);
+        Controller c("audio=Microfono (Logitech G533 Gaming Headset)", "desktop", settings);
 
 
         bool capturing = true;
