@@ -125,7 +125,7 @@ void Muxer::generateVideoOutputStream() {
     outVCodecContext->codec_id = AV_CODEC_ID_H264;// AV_CODEC_ID_MPEG4; // AV_CODEC_ID_H264 // AV_CODEC_ID_MPEG1VIDEO
     outVCodecContext->codec_type = AVMEDIA_TYPE_VIDEO;
     outVCodecContext->pix_fmt = AV_PIX_FMT_YUV420P;
-    outVCodecContext->bit_rate = 20000000; // 2500000
+    outVCodecContext->bit_rate = 2500000; // 400000
     outVCodecContext->width = outputSettings._outscreenres.width;
     outVCodecContext->height = outputSettings._outscreenres.height;
     outVCodecContext->gop_size = 3;
