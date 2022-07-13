@@ -31,6 +31,12 @@ Controller::~Controller() {
 
 }
 
+int nextPTS()
+{
+    static int static_pts = 0;
+    return static_pts ++;
+}
+
 /**
  * captureVideo() is the "VideoThread" execution flow.
  * This execution flow get packets from video input device
@@ -146,7 +152,7 @@ void Controller::captureVideo(){
                 scaledFrame->width = output->getVCodecContext()->width;
                 scaledFrame->height = output->getVCodecContext()->height;
                 scaledFrame->format = output->getVCodecContext()->pix_fmt;
-                scaledFrame->pts = rawFrame->pts;
+                scaledFrame->pts = nextPTS();
                 scaledFrame->pkt_dts=rawFrame->pkt_dts;
                 scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
                 //av_frame_get_buffer(scaledFrame, 0);

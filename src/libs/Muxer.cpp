@@ -116,13 +116,13 @@ void Muxer::generateVideoOutputStream() {
     AVStream *video_st = avformat_new_stream(outAVFormatContext, nullptr);
 
     if (!video_st) throw std::runtime_error("Muxer: failed to create a new stream");
-    AVCodec* outVCodec = avcodec_find_encoder(AV_CODEC_ID_MPEG4);
+    AVCodec* outVCodec = avcodec_find_encoder(AV_CODEC_ID_H264);
     if (!outVCodec) throw std::runtime_error("Muxer: cannot find requested encoder");
     outVCodecContext = avcodec_alloc_context3(outVCodec);
     if (!outVCodecContext) throw std::runtime_error("Muxer: cannot create VideoCodecContext");
 
     /* set properties for the video stream encoding */
-    outVCodecContext->codec_id = AV_CODEC_ID_MPEG4;// AV_CODEC_ID_MPEG4; // AV_CODEC_ID_H264 // AV_CODEC_ID_MPEG1VIDEO
+    outVCodecContext->codec_id = AV_CODEC_ID_H264;// AV_CODEC_ID_MPEG4; // AV_CODEC_ID_H264 // AV_CODEC_ID_MPEG1VIDEO
     outVCodecContext->codec_type = AVMEDIA_TYPE_VIDEO;
     outVCodecContext->pix_fmt = AV_PIX_FMT_YUV420P;
     outVCodecContext->bit_rate = 20000000; // 2500000
