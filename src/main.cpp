@@ -169,7 +169,7 @@ void menu(SRSettings *settings){
     settings->_screenoffset = {x_start, y_start};
     settings->_inscreenres= {x_toadd, y_toadd};
 
-    //setting resolution output
+    /*setting resolution output
     std::cout << "---Choose output resolution #" << std::endl;
     std::cout << "resolution #0: \t1280x720 pixels"
                  "\nresolution #1: \t1920x1080 pixels"<<
@@ -196,7 +196,10 @@ void menu(SRSettings *settings){
             break;
         default:
             break;
-    }
+    }*/
+
+    settings->_outscreenres = {x_toadd,y_toadd};
+
 
     //setting audio
     std::cout << "---Do you want audio record? 1 for yes, 0 for not ---" << std::endl;
