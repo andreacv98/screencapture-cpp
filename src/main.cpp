@@ -2,7 +2,6 @@
 #include <thread>
 #include "ScreenRecorder.h"
 #include "libs/Controller.h"
-#include "libs/DisplayInfo.h"
 
 #ifdef __APPLE__
 #include <unistd.h>
@@ -84,10 +83,10 @@ void menu(SRSettings *settings){
     int i;
 
 #ifdef __unix__
-    DisplayInfo di;
+    Display *dpy = XOpenDisplay (NULL);
     //di.showInfos();
-    resolution_width= XDisplayWidth(di.dpy,0);
-    resolution_height = XDisplayHeight(di.dpy,0);
+    resolution_width= XDisplayWidth(dpy,0);
+    resolution_height = XDisplayHeight(dpy,0);
     std::cout << "---Dispays info---" << std::endl;
     std::cout <<"resolution_width:"  << resolution_width <<"\tresolution_height:"<<resolution_height<<"\n";
 
