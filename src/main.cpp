@@ -119,7 +119,7 @@ void menu(SRSettings *settings){
         std::cout << "---Enter n pixel to start area capture x (x origin area) ---" << std::endl;
         std::cin >>x_start;
         while (x_start>=resolution_width){
-            std::cout << "---ERROR : origin can't be egual or greater than resolution" << std::endl;
+            std::cout << "---ERROR : origin can't be equal or greater than resolution" << std::endl;
             std::cout << "---REEnter n pixel to start area capture x (x origin area) ---" << std::endl;
             std::cin >>x_start;
         }
@@ -128,7 +128,7 @@ void menu(SRSettings *settings){
         std::cin >>y_start;
 
         while (y_start>=resolution_height){
-            std::cout << "---ERROR : origin can't be egual or greater than resolution" << std::endl;
+            std::cout << "---ERROR : origin can't be equal or greater than resolution" << std::endl;
             std::cout << "---REEnter n pixel to start area capture y (y origin area) ---" << std::endl;
             std::cin >>y_start;
         }
@@ -141,7 +141,7 @@ void menu(SRSettings *settings){
             std::cout << "---ReEnter n pixel to start area capture x (x origin area) ---" << std::endl;
             std::cin >>x_start;
             while (x_start>=resolution_width){
-                std::cout << "---ERROR : origin can't be egual or greater than resolution" << std::endl;
+                std::cout << "---ERROR : origin can't be equal or greater than resolution" << std::endl;
                 std::cout << "---REEnter n pixel to start area capture x (x origin area) ---" << std::endl;
                 std::cin >>x_start;
             }
@@ -158,7 +158,7 @@ void menu(SRSettings *settings){
             std::cin >>y_start;
 
             while (y_start>=resolution_height){
-                std::cout << "---ERROR : origin can't be egual or greater than resolution" << std::endl;
+                std::cout << "---ERROR : origin can't be equal or greater than resolution" << std::endl;
                 std::cout << "---REEnter n pixel to start area capture y (y origin area) ---" << std::endl;
                 std::cin >>y_start;
             }
@@ -263,7 +263,7 @@ void registration_loop(Controller *c){
 
                     std::cout << "\n--- 2 -> resume | 3 -> end ---\n";
                     std::cin>>command;
-                    while (command!=1 && command!= 3){
+                    while (command!=2 && command!= 3){
                         std::cout << "\n--- 2 -> pause | 3 -> end ---\n";
                         std::cin>>command;
                     }
