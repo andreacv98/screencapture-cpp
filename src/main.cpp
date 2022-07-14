@@ -252,20 +252,35 @@ void registration_loop(Controller *c){
                 case 0:
                     c->startCapture();
 
+                    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+                    std::cout << "\n\nRegistration started...\n";
                     std::cout << "\n--- 1 -> pause | 3 -> end ---\n";
                     std::cin>>command;
+                    while (command!=1 && command!= 3){
+                        std::cout << "\n--- 1 -> pause | 3 -> end ---\n";
+                        std::cin>>command;
+                    }
                     break;
                 case 1:
                     c->pauseCapture();
 
                     std::cout << "\n--- 2 -> resume | 3 -> end ---\n";
                     std::cin>>command;
+                    while (command!=1 && command!= 3){
+                        std::cout << "\n--- 2 -> pause | 3 -> end ---\n";
+                        std::cin>>command;
+                    }
                     break;
                 case 2:
                     c->resumeCapture();
 
                     std::cout << "\n--- 1 -> pause | 3 -> end ---\n";
                     std::cin>>command;
+                    while (command!=1 && command!= 3){
+                        std::cout << "\n--- 1 -> pause | 3 -> end ---\n";
+                        std::cin>>command;
+                    }
                     break;
                 case 3:
                     c->endCapture();

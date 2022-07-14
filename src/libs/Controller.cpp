@@ -11,6 +11,8 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
                                                                                inAudio(nullptr),
                                                                                output(nullptr)
                                                                                {
+
+    av_log_set_level(AV_LOG_QUIET);
     inVideoBuffer.np = 0;
     inAudioBuffer.np = 0;
 
