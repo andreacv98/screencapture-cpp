@@ -13,8 +13,6 @@
 #include <cstdlib>
 #include <fstream>
 #include <cstring>
-#include <math.h>
-#include <string.h>
 #include <queue>
 #include <mutex>
 #include <condition_variable>
@@ -98,7 +96,7 @@ private:
 
     int init_fifo();
 
-    int add_samples_to_fifo(uint8_t **converted_input_samples, const int frame_size);
+    int add_samples_to_fifo(uint8_t **converted_input_samples, int frame_size);
 
 public:
     Controller(char * audioUrl, char * videoUrl, SRSettings settings);

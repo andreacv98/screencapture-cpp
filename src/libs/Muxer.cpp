@@ -34,7 +34,7 @@ Muxer::~Muxer() {
 int Muxer::initOutputFile() {
 
     outAVFormatContext = nullptr;
-    int value = 0;
+    int value;
 
     /*get the filetype from filename extension*/
     outAVOutputFormat = av_guess_format(nullptr,outputSettings.filename, nullptr);
@@ -65,7 +65,7 @@ int Muxer::initOutputFile() {
 
 void Muxer::generateAudioOutputStream() {
     outACodecContext = nullptr;
-    AVCodec* outACodec = nullptr;
+    AVCodec* outACodec;
     int i;
 
     AVStream *audio_st = avformat_new_stream(outAVFormatContext, nullptr);

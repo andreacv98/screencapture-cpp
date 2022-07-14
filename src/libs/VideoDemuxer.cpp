@@ -77,8 +77,6 @@ void VideoDemuxer::setOptions() {
     if (value < 0) {
         throw std::invalid_argument("Error in set probesize value");
     }
-
-    return;
 }
 
 /**
