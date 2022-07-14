@@ -94,14 +94,10 @@ void menu(SRSettings *settings){
 #endif
 
 #ifdef _WIN32
-    int x1, y1, x2, y2, resolution_width, resolution_height;
-    x1 = GetSystemMetrics(SM_XVIRTUALSCREEN);
-    y1 = GetSystemMetrics(SM_YVIRTUALSCREEN);
-    x2 = GetSystemMetrics(SM_CXFULLSCREEN);
-    y2 = GetSystemMetrics(SM_CYSCREEN);
+    int resolution_width, resolution_height;
 
-    resolution_width = x2 - x1;
-    resolution_height = y2 - y1;
+    resolution_width = GetSystemMetrics(SM_CXSCREEN);
+    resolution_height = GetSystemMetrics(SM_CYSCREEN);
     std::cout << "---Dispays info---" << std::endl;
     std::cout <<"resolution_width:  "  << resolution_width <<"px\tresolution_height:  "<<resolution_height<<"px\n"<< std::endl;
 #endif
