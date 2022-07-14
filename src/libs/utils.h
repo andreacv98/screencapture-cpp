@@ -28,7 +28,6 @@ extern "C"
 #include "libavutil/audio_fifo.h"
 #include "libswscale/swscale.h"
 #include "libswresample/swresample.h"
-
 }
 
 typedef struct S{
@@ -48,9 +47,10 @@ typedef struct A{
     SRResolution  _outscreenres;
     SROffset _screenoffset;
     uint16_t  _fps;
-    char* filename;
+    char filename[100];
     int audio_sample_rate;
     int audio_channels;
+    char audio_url [200];
 }SRSettings;
 
 typedef struct B{

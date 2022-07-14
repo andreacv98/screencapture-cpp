@@ -296,7 +296,7 @@ int ScreenRecorder::openAudioSource() {
 }
 
 int ScreenRecorder::initOutputFile(){
-    char* filename = settings.filename;
+    const char* filename = settings.filename;
     bool audio_recorded = settings._recaudio;
 
     outAVFormatContext = nullptr;
@@ -875,7 +875,6 @@ void ScreenRecorder::initThreads() {
  * @note Has to be called before initOutput() and initThreads()
  */
 void ScreenRecorder::initOptions() {
-    settings.filename = "output.mp4";
     settings._recaudio=false;
     settings._inscreenres={0,0};
     settings._outscreenres={0,0};
