@@ -15,7 +15,6 @@ AVFormatContext *AudioDemuxer::open() {
     value = avformat_open_input(&inFormatContext, url, inFormat, &options);
     if (value != 0) {
         throw std::runtime_error("Cannot open selected device");
-        exit(1);
     }
 
 

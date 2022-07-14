@@ -1,6 +1,5 @@
 #include "Encoder.h"
 #include <stdexcept>
-#include <iostream>
 
 int Encoder::sendFrame(AVFrame *frame) {
     int ret = avcodec_send_frame(outCodecContext, frame);
