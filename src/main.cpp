@@ -72,7 +72,7 @@ int main() {
 
 void menu(SRSettings *settings){
 
-    bool fullscreen;
+    int fullscreen;
     bool audio;
     std::string output_name;
     int resolution_out;
@@ -106,6 +106,7 @@ void menu(SRSettings *settings){
     std::cout << "---Do you want to record in fullscreen? 1 for yes, 0 for not---" << std::endl;
     std::cin >> fullscreen;
     while (fullscreen!=0 && fullscreen!=1){
+        std::cout << "---ERROR : option not valid" << std::endl;
         std::cout << "---Do you want to record in fullscreen? 1 for yes, 0 for not---" << std::endl;
         std::cin >> fullscreen;
     }
@@ -248,22 +249,21 @@ void registration_loop(Controller *c){
                 case 0:
                     c->startCapture();
 
-                    std::this_thread::sleep_for(std::chrono::seconds(1));
-
                     std::cout << "\n\nRegistration started...\n";
                     std::cout << "\n--- 1 -> pause | 3 -> end ---\n";
                     std::cin>>command;
                     while (command!=1 && command!= 3){
+                        std::cout << "---ERROR : option not valid" << std::endl;
                         std::cout << "\n--- 1 -> pause | 3 -> end ---\n";
                         std::cin>>command;
                     }
                     break;
                 case 1:
                     c->pauseCapture();
-
                     std::cout << "\n--- 2 -> resume | 3 -> end ---\n";
                     std::cin>>command;
                     while (command!=2 && command!= 3){
+                        std::cout << "---ERROR : option not valid" << std::endl;
                         std::cout << "\n--- 2 -> pause | 3 -> end ---\n";
                         std::cin>>command;
                     }
@@ -274,6 +274,7 @@ void registration_loop(Controller *c){
                     std::cout << "\n--- 1 -> pause | 3 -> end ---\n";
                     std::cin>>command;
                     while (command!=1 && command!= 3){
+                        std::cout << "---ERROR : option not valid" << std::endl;
                         std::cout << "\n--- 1 -> pause | 3 -> end ---\n";
                         std::cin>>command;
                     }
