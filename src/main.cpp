@@ -1,6 +1,5 @@
 #include <iostream>
 #include <thread>
-#include "ScreenRecorder.h"
 #include "libs/Controller.h"
 
 #ifdef __APPLE__
@@ -81,6 +80,7 @@ void menu(SRSettings *settings){
     int y_toadd;
     int audio_number;
     int i;
+    int resolution_width, resolution_height;
 
 #ifdef __unix__
     Display *dpy = XOpenDisplay (NULL);
@@ -93,8 +93,6 @@ void menu(SRSettings *settings){
 #endif
 
 #ifdef _WIN32
-    int resolution_width, resolution_height;
-
     resolution_width = GetSystemMetrics(SM_CXSCREEN);
     resolution_height = GetSystemMetrics(SM_CYSCREEN);
     std::cout << "---Dispays info---" << std::endl;
