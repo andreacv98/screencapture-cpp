@@ -97,7 +97,7 @@ void menu(SRSettings *settings){
     int x1, y1, x2, y2, resolution_width, resolution_height;
     x1 = GetSystemMetrics(SM_XVIRTUALSCREEN);
     y1 = GetSystemMetrics(SM_YVIRTUALSCREEN);
-    x2 = GetSystemMetrics(SM_CXSCREEN);
+    x2 = GetSystemMetrics(SM_CXFULLSCREEN);
     y2 = GetSystemMetrics(SM_CYSCREEN);
 
     resolution_width = x2 - x1;
