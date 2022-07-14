@@ -44,8 +44,8 @@ int Muxer::initOutputFile() {
     avformat_alloc_output_context2(&outAVFormatContext, outAVOutputFormat, outAVOutputFormat->name, outputSettings.filename);
     if (!outAVFormatContext) throw std::runtime_error("Muxer: cannot allocate the output context");
 
-    if(outputSettings._recvideo) generateVideoOutputStream();
     if(outputSettings._recaudio) generateAudioOutputStream();
+    if(outputSettings._recvideo) generateVideoOutputStream();
 
     /* create empty video file */
     if (!(outAVFormatContext->flags & AVFMT_NOFILE)) {
@@ -69,11 +69,16 @@ void Muxer::generateAudioOutputStream() {
     int i;
 
     AVStream *audio_st = avformat_new_stream(outAVFormatContext, nullptr);
-    if (!audio_st) throw std::runtime_error("Muxer: cannot create audio stream");
+    if (!audio_st)
+        throw std::runtime_error("Muxer: cannot create audio stream");
+
     outACodec = avcodec_find_encoder(AV_CODEC_ID_AAC);
-    if (!outACodec) throw std::runtime_error("Muxer: cannot find requested encoder");
+    if (!outACodec)
+        throw std::runtime_error("Muxer: cannot find requested encoder");
+
     outACodecContext = avcodec_alloc_context3(outACodec);
-    if (!outACodecContext) throw std::runtime_error("Muxer: cannot create related VideoCodecContext");
+    if (!outACodecContext)
+        throw std::runtime_error("Muxer: cannot create related VideoCodecContext");
 
 
     /* set properties for the video stream encoding*/
@@ -97,7 +102,8 @@ void Muxer::generateAudioOutputStream() {
         outACodecContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
     }
 
-    if (avcodec_open2(outACodecContext, outACodec, nullptr)< 0) throw std::runtime_error("Muxer: error in opening the avcodec");
+    if (avcodec_open2(outACodecContext, outACodec, nullptr)< 0)
+        throw std::runtime_error("Muxer: error in opening the avcodec");
 
     //find a free stream index
     outAudioStreamIndex = -1;
@@ -105,7 +111,10 @@ void Muxer::generateAudioOutputStream() {
         if(outAVFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_UNKNOWN)
             outAudioStreamIndex = i;
 
-    if(outAudioStreamIndex < 0) throw std::runtime_error("Muxer: cannot find a free stream for audio on the output");
+    if(outAudioStreamIndex < 0)
+        throw std::runtime_error("Muxer: cannot find a free stream for audio on the output");
+
+    std::cout << "Audio Output stream index: "<< outAudioStreamIndex << std::endl;
 
     avcodec_parameters_from_context(outAVFormatContext->streams[outAudioStreamIndex]->codecpar, outACodecContext);
 
@@ -116,13 +125,13 @@ void Muxer::generateVideoOutputStream() {
     AVStream *video_st = avformat_new_stream(outAVFormatContext, nullptr);
 
     if (!video_st) throw std::runtime_error("Muxer: failed to create a new stream");
-    AVCodec* outVCodec = avcodec_find_encoder(AV_CODEC_ID_MPEG4);
+    AVCodec* outVCodec = avcodec_find_encoder(AV_CODEC_ID_H264);
     if (!outVCodec) throw std::runtime_error("Muxer: cannot find requested encoder");
     outVCodecContext = avcodec_alloc_context3(outVCodec);
     if (!outVCodecContext) throw std::runtime_error("Muxer: cannot create VideoCodecContext");
 
     /* set properties for the video stream encoding */
-    outVCodecContext->codec_id = AV_CODEC_ID_MPEG4;// AV_CODEC_ID_MPEG4; // AV_CODEC_ID_H264 // AV_CODEC_ID_MPEG1VIDEO
+    outVCodecContext->codec_id = AV_CODEC_ID_H264;// AV_CODEC_ID_MPEG4; // AV_CODEC_ID_H264 // AV_CODEC_ID_MPEG1VIDEO
     outVCodecContext->codec_type = AVMEDIA_TYPE_VIDEO;
     outVCodecContext->pix_fmt = AV_PIX_FMT_YUV420P;
     outVCodecContext->bit_rate = 400000; // 2500000
@@ -130,8 +139,8 @@ void Muxer::generateVideoOutputStream() {
     outVCodecContext->height = outputSettings._outscreenres.height;
     outVCodecContext->gop_size = 3;
     outVCodecContext->max_b_frames = 2;
-    outVCodecContext->time_base.num = 1;
-    outVCodecContext->time_base.den = outputSettings._fps; // 15fps
+    outVCodecContext->time_base = AVRational{1, outputSettings._fps};
+    outVCodecContext->framerate = AVRational{outputSettings._fps, 1};
     outVCodecContext->compression_level = 1;
     /* reduce preset to slow if H264 to avoid resources leak */
     if(outVCodecContext->codec_id == AV_CODEC_ID_H264)
@@ -142,7 +151,8 @@ void Muxer::generateVideoOutputStream() {
         outVCodecContext->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
     }
 
-    if (avcodec_open2(outVCodecContext, outVCodec, nullptr)< 0) throw std::runtime_error("Muxer: error in opening the avcodec");
+    if (avcodec_open2(outVCodecContext, outVCodec, nullptr)< 0)
+        throw std::runtime_error("Muxer: error in opening the avcodec");
 
     //find a free stream index
     outVideoStreamIndex = -1;
@@ -150,7 +160,10 @@ void Muxer::generateVideoOutputStream() {
         if(outAVFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_UNKNOWN)
             outVideoStreamIndex = i;
 
-    if(outVideoStreamIndex < 0) throw std::runtime_error("Muxer: cannot find a free stream for video on the output");
+    if(outVideoStreamIndex < 0)
+        throw std::runtime_error("Muxer: cannot find a free stream for video on the output");
+
+    std::cout << "Video Output stream index: "<< outVideoStreamIndex << std::endl;
 
     avcodec_parameters_from_context(outAVFormatContext->streams[outVideoStreamIndex]->codecpar, outVCodecContext);
 }

@@ -100,6 +100,8 @@ private:
 
     int add_samples_to_fifo(uint8_t **converted_input_samples, const int frame_size);
 
+    long long first_pts;
+
 public:
     Controller(char * audioUrl, char * videoUrl, SRSettings settings);
     ~Controller();

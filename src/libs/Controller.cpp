@@ -9,7 +9,8 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
                                                                                captureStarted(false),
                                                                                inVideo(nullptr),
                                                                                inAudio(nullptr),
-                                                                               output(nullptr)
+                                                                               output(nullptr),
+                                                                               first_pts(-1)
                                                                                {
     inVideoBuffer.np = 0;
     inAudioBuffer.np = 0;
@@ -44,12 +45,12 @@ void Controller::captureVideo(){
     AVFrame *rawFrame, *scaledFrame;
 
     //allocate space for a packet
-    inPacket = (AVPacket *) av_malloc(sizeof (AVPacket));
+    inPacket = av_packet_alloc();
     if(!inPacket) {
         cout << "\nCannot allocate an AVPacket for encoded video";
         exit(1);
     }
-    av_init_packet(inPacket);
+    //av_init_packet(inPacket);
 
     //allocate space for a frame
     rawFrame =av_frame_alloc();
@@ -58,7 +59,7 @@ void Controller::captureVideo(){
         exit(1);
     }
 
-    outPacket = (AVPacket *) av_malloc(sizeof (AVPacket));
+    outPacket = av_packet_alloc();
     if(!outPacket) {
         cout << "\nCannot allocate an AVPacket for encoded video";
         exit(1);
@@ -132,13 +133,19 @@ void Controller::captureVideo(){
 
             av_packet_rescale_ts(inPacket,  inVideo->getInFormatContext()->streams[inVideoStreamIndex]->time_base,decoderVideo->getCodecContext()->time_base);
             ret = decoderVideo->sendPacket(inPacket);
+
+            if(first_pts<0)
+                first_pts = inPacket->pts;
+            inPacket->dts -= first_pts;
+            inPacket->pts -= first_pts;
+
             while (decoderVideo->getDecodedOutput(rawFrame) >= 0) {
                 //raw frame ready
                 if(output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->start_time <= 0) {
                     output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->start_time = rawFrame->pts;
                 }
 
-                av_init_packet(outPacket);
+                //av_init_packet(outPacket);
                 outPacket->data =  nullptr;    // packet data will be allocated by the encoder
                 outPacket->size = 0;
 
@@ -151,20 +158,36 @@ void Controller::captureVideo(){
                 scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
                 //av_frame_get_buffer(scaledFrame, 0);
 
+                cout << "rawFrame PTS:" << rawFrame->pts << endl;
+                cout << "rawFrame DTS:" << rawFrame->pkt_dts << endl;
+
                 sws_scale(swsCtx_, rawFrame->data, rawFrame->linesize,0, decoderVideo->getCodecContext()->height, scaledFrame->data, scaledFrame->linesize);
 
                 encoderVideo->sendFrame(scaledFrame);
+
+                cout << "scaledFrame PTS:" << scaledFrame->pts << endl;
+                cout << "rawFrame DTS:" << scaledFrame->pkt_dts << endl;
+
                 while(encoderVideo->getPacket(outPacket)>=0){
+                    cout << "PRE outPacket PTS:" << outPacket->pts << endl;
+                    cout << "PRE outPacket DTS:" << outPacket->dts << endl;
+                    w_lock.lock();
                     //outPacket ready
                     if(outPacket->pts != AV_NOPTS_VALUE)
                         outPacket->pts = av_rescale_q(outPacket->pts, encoderVideo->getCodecContext()->time_base,  output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
                     if(outPacket->dts != AV_NOPTS_VALUE)
                         outPacket->dts = av_rescale_q(outPacket->dts, encoderVideo->getCodecContext()->time_base, output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
 
+                    cout << "POST_1 outPacket PTS:" << outPacket->pts << endl;
+                    cout << "POST_1 outPacket DTS:" << outPacket->dts << endl;
 
                     outPacket->stream_index = output->outVideoStreamIndex;
-                    w_lock.lock();
-                    if(av_interleaved_write_frame(output->getOutAVFormatContext() , outPacket) != 0)
+                    /*av_packet_rescale_ts(outPacket, encoderVideo->getCodecContext()->time_base, output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
+
+                    cout << "POST_2 outPacket PTS:" << outPacket->pts << endl;
+                    cout << "POST_2 outPacket DTS:" << outPacket->dts << endl;*/
+
+                    if(av_write_frame(output->getOutAVFormatContext() , outPacket) != 0)
                     {
                         cout<<"\nerror in writing video frame";
                     }
@@ -321,8 +344,6 @@ void Controller::captureAudio() {
                 }// got_picture
                 av_frame_free(&scaledFrame);
                 av_packet_unref(outPacket);
-                //av_freep(&resampledData[0]);
-                // free(resampledData);
             }
         }
 
