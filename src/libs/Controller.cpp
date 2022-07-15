@@ -139,7 +139,7 @@ void Controller::captureVideo(){
             //decode video routine
 
             av_packet_rescale_ts(inPacket,  inVideo->getInFormatContext()->streams[inVideoStreamIndex]->time_base,decoderVideo->getCodecContext()->time_base);
-            ret = decoderVideo->sendPacket(inPacket);
+            decoderVideo->sendPacket(inPacket);
             while (decoderVideo->getDecodedOutput(rawFrame) >= 0) {
                 //raw frame ready
                 if(output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->start_time <= 0) {
@@ -151,27 +151,47 @@ void Controller::captureVideo(){
                 outPacket->size = 0;
 
                 /*initializing scaleFrame */
-                scaledFrame->width = output->getVCodecContext()->width;
-                scaledFrame->height = output->getVCodecContext()->height;
-                scaledFrame->format = output->getVCodecContext()->pix_fmt;
-                scaledFrame->pts = nextPTS();
-                scaledFrame->pkt_dts=rawFrame->pkt_dts;
-                scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
-                //av_frame_get_buffer(scaledFrame, 0);
 
                 sws_scale(swsCtx_, rawFrame->data, rawFrame->linesize,0, decoderVideo->getCodecContext()->height, scaledFrame->data, scaledFrame->linesize);
 
+                scaledFrame->width = output->getVCodecContext()->width;
+                scaledFrame->height = output->getVCodecContext()->height;
+                scaledFrame->format = output->getVCodecContext()->pix_fmt;
+
+                /*
+                if (inPacket->dts != AV_NOPTS_VALUE){
+                    scaledFrame->pts = av_frame_get_best_effort_timestamp(rawFrame);
+                }else scaledFrame->pts =0;
+
+                 //scaledFrame->pts*= av_q2d(inVideo->getInFormatContext()->streams[inVideoStreamIndex]->time_base);
+
+                 */
+
+                scaledFrame->pts = nextPTS();
+
+                //cout<<"FramePTS: "<<scaledFrame->pts<<std::endl;
+
+                //scaledFrame->pkt_dts= rawFrame->pkt_dts;
+                //scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
+
+
                 encoderVideo->sendFrame(scaledFrame);
                 while(encoderVideo->getPacket(outPacket)>=0){
-                    //outPacket ready
+
+                    av_packet_rescale_ts(outPacket,  encoderVideo->getCodecContext()->time_base,output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
+
+
+                    /*outPacket ready
                     if(outPacket->pts != AV_NOPTS_VALUE)
                         outPacket->pts = av_rescale_q(outPacket->pts, encoderVideo->getCodecContext()->time_base,  output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
                     if(outPacket->dts != AV_NOPTS_VALUE)
                         outPacket->dts = av_rescale_q(outPacket->dts, encoderVideo->getCodecContext()->time_base, output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->time_base);
 
+                    */
 
                     outPacket->stream_index = output->outVideoStreamIndex;
                     w_lock.lock();
+                    //cout<<"Videopkt_pts:\t"<<outPacket->pts<<std::endl;
                     if(av_interleaved_write_frame(output->getOutAVFormatContext() , outPacket) != 0)
                     {
                         cout<<"\nerror in writing video frame";
@@ -179,11 +199,12 @@ void Controller::captureVideo(){
 
                     w_lock.unlock();
                     av_packet_unref(outPacket);
-                } // got_picture
-                av_packet_unref(outPacket);
+                }
+                //av_packet_unref(outPacket);
             }
         }
 
+        av_free_packet(inPacket);
     }
 
 }
@@ -292,8 +313,8 @@ void Controller::captureAudio() {
 
         if(av_read_frame(inAudio->getInFormatContext(), inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
             //decode video routing
-            av_packet_rescale_ts(outPacket,  inAudio->getInFormatContext()->streams[inAudioStreamIndex]->time_base, decoderAudio->getCodecContext()->time_base);
-            ret = decoderAudio->sendPacket(inPacket);
+            av_packet_rescale_ts(inPacket,  inAudio->getInFormatContext()->streams[inAudioStreamIndex]->time_base, decoderAudio->getCodecContext()->time_base);
+            decoderAudio->sendPacket(inPacket);
             while (decoderAudio->getDecodedOutput(rawFrame) >= 0) {
                 if(output->getOutAVFormatContext()->streams[output->outAudioStreamIndex]->start_time <= 0) {
                     output->getOutAVFormatContext()->streams[output->outAudioStreamIndex]->start_time = rawFrame->pts;
@@ -336,8 +357,9 @@ void Controller::captureAudio() {
 
 
                         outPacket->stream_index = output->outAudioStreamIndex;
-
                         w_lock.lock();
+                        //cout<<"Audiopkt_pts:\t"<<outPacket->pts<<std::endl;
+
                         if(av_interleaved_write_frame(output->getOutAVFormatContext() , outPacket) != 0)
                         {
                             cout<<"\nerror in writing audio frame";
@@ -345,10 +367,9 @@ void Controller::captureAudio() {
                         w_lock.unlock();
                         av_packet_unref(outPacket);
                     }
-                    ret=0;
                 }// got_picture
                 av_frame_free(&scaledFrame);
-                av_packet_unref(outPacket);
+                //av_packet_unref(outPacket);
                 //av_freep(&resampledData[0]);
                 // free(resampledData);
             }
