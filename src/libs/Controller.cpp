@@ -148,6 +148,7 @@ void Controller::captureVideo(){
 
         inVideoStreamIndex = inVideo->getStreamIndex();
 
+
         if(retFrameRead >= 0 && inPacket->stream_index == inVideoStreamIndex) {
 
             av_packet_rescale_ts(inPacket,  inVideo->getInFormatContext()->streams[inVideoStreamIndex]->time_base,decoderVideo->getCodecContext()->time_base);
@@ -205,6 +206,7 @@ void Controller::captureVideo(){
 
                 //scaledFrame->pkt_dts= rawFrame->pkt_dts;
                 //scaledFrame->best_effort_timestamp = rawFrame->best_effort_timestamp;
+
 
 
                 encoderVideo->sendFrame(scaledFrame);
