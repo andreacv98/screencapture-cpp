@@ -232,7 +232,7 @@ void menu(SRSettings *settings){
 
     std::cout << "---Insert name for output file and extensions (max 100chr) eg. 'output.mp4'---" << std::endl;
     std::cin >>settings->filename;
-    settings->_fps = 15;
+    settings->_fps = 25;
 }
 
 void registration_loop(Controller *c){
