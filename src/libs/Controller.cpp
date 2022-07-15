@@ -387,6 +387,7 @@ void Controller::captureAudio() {
 
                 while (av_audio_fifo_size(fifo) >= encoderAudio->getCodecContext()->frame_size){
                     ret = av_audio_fifo_read(fifo, (void **)(scaledFrame->data), encoderAudio->getCodecContext()->frame_size);
+                    scaledFrame->pts = pts+1024;
                     pts += scaledFrame->nb_samples;
                     encoderAudio->sendFrame(scaledFrame);
                     while(encoderAudio->getPacket(outPacket)>=0){
