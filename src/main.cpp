@@ -264,7 +264,7 @@ void registration_loop(Controller *c){
                     std::cin>>command;
                     while (command!=2 && command!= 3){
                         std::cout << "---ERROR : option not valid" << std::endl;
-                        std::cout << "\n--- 2 -> pause | 3 -> end ---\n";
+                        std::cout << "\n--- 2 -> resume | 3 -> end ---\n";
                         std::cin>>command;
                     }
                     break;

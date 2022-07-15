@@ -126,6 +126,7 @@ AVFormatContext *VideoDemuxer::open() {
         avcodec_parameters_to_context(inCodecContext, params);
 
         value = avcodec_open2(inCodecContext, inCodec, nullptr);
+        inCodecContext->time_base= AVRational{1,fps};
         if (value < 0) {
             throw std::runtime_error("Cannot open the av codec");
         }

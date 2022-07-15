@@ -50,6 +50,7 @@ void Controller::captureVideo(){
     int ret;
     AVPacket *inPacket, *outPacket;
     AVFrame *rawFrame, *scaledFrame;
+    int64_t initial_pts=0;
 
     //allocate space for a packet
     inPacket = (AVPacket *) av_malloc(sizeof (AVPacket));
@@ -116,10 +117,17 @@ void Controller::captureVideo(){
 
     cout<<"\n\n[VideoThread] thread started!";
     bool paused = false;
+
+    bool adjust_pts_offset = false;
+    int64_t pts_offset = 0;
+    int64_t last_pts = AV_NOPTS_VALUE;
+
     while(true) {
         r_lock.lock();
         paused = !captureSwitch && captureStarted;
-        if (paused) inVideo->closeInput();
+        if (paused) {
+            inVideo->closeInput();
+        }
 
         r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
         if(killSwitch) {
@@ -128,23 +136,24 @@ void Controller::captureVideo(){
         }
 
         // if it was in a paused state we need to reopen the input
-        if (paused) inVideo->open();
+        if (paused) {
+            inVideo->open();
+            adjust_pts_offset = true;
+        }
+
         r_lock.unlock();
+
 
         int retFrameRead =av_read_frame(inVideo->getInFormatContext(), inPacket);
 
         inVideoStreamIndex = inVideo->getStreamIndex();
 
         if(retFrameRead >= 0 && inPacket->stream_index == inVideoStreamIndex) {
-            //decode video routine
 
             av_packet_rescale_ts(inPacket,  inVideo->getInFormatContext()->streams[inVideoStreamIndex]->time_base,decoderVideo->getCodecContext()->time_base);
             decoderVideo->sendPacket(inPacket);
             while (decoderVideo->getDecodedOutput(rawFrame) >= 0) {
-                //raw frame ready
-                if(output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->start_time <= 0) {
-                    output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->start_time = rawFrame->pts;
-                }
+
 
                 av_init_packet(outPacket);
                 outPacket->data =  nullptr;    // packet data will be allocated by the encoder
@@ -158,16 +167,39 @@ void Controller::captureVideo(){
                 scaledFrame->height = output->getVCodecContext()->height;
                 scaledFrame->format = output->getVCodecContext()->pix_fmt;
 
-                /*
                 if (inPacket->dts != AV_NOPTS_VALUE){
-                    scaledFrame->pts = av_frame_get_best_effort_timestamp(rawFrame);
+                    if (initial_pts==0) initial_pts = rawFrame->best_effort_timestamp;
+                    scaledFrame->pts = rawFrame->best_effort_timestamp  - initial_pts;
                 }else scaledFrame->pts =0;
 
+                if (adjust_pts_offset) {
+                    pts_offset += scaledFrame->pts - last_pts;
+                }
+
+                if(last_pts == scaledFrame->pts) {
+                    continue;
+                }
+
+                last_pts = scaledFrame->pts;
+                if (adjust_pts_offset){
+                    adjust_pts_offset = false;
+                    continue;
+                } else {
+                    scaledFrame->pts -= pts_offset;
+                }
+
+
+                //scaledFrame->pts= av_rescale_q(scaledFrame->pts,  decoderVideo->getCodecContext()->time_base, encoderVideo->getCodecContext()->time_base);
+
+                //raw frame ready
+                if(output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->start_time <= 0) {
+                    output->getOutAVFormatContext()->streams[output->outVideoStreamIndex]->start_time = scaledFrame->pts;
+                }
                  //scaledFrame->pts*= av_q2d(inVideo->getInFormatContext()->streams[inVideoStreamIndex]->time_base);
 
-                 */
 
-                scaledFrame->pts = nextPTS();
+
+                //scaledFrame->pts = nextPTS();
 
                 //cout<<"FramePTS: "<<scaledFrame->pts<<std::endl;
 
@@ -200,10 +232,10 @@ void Controller::captureVideo(){
                     w_lock.unlock();
                     av_packet_unref(outPacket);
                 }
-                //av_packet_unref(outPacket);
+                av_packet_unref(outPacket);
             }
         }
-
+        //av_packet_unref(inPacket);
         av_free_packet(inPacket);
     }
 
@@ -277,6 +309,8 @@ void Controller::captureAudio() {
     int64_t pts_offset = 0;
     int64_t last_pts = 0;
 
+    int i=0;
+
     while(true) {
 
         r_lock.lock();
@@ -297,23 +331,26 @@ void Controller::captureAudio() {
 
         r_lock.unlock();
 
-        if (adjust_pts_offset) {
-            pts_offset += inPacket->pts - last_pts;
-        }
-
-        last_pts = inPacket->pts;
-        if (adjust_pts_offset){
-            adjust_pts_offset = false;
-            continue;
-        } else {
-            inPacket->pts -= pts_offset;
-        }
 
         inAudioStreamIndex = inAudio->getStreamIndex();
 
         if(av_read_frame(inAudio->getInFormatContext(), inPacket) >= 0 && inPacket->stream_index == inAudioStreamIndex) {
-            //decode video routing
+
+            if (adjust_pts_offset) {
+                pts_offset += inPacket->pts - last_pts;
+            }
+
+            last_pts = inPacket->pts;
+            if (adjust_pts_offset){
+                adjust_pts_offset = false;
+                continue;
+            } else {
+                //inPacket->pts -= pts_offset;
+            }
+
+
             av_packet_rescale_ts(inPacket,  inAudio->getInFormatContext()->streams[inAudioStreamIndex]->time_base, decoderAudio->getCodecContext()->time_base);
+
             decoderAudio->sendPacket(inPacket);
             while (decoderAudio->getDecodedOutput(rawFrame) >= 0) {
                 if(output->getOutAVFormatContext()->streams[output->outAudioStreamIndex]->start_time <= 0) {
@@ -348,13 +385,11 @@ void Controller::captureAudio() {
 
                 while (av_audio_fifo_size(fifo) >= encoderAudio->getCodecContext()->frame_size){
                     ret = av_audio_fifo_read(fifo, (void **)(scaledFrame->data), encoderAudio->getCodecContext()->frame_size);
-                    scaledFrame->pts = pts;
                     pts += scaledFrame->nb_samples;
                     encoderAudio->sendFrame(scaledFrame);
                     while(encoderAudio->getPacket(outPacket)>=0){
                         //outPacket ready
                         av_packet_rescale_ts(outPacket, encoderAudio->getCodecContext()->time_base,  output->getOutAVFormatContext()->streams[output->outAudioStreamIndex]->time_base);
-
 
                         outPacket->stream_index = output->outAudioStreamIndex;
                         w_lock.lock();
