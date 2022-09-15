@@ -56,8 +56,12 @@ class Controller {
 
 private:
     //synchro stuff
-    std::mutex r_mutex;
-    std::condition_variable r_cv;
+    //std::mutex r_mutex;
+    std::mutex video_mutex;
+    std::mutex audio_mutex;
+    //std::condition_variable r_cv;
+    std::condition_variable video_cv;
+    std::condition_variable audio_cv;
     std::mutex w_lock;
 
     //threads

@@ -12,7 +12,7 @@ Controller::Controller(char * audioUrl, char * videoUrl, SRSettings settings): s
                                                                                output(nullptr)
                                                                                {
 
-    av_log_set_level(AV_LOG_QUIET);
+    //av_log_set_level(AV_LOG_QUIET);
     inVideoBuffer.np = 0;
     inAudioBuffer.np = 0;
 
@@ -112,7 +112,7 @@ void Controller::captureVideo(){
 
 
     // Unique lock with defer lock to not lock automatically at the construction of the unique lock
-    std::unique_lock<std::mutex> r_lock(r_mutex, std::defer_lock);
+    std::unique_lock<std::mutex> r_lock(video_mutex, std::defer_lock);
 
 
     cout<<"\n\n[VideoThread] thread started!";
@@ -129,7 +129,7 @@ void Controller::captureVideo(){
             inVideo->closeInput();
         }
 
-        r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
+        video_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
         if(killSwitch) {
             cout << "\n[VideoThread] thread stopped!";
             return;
@@ -304,7 +304,7 @@ void Controller::captureAudio() {
 
 
     cout<<"\n\n[AudioThread] thread started!";
-    std::unique_lock<std::mutex> r_lock(r_mutex, std::defer_lock);
+    std::unique_lock<std::mutex> r_lock(audio_mutex, std::defer_lock);
     bool paused = false;
 
     bool adjust_pts_offset = false;
@@ -319,7 +319,7 @@ void Controller::captureAudio() {
         paused = !captureSwitch && captureStarted;
         if (paused) inAudio->closeInput();
 
-        r_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
+        audio_cv.wait(r_lock, [&](){return (captureSwitch || killSwitch);});
 
         if(killSwitch) {
             cout << "\n[AudioThread] thread stopped!";
@@ -440,13 +440,14 @@ void Controller::startCapture() {
     initThreads();
     cout << "\n[MainThread] Capture started";
     cout << "\n[MainThread] Capturing audio: " << (settings._recaudio ? "yes" : "no");
-    std::lock_guard<std::mutex> r_lock(r_mutex);
+    std::lock_guard<std::mutex> r_lock_video(video_mutex);
+    std::lock_guard<std::mutex> r_lock_audio(audio_mutex);
     if (settings._recaudio)
         init_fifo();
     captureSwitch = true;
     captureStarted = true;
-    r_cv.notify_all();
-
+    video_cv.notify_all();
+    audio_cv.notify_all();
 
 }
 /**
@@ -456,10 +457,12 @@ void Controller::startCapture() {
 void Controller::pauseCapture() {
     if (!captureSwitch || killSwitch) return;
     std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    std::lock_guard<std::mutex> r_lock(r_mutex);
+    std::lock_guard<std::mutex> r_lock_video(video_mutex);
+    std::lock_guard<std::mutex> r_lock_audio(audio_mutex);
     cout<<"\n[MainThread] Capture paused\n";
     captureSwitch = false;
-    r_cv.notify_all();
+    video_cv.notify_all();
+    audio_cv.notify_all();
 }
 /**
  * resumeCapture() resumes Audio and Video capturing threads
@@ -467,10 +470,12 @@ void Controller::pauseCapture() {
  */
 void Controller::resumeCapture() {
     if (captureSwitch || killSwitch) return;
-    std::lock_guard<std::mutex> r_lock(r_mutex);
+    std::lock_guard<std::mutex> r_lock_video(video_mutex);
+    std::lock_guard<std::mutex> r_lock_audio(audio_mutex);
     captureSwitch = true;
     cout<<"\n[MainThread] Capture resumed\n";
-    r_cv.notify_all();
+    video_cv.notify_all();
+    audio_cv.notify_all();
 }
 /**
  * endCapture() ends Audio and Video capturing threads
@@ -478,11 +483,12 @@ void Controller::resumeCapture() {
  */
 void Controller::endCapture() {
     if (killSwitch) return;
-    std::lock_guard<std::mutex> r_lock(r_mutex);
+    std::lock_guard<std::mutex> r_lock_video(video_mutex);
+    std::lock_guard<std::mutex> r_lock_audio(audio_mutex);
     killSwitch = true;
     cout<<"\n[MainThread] Capture ended\n";
-    r_cv.notify_all();
-
+    video_cv.notify_all();
+    audio_cv.notify_all();
 }
 
 /**
